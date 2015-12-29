@@ -1,0 +1,69 @@
+{% extends "layouts/_main.html" %}
+
+{% block body %}
+
+  {% include "layouts/partials/_top-nav-menu.html" %}
+
+  <div class="callout large">
+    <div class="row column text-center">
+      <h1><span class="docdocs-text-logo">Docdocs..</span> Add New</h1>
+      <p class="lead">Fill out one or more of the forms below.</p>
+      <a href="#" class="button medium">Search</a>
+
+      {% if not current_user.is_active %}
+        {# User not logged in then we should offer Sign-Up #}
+        <a href="#" class="button medium hollow" data-open="signup-modal">Sign Up</a>
+      {% else %}
+        {# Active user then show button to add new Review #}
+        <a href="{{ url_for('public.add_new') }}" class="button medium hollow secondary">Add New</a>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <div class="row column">
+    {% include "public/partials/_add-new-forms.html" %}
+
+
+  </div>
+
+  <div class="row medium-up-2">
+
+    <div class="column recently-added">
+
+      <header class="section-header">
+        <div class="section-title">
+          <h3>Recently added:</h3>
+        </div>
+      </header>
+      <div class="feed">
+        {% include "public/partials/_recently_added_list.html" %}
+      </div>
+
+    </div>
+
+    <div class="column recent-activity">
+      <header class="section-header">
+        <div class="section-title">
+          <h3>Recent activity:</h3>
+        </div>
+      </header>
+      <div class="feed">
+        {% include "public/partials/_recent_activity_list.html" %}
+      </div>
+    </div>
+
+  </div>
+
+  <hr>
+  <div class="row column">
+
+    <ul class="menu">
+      <li><a href="#">Sign Up</a></li>
+      <li><a href="#">Sign In</a></li>
+      <li><a href="#">Recent</a></li>
+      <li><a href="#">Archives</a></li>
+      <li><a href="#">Most Trusted</a></li>
+    </ul>
+  </div>
+{% endblock %}

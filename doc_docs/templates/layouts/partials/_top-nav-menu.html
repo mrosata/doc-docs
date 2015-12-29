@@ -1,0 +1,42 @@
+{% set navigation_links = [
+    (url_for("public.the_feeds"), "fi-burst-new", " Feeds ", "the-feeds"),
+    (url_for("public.the_archive"), "fi-page-search", " Archive ", "the-archive"),
+    (url_for("public.the_blog"), "fi-clipboard-notes", " Blog ", "the-blog"),
+ ] -%}
+{% set active_link = active_page|default("index") -%}
+
+  <div class="row top-nav">
+    <nav class="menu">
+
+      <h1 class="name header-logo"><i class="fi-shield"></i> HERE BE DRAGONS</h1>
+      <ul class="inline-list">
+        {% for href, icon_class, title, route_name in navigation_links %}
+          <li{% if active_link == route_name %} class="active"{% endif %}><a href="{{ href|e }}"> <i class="{{ icon_class }}"> </i> {{ title|e }} </a> </li> &nbsp;
+        {% endfor %}
+
+      </ul>
+
+
+      {% if not current_user.is_active %}
+
+        <ul class="inline-list account-action">
+          <li><a href="#" data-open="login-modal">Login</a></li>
+          <li class=""><a class="signup" href="#" data-open="signup-modal">Signup</a></li>
+        </ul>
+
+      {% else: %}
+
+        <span class="active-user-name"> {{ current_user.email }} </span>
+        <ul class="inline-list account-action active-user">
+          <li> <a href="{{ url_for('public.profile') }}">Profile</a></li>
+          <li class=""> <a class="signup" href="{{ url_for('public.logout') }}">Logout</a></li>
+        </ul>
+
+      {% endif %}
+
+    </nav>
+
+  </div>
+
+  {% include "public/partials/_login-modal.html" %}
+

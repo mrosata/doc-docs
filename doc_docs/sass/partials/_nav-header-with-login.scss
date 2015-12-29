@@ -1,0 +1,162 @@
+// http://zurb.com/building-blocks/navigation-with-login
+
+@import "../_settings";
+
+.row.top-nav {
+  max-width: 100%;
+
+  .menu {
+    background-color: $nav-background-color;
+    padding: 1.5rem 3rem;
+    height: auto;
+
+    .header-logo {
+      position: relative;
+      font-family: $cursive-font-family;
+
+      i {
+        position: absolute;
+        transform: scale(1.75);
+        left: -2.1rem;
+      }
+    }
+
+    .inline-list {
+      text-align: center;
+
+      &.account-action {
+        font-size: 0.83rem;
+
+      }
+
+      li {
+        float: none;
+        display: inline-block;
+      }
+
+      a {
+        color: #fff;
+        padding-bottom: 0.5rem;
+
+        &:hover {
+          color: $nav-primary-color;
+          transition: all .3s ease-in-out;
+        }
+      }
+
+      .active a {
+        color: $nav-primary-color;
+      }
+    }
+  }
+
+  // .menu (cont...)
+  .menu {
+
+    .active-user-name {
+      color: #0b97c4;
+      font-weight: bold;
+      padding: 0.25rem;
+      position: absolute;
+      top:0;
+      right:0;
+      @media screen and (max-width: 323px) {
+        display: none;
+      }
+    }
+
+    .account {
+      display: none;
+      position: absolute;
+      top: 3%;
+      right: 3%;
+
+      a , i {
+        color: #fff;
+      }
+    }
+
+    @media only screen and (min-width: 40.063em) {
+    height: 5rem;
+
+    .inline-list {
+      float: left;
+      margin: 0 0 0 1.5rem;
+      }
+
+      a:hover {
+        border-bottom: 2px solid $nav-primary-color;
+      }
+
+    }
+
+    .account-action {
+      float: right;
+      margin: -.15rem 0 0 0;
+
+      li {
+        margin-left: .2rem;
+      }
+
+      a {
+        padding: 0;
+      }
+
+      a.signup {
+        font-weight: bold;
+        background-color: scale-color($nav-background-color, $lightness: 10%);
+        border-radius: 3px;
+      }
+
+
+      @media screen and (min-width: $min-width-medium) {
+       &.active-user {
+         margin: .6rem 0 0 0;
+       }
+      }
+      @media screen and (min-width:323px) {
+        margin: 0;
+
+        a {
+          // After 323px the 2 items smoosh
+          padding: 0.55rem 1rem;
+        }
+      }
+    }
+  }
+
+  .name {
+    text-align: center;
+    font-size:  1.15rem;
+    line-height: 1;
+    margin: 0 0 0.5rem 0;
+    color: #fff;
+
+    i {
+      color: $nav-primary-color;
+      margin-right: 0.5rem;
+    }
+
+
+    @media screen and (min-width:323px) {
+      font-size: 1.33rem;
+      margin: 0 0 0.55rem 0;
+    }
+
+    @media only screen and (min-width: $min-width-medium) {
+      font-size: 1.5rem;
+      margin: 0 0 1rem 0;
+      float: left;
+    }
+  }
+
+}
+
+
+.login-panel form label {
+  font-weight: bold;
+}
+.login-panel form input[type=checkbox] {
+  width: 1.25em;
+  height: 1.25em;
+}

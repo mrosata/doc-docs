@@ -1,0 +1,30 @@
+<div class="row">
+  <div class="small-11 columns small-centered">
+
+    {% for review in reviews %}
+    <article class="activity row">
+
+        <div class="activity-info medium-6 large-4 small-11 columns">
+          <div class="row">
+            <p class="activity-datetime small-6 medium-12 columns">12/20/2015 <br> 11:14am</p>
+            <p class="activity-author small-6 medium-12 columns"><span class="username">MoJo-Rydah82</span><br>Member<br>1210 pts.</p>
+          </div>
+        </div>
+
+        <div class="activity-desc medium-6 large-8 small-12 columns wrap">
+          <h4 class="activity-desc-header">Title of Review or page where action was.</h4>
+          <p class="activity-desc-detail">
+            <span class="activity-desc-time">Describe the action</span>
+            Details of the doc/page
+          </p>
+          <a href="http://bdconf.com/speakers/brandon-arnold/" class="rsvp button">View Details</a>
+        </div>
+
+      </article>
+
+      <hr>
+
+    {% endfor %}
+
+  </div>
+</div>

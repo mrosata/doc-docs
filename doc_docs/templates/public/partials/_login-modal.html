@@ -1,0 +1,115 @@
+<!-- The login modal -->
+  <div id="login-modal" class="reveal" data-reveal aria-labelledby="login" aria-hidden="true" role="dialog">
+    <div class="row">
+      <div class="large-6 columns auth-plain">
+        <div class="login-panel left-solid">
+          <p class="welcome">Registered Users</p>
+            <form action="{{ url_for_security('login') }}" method="POST" name="login_user_form">
+            {% from "security/_macros.html" import render_field_with_errors, render_field %}
+            {% include "security/_messages.html" %}
+              {{ login_user_form.hidden_tag() }}
+
+            <div class="row collapse">
+              <div class="small-2  columns">
+                <span class="prefix"><i class="fi-torso-female"></i></span>
+              </div>
+              <div class="small-10  columns">
+              {{ render_field(login_user_form.email, placeholder="Email Address") }}
+              </div>
+            </div>
+
+            <div class="row collapse">
+              <div class="small-2 columns ">
+                <span class="prefix"><i class="fi-lock"></i></span>
+              </div>
+              <div class="small-10 columns ">
+              {{ render_field(login_user_form.password, placeholder="Password") }}
+                <label>
+              {{ render_field(login_user_form.remember) }}Remember Me</label>
+              </div>
+            </div>
+
+              {{ render_field(login_user_form.next, class="button") }}
+              {{ render_field(login_user_form.submit, class="button") }}
+
+
+          </form>
+
+        </div>
+
+      </div>
+
+
+      <div class="large-6 columns auth-plain">
+        <div class="signup-panel left-solid">
+          <p class="welcome"></p>
+          <h5>Well look who decided to come back!</h5>
+        </div>
+        <div>
+          <br>
+          <a href="#" data-close="login-modal" data-open="signup-modal">Not yet a member? SIGN UP FREE!</a>
+        </div>
+
+      </div>
+
+
+    </div>
+    <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
+  </div>
+
+
+  <div id="signup-modal" class="reveal" data-reveal aria-labelledby="sign up" aria-hidden="true" role="dialog">
+    <div class="row">
+      <div class="large-12 columns auth-plain">
+        <div class="signup-panel newusers">
+          <h2 class="welcome">New User?</h2>
+          <p>
+            Create an account to get real-time document flags. Be warned when a document you surf to has been deemed
+            out of date by reputable users at Docdocs. Become a reputable user yourself by reviewing, rating, and
+            offering alternative sources of information for other Doc-docs community members to benefit from.
+          </p>
+          <br>
+          {% from "security/_macros.html" import render_field_with_errors, render_field %}
+          {% include "security/_messages.html" %}
+          <form action="{{ url_for_security('register') }}" method="POST" name="register_user_form">
+            {{ register_user_form.hidden_tag() }}
+
+             <div class="row collapse">
+              <div class="small-2  columns">
+                <span class="prefix"><i class="fi-torso-female"></i></span>
+              </div>
+              <div class="small-10  columns">
+              {{ render_field_with_errors(register_user_form.email, placeholder="Email Address") }}
+              </div>
+            </div>
+
+            <div class="row collapse">
+              <div class="small-2 columns ">
+                <span class="prefix"><i class="fi-lock"></i></span>
+              </div>
+              <div class="small-10 columns ">
+              {{ render_field_with_errors(register_user_form.password, placeholder="Type Password") }}
+              </div>
+            </div>
+
+            {% if register_user_form.password_confirm %}
+            <div class="row collapse">
+              <div class="small-2 columns ">
+                <span class="prefix"><i class="fi-lock"></i></span>
+              </div>
+              <div class="small-10 columns ">
+              {{ render_field_with_errors(register_user_form.password_confirm, placeholder="Re-Type Password") }}
+              </div>
+            </div>
+            {% endif %}
+
+            {{ render_field(register_user_form.submit, class="button") }}
+          </form>
+
+        </div>
+        <a href="#" data-open="login-modal" data-close="signup-modal">Already a member? SIGN IN!</a>
+
+      </div>
+     </div>
+    <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
+  </div>

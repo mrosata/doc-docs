@@ -1,0 +1,8 @@
+.git
+.idea
+.vagrant
+*.pyc
+node_modules
+vagrant
+
+nohup.out

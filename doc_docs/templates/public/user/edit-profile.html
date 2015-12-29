@@ -1,0 +1,50 @@
+{% extends "layouts/_main.html" %}
+
+{% block body %}
+
+  <section class="callout large">
+    <div class="row column text-center">
+      <h1><span class="docdocs-text-logo">Docdocs..</span> When Good Docs Go Bad.</h1>
+    </div>
+  </section>
+
+  <section class="row">
+    <div class="small-11 small-push-1 medium-push-1">
+      <h3>Edit your profile</h3>
+    </div>
+
+    <div class="small-10 medium-8 small-push-1 medium-push-2">
+      <p>
+        This is all information which the rest of the world could potentially see. When you contribute to the site by
+        reviewing docs/articles, rating or posting detours, the other members of the site will be able to take a peek
+        at your <a href="{{ url_for('public.profile') }}">profile page</a> which will show a feed of your recent
+        activity along with the information which you decide to provide below. If your one of those people who likes to
+        contribute without reconition, Feel free to leave them blank.
+      </p>
+    </div>
+
+    <div class="small-10 medium-8 small-push-1 medium-push-2">
+      <form action="{{ url_for('public.edit_profile') }}" method="post">
+        {{ profile_form.csrf_token }}
+        {{ profile_form.hidden_tag() }}
+        {{ profile_form.first_name.label }} {{ profile_form.first_name(value=profile.first_name) }}
+        {{ profile_form.last_name.label }} {{ profile_form.last_name(value=profile.last_name) }}
+        {{ profile_form.homepage.label }} {{ profile_form.homepage(value=profile.homepage) }}
+        {{ profile_form.github.label }} {{ profile_form.github(value=profile.github) }}
+        {{ profile_form.facebook.label }} {{ profile_form.facebook(value=profile.facebook) }}
+        {{ profile_form.stackoverflow.label }} {{ profile_form.stackoverflow(value=profile.stackoverflow) }}
+        {{ profile_form.twitter.label }} {{ profile_form.twitter(value=profile.twitter) }}
+        {{ profile_form.bio_text.label }} <textarea name="{{ profile_form.bio_text.name }}" id="{{ profile_form.bio_text.name }}">{{ bio.bio_text }}</textarea>
+
+        <button type="submit" class="button large">Submit</button>
+        <button type="reset" class="button hollow large">Reset</button>
+      </form>
+    </div>
+  </section>
+{% endblock %}
+
+
+
+
+
+

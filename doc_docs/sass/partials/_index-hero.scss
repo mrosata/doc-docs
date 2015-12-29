@@ -1,0 +1,18 @@
+// This is the "Jumbotron" type area right under the nav header but above the content of page
+
+.callout {
+
+  .button.hollow {
+
+    &.secondary {
+      border: 1px solid #87d37c;
+      color: #fefffe;
+      background-color: #3adb76;
+
+      &:hover {
+        color: #fafbfa;
+        background-color: #22bb5b;
+      }
+    }
+  }
+}

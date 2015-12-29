@@ -1,0 +1,109 @@
+{% extends "layouts/_main.html" %}
+
+{% block body %}
+
+  <section class="callout large">
+    <div class="row column text-center">
+      <h1><span class="docdocs-text-logo">Docdocs..</span> When Good Docs Go Bad.</h1>
+    </div>
+  </section>
+
+  <section class="row profile-fields">
+    <div class="small-10 medium-8 small-push-1 medium-push-2">
+      <div>
+        <div class="row">
+          <div class="column small-4 medium-4 large-3">
+            <span class="label field">First Name: </span>
+          </div>
+          <div class="column small-8 medium-8 large-9">
+            {{ profile.first_name }}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="column small-4 medium-4 large-3">
+            <span class="label field">Last Name: </span>
+          </div>
+          <div class="column small-8 medium-8 large-9">
+            {{ profile.last_name }}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="column small-4 medium-4 large-3">
+            <span class="label field">Homepage URL: </span>
+          </div>
+          <div class="column small-8 medium-8 large-9">
+            {{ profile.homepage }}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="column small-4 medium-4 large-3">
+            <span class="label field">Github: </span>
+          </div>
+          <div class="column small-8 medium-8 large-9">
+            {{ profile.github }}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="column small-4 medium-4 large-3">
+            <span class="label field">Facebook: </span>
+          </div>
+          <div class="column small-8 medium-8 large-9">
+            {{ profile.facebook }}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="column small-4 medium-4 large-3">
+            <span class="label field">StackOverflow: </span>
+          </div>
+          <div class="column small-8 medium-8 large-9">
+            {{ profile.stackoverflow }}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="column small-4 medium-4 large-3">
+            <span class="label field">Twitter: </span>
+          </div>
+          <div class="column small-8 medium-8 large-9">
+            {{ profile.twitter }}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="column small-4 medium-4 large-3">
+            <span class="label field">Bio Text: </span>
+          </div>
+          <div class="column small-8 medium-8 large-9">
+            {{ bio.bio_text }}
+          </div>
+        </div>
+
+        <div class="row">
+          <column class="small-12 center">
+            <div class="center text-center">
+              <a href="{{ url_for("public.edit_profile") }}" class="button hollow center">Edit Profile</a>
+            </div>
+          </column>
+
+        </div>
+      </div>
+
+      <p>Profile last updated on: <em>{{ profile.updated_at.date() }}</em></p>
+
+      <hr>
+
+      <p>For dev purpose only, update time: <em>{{ profile.updated_at.time() }}</em></p>
+    </div>
+  </section>
+{% endblock %}
+
+
+
+
+
+

@@ -1,0 +1,28 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+
+    {% block header %}
+      {% include "layouts/partials/_head.html" %}
+    {% endblock %}
+
+  </head>
+  <body>
+
+  {% include "layouts/partials/_top-nav-menu.html" %}
+
+    {% block body %}
+      <h1>AhWAAAT! Who's There??</h1>
+      <h3>Hey Oh', Seems ter me that ye be pokin inta places ya'll don't belang!</h3>
+    {% endblock %}
+
+    {% block footer %}
+      {% include "public/partials/_page-footer.html" %}
+    {% endblock %}
+
+    {% block close %}
+      {% include "layouts/partials/_close-body.html" %}
+    {% endblock %}
+
+  </body>
+</html>

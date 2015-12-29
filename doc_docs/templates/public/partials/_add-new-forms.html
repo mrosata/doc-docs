@@ -1,0 +1,12 @@
+<form method="post" action="{{ url_for('public.add_new') }}">
+  {{ new_review_form.csrf_token }}
+  {{ new_review_form.hidden_tag() }}
+  {{ new_review_form.doc_url.label }} {{ new_review_form.doc_url(size=100) }}
+  {{ new_review_form.rating.label }} {{ new_review_form.rating(size=100) }}
+  {{ new_review_form.review.label }} {{ new_review_form.review(size=100) }}
+  {{ new_review_form.summary.label }} {{ new_review_form.summary(size=100) }}
+  {{ new_review_form.detour.label }} {{ new_review_form.detour(size=100) }}
+  {{ new_review_form.tags.label }} {{ new_review_form.tags(size=100) }}
+
+  <input type="submit" value="Add Review"/>
+</form>
