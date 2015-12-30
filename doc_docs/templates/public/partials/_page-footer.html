@@ -1,14 +1,23 @@
 {# This is the page footer for pretty much every single page on the site #}
-
+{% set navigation_links = [
+    (url_for("public.the_feeds"), " Feeds ", "the-feeds"),
+    (url_for("public.the_archive"), " Archive ", "the-archive"),
+    (url_for("public.the_blog"), " Blog ", "the-blog"),
+ ] -%}
   <hr>
 
   <footer class="row column">
 
     <ul class="menu">
-      <li><a href="#">Sign Up</a></li>
-      <li><a href="#">Sign In</a></li>
-      <li><a href="#">Recent</a></li>
-      <li><a href="#">Archives</a></li>
-      <li><a href="#">Most Trusted</a></li>
+    <li><a href="{{ url_for('public.index') }}">Home</a></li>
+      {% if not current_user.is_active %}
+        <li><a class="signup" href="#" data-open="signup-modal">Sign Up</a></li>
+        <li><a class="signup" href="#" data-open="login-modal">Sign In</a></li>
+      {% else %}
+        <li><a class="logout" href="{{ url_for('public.logout') }}">Logout</a></li>
+      {% endif %}
+      {% for href, title, route_name in navigation_links %}
+        <li{% if active_link == route_name %} class="active"{% endif %}><a href="{{ href|e }}"> {{ title|e }} </a></li>
+      {% endfor %}
     </ul>
   </footer>

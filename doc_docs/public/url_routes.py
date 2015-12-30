@@ -6,17 +6,20 @@ Public URL Routes
 -----------------
 Most of the sites urls reside here in the public folder.
 """
+from flask import Blueprint, render_template, current_app, request, url_for, redirect, flash
 
-from flask import Blueprint, render_template, current_app, request, _request_ctx_stack, redirect, flash
+from flask_security import current_user, login_required, logout_user, forms
 
-from flask_security import current_user, login_required, logout_user, login_user, utils, forms
+from . import resources, site_forms
 
-# This is a file with resources in dicts.
-from doc_docs.public import resources, site_forms
-from doc_docs.sql import DocReview, DocReviewBody, DocDoc, DocDetour, DocRating, UserProfile, UserBioText, db
+from doc_docs.public.security_forms import ExtendedRegistrationForm
+from doc_docs.public.creator import DocReviewCreator
 from doc_docs.utilities import utils
 
-import pprint
+
+from doc_docs import db
+from doc_docs.sql import models
+from sqlalchemy.orm.exc import NoResultFound
 
 public = Blueprint('public', __name__, template_folder='../templates')
 
@@ -24,7 +27,8 @@ public = Blueprint('public', __name__, template_folder='../templates')
 @public.context_processor
 def public_context_processor():
     # Need to include the login form because integrating flask-security as sub template.
-    return dict(login_user_form=forms.LoginForm(), register_user_form=forms.RegisterForm())
+    register_user_form = ExtendedRegistrationForm()
+    return dict(login_user_form=forms.LoginForm(), register_user_form=register_user_form)
 
 
 @public.route('/')
@@ -47,16 +51,21 @@ def logout():
 @login_required
 @public.route('/docs/add_new', methods=['POST', 'GET'])
 def add_new():
+    creator = DocReviewCreator(current_user)
     if str(request.method).upper() == 'POST':
         """FROM SUBMISSION"""
-        review_form = site_forms.ReviewForm(request.form)
-        current_app.logger.info('REVIEW FORM %s')
+        review_form = creator.form()
         # Shortcut for is_submitted() and validate()
         if review_form.validate_on_submit():
-            # TODO: WHAT THE CRAP YO, Figure out how to turn the form into a doc review!
-            #DocReview(review_form.get_fields())
-            return "Here you go bro YOU PASS!"
-        return "Here you go bro. YOU FAIL!"
+            doc = creator.return_or_create_doc(creator, review_form.doc_url.data)
+            creator.push(rating=review_form.rating.data, review=review_form.review.data, tags=review_form.tags.data,
+                         detour=review_form.detour.data, summary=review_form.summary.data, discoverer=current_user)
+
+            creator.create()
+
+            return render_template(resources.add_new['html'], new_review_form=review_form)
+        utils.log("YOU HAVE FAILED ME BIG TIME BRO!")
+        return render_template(resources.add_new['html'], new_review_form=review_form)
     else:
         review_form = site_forms.ReviewForm()
         """PAGE VIEW (we must assume for now)"""
@@ -70,18 +79,45 @@ def new_review():
     return render_template(resources.add_new['html'], new_review_form=review_form)
 
 
+@public.route('/profile/<string:username>/')
+def public_profile(username):
+    user = db.session.query(models.User).filter_by(username=username).first()
+    if user is not None:
+        user_profile = db.session.query(models.UserProfile).filter_by(user_id=user.id).first()
+        if user_profile is not None:
+            profile_bio = db.session.query(models.UserBioText).filter_by(bio_text_id=user_profile.bio_text_id).first()
+            return render_template(resources.personal_profile['html'], profile=user_profile, bio=profile_bio)
+
+    # There is no user profile associated with the username used in the url, so redirect users to profile, else index
+    return redirect(url_for('public.profile'))
+
+
 @login_required
 @public.route('/profile/')
 def profile():
-    user_profile = db.session.query(UserProfile).filter_by(user_id=current_user.id).one()
-
-    if user_profile is None:
+    """
+    /profile - a user is able to see their own profile. It is the same as the view to view another persons profile
+               except no "Edit Profile" button.
+    :return:
+    """
+    try:
+        user_profile = db.session.query(models.UserProfile).filter_by(user_id=current_user.id).one()
+    except NoResultFound, e:
         current_app.logger.info("Current user %s had no profile! <<GENERATING PROFILE>>", current_user.id)
-        user_profile = UserProfile(current_user)
+        user_profile = models.UserProfile(current_user)
 
-    profile_bio = db.session.query(UserBioText).filter_by(bio_text_id=user_profile.bio_text_id).first()
+    profile_bio = db.session.query(models.UserBioText).filter_by(bio_text_id=user_profile.bio_text_id).first()
 
-    return render_template(resources.personal_profile['html'], profile=user_profile, bio=profile_bio)
+    # Get a list of all the users reviews to showcase on their profile page
+    reviews = list()
+    reviews_q = db.session.query(models.DocReview).filter_by(reviewer=current_user.id).all()
+    if reviews_q is not None:
+        for review in reviews_q:
+            reviews.append(review)
+
+    utils.log("These are the reviews this user has made thus far::::::: %r", reviews)
+
+    return render_template(resources.personal_profile['html'], profile=user_profile, bio=profile_bio, reviews=reviews)
 
 
 @login_required
@@ -93,12 +129,12 @@ def edit_profile():
     :return:
     """
     the_form = site_forms.ProfileForm()
-    user_profile = db.session.query(UserProfile).filter_by(user_id=current_user.id).one()
+    user_profile = db.session.query(models.UserProfile).filter_by(user_id=current_user.id).one()
 
     if user_profile is None:
         current_app.logger.info("Current user %s had no profile! <<GENERATING PROFILE>>", current_user.id)
-        user_profile = UserProfile(current_user)
-    bio = db.session.query(UserBioText).filter_by(bio_text_id=user_profile.bio_text_id).first()
+        user_profile = models.UserProfile(current_user)
+    bio = db.session.query(models.UserBioText).filter_by(bio_text_id=user_profile.bio_text_id).first()
 
     if str(request.method).lower() == 'post':
         # This is a submission. We should update the users profile.

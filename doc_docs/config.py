@@ -14,6 +14,10 @@ configurations = {
     "development": "doc_docs.config.DevConfig",
     "default": "doc_docs.config.DevConfig"
 }
+options = {
+    "REGISTER_USERNAME_EMPTY_MSG": "The Username field Can't be empty.",
+    "REGISTER_USERNAME_UNAVAILABLE_MSG": "Please choose another username, that name is unavailable.",
+}
 
 
 def configure_app(app):
@@ -33,7 +37,8 @@ class BaseConfig(object):
     TESTING = False
     SQLALCHEMY_DATABASE_URI = 'sqlite:////vagrant/pro-docdocs.db'
     SECRET_KEY = '2-90d324d13nlSEa4l-EASc35Ldgfhfsd-34gkl-LF24s'
-    SECURITY_CONFIRMABLE = False
+    SECURITY_CONFIRM = None
+    SECURITY_CONFIRMABLE = None
     SECURITY_REGISTERABLE = True
     SECURITY_TRACKABLE = True
     SECURITY_PASSWORD_HASH = 'plaintext' #'pbkdf2_sha512'
@@ -61,6 +66,8 @@ class BaseConfig(object):
     SECURITY_CHANGEABLE = False
     SECURITY_RECOVERABLE = False
 
+    SEND_REGISTER_EMAIL = None
+
 
 class DevConfig(BaseConfig):
     """
@@ -75,8 +82,14 @@ class DevConfig(BaseConfig):
     PORT = 5000
     SQLALCHEMY_DATABASE_URI = 'sqlite:////vagrant/dev-docdocs.db'
     # We don't need to verify email addresses in development
-    SECURITY_CONFIRMABLE = False
+    SECURITY_CONFIRMABLE = None
+    SECURITY_CONFIRM_URL = None
+    SECURITY_REGISTERABLE = True
+    SECURITY_CONFIRM_ERROR_VIEW = '/error'
+    SEND_REGISTER_EMAIL = False
+    SECURITY_SEND_REGISTER_EMAIL = False
     SECRET_KEY = '213nlSEal-EASc35Lhfsd-34gkl-LF'
+    SECURITY_UNAUTHORIZED_VIEW = '/index'
 
 
 class ProductionConfig(BaseConfig):

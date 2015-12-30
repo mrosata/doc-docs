@@ -1,3 +1,6 @@
+
+{% set _viewers_own_profile = current_user and current_user.id == profile.user_id -%}
+
 {% extends "layouts/_main.html" %}
 
 {% block body %}
@@ -11,77 +14,82 @@
   <section class="row profile-fields">
     <div class="small-10 medium-8 small-push-1 medium-push-2">
       <div>
-        <div class="row">
-          <div class="column small-4 medium-4 large-3">
+
+        <div class="row profile-field-container{% if profile.first_name == '' and not _viewers_own_profile %} hide{% endif %}">
+          <div class="column small-12">
             <span class="label field">First Name: </span>
           </div>
-          <div class="column small-8 medium-8 large-9">
+          <div class="column small-12">
             {{ profile.first_name }}
           </div>
         </div>
 
-        <div class="row">
-          <div class="column small-4 medium-4 large-3">
+        <div class="row profile-field-container{% if profile.last_name == '' and not _viewers_own_profile %} hide{% endif %}">
+          <div class="column small-12">
             <span class="label field">Last Name: </span>
           </div>
-          <div class="column small-8 medium-8 large-9">
+          <div class="column small-12">
             {{ profile.last_name }}
           </div>
         </div>
 
-        <div class="row">
-          <div class="column small-4 medium-4 large-3">
+        <div class="row profile-field-container{% if profile.homepage == '' and not _viewers_own_profile %} hide{% endif %}">
+          <div class="column small-12">
             <span class="label field">Homepage URL: </span>
           </div>
-          <div class="column small-8 medium-8 large-9">
+          <div class="column small-12">
             {{ profile.homepage }}
           </div>
         </div>
 
-        <div class="row">
-          <div class="column small-4 medium-4 large-3">
+        <div class="row profile-field-container{% if profile.github == '' and not _viewers_own_profile %} hide{% endif %}">
+          <div class="column small-12">
             <span class="label field">Github: </span>
           </div>
-          <div class="column small-8 medium-8 large-9">
+          <div class="column small-12">
             {{ profile.github }}
           </div>
         </div>
 
-        <div class="row">
-          <div class="column small-4 medium-4 large-3">
+        <div class="row profile-field-container{% if profile.facebook == '' and not _viewers_own_profile %} hide{% endif %}">
+          <div class="column small-12">
             <span class="label field">Facebook: </span>
           </div>
-          <div class="column small-8 medium-8 large-9">
+          <div class="column small-12">
             {{ profile.facebook }}
           </div>
         </div>
 
-        <div class="row">
-          <div class="column small-4 medium-4 large-3">
+        <div class="row profile-field-container{% if profile.stackoverflow == '' and not _viewers_own_profile %} hide{% endif %}">
+          <div class="column small-12">
             <span class="label field">StackOverflow: </span>
           </div>
-          <div class="column small-8 medium-8 large-9">
+          <div class="column small-12">
             {{ profile.stackoverflow }}
           </div>
         </div>
 
-        <div class="row">
-          <div class="column small-4 medium-4 large-3">
+        <div class="row profile-field-container{% if profile.twitter == '' and not _viewers_own_profile %} hide{% endif %}">
+          <div class="column small-12">
             <span class="label field">Twitter: </span>
           </div>
-          <div class="column small-8 medium-8 large-9">
+          <div class="column small-12">
             {{ profile.twitter }}
           </div>
         </div>
 
-        <div class="row">
-          <div class="column small-4 medium-4 large-3">
+        <div class="row profile-field-container
+        {% if bio.bio_text == '' and not _viewers_own_profile %} hide{% endif %}">
+          <div class="column small-12">
             <span class="label field">Bio Text: </span>
           </div>
-          <div class="column small-8 medium-8 large-9">
+          <div class="column small-12">
             {{ bio.bio_text }}
           </div>
         </div>
+
+        {# Only allow users to edit their own profiles (This includes even seeing the 'Edit' button) #}
+        {% if _viewers_own_profile %}
 
         <div class="row">
           <column class="small-12 center">
@@ -90,15 +98,47 @@
             </div>
           </column>
 
+          <hr>
+          <p>You last updated your profile on: <em>{{ profile.updated_at.date() }}</em></p>
+          <p>update time: <em>{{ profile.updated_at.time() }}</em></p>
+
         </div>
+
+        {% endif %}
+
       </div>
-
-      <p>Profile last updated on: <em>{{ profile.updated_at.date() }}</em></p>
-
-      <hr>
-
-      <p>For dev purpose only, update time: <em>{{ profile.updated_at.time() }}</em></p>
     </div>
+  </section>
+  
+  <section class="profile-doc-reviews">
+  
+    <div class="small-10 medium-8 small-push-1 medium-push-2">
+      {% if (reviews|length) == 0 %}
+
+        {# The User Whos Profile this is has not made any reviews to display. #}
+        {% if _viewers_own_profile %}
+          <h3>You haven't made any reviews yet</h3>
+          <a href="{{ url_for('public.add_new') }}" class="button medium hollow success">Add Review</a>
+        {% else %}
+          <h3>This user hasn't reviewed any docs yet</h3>
+        {% endif %}
+
+      {% else %}
+        <h3>Past Reviews</h3>
+        {% for review in reviews %}
+          <div class="profile-review">
+            <h5>Doc: {{ None }}</h5>
+            <p>
+              {{ review.review }}
+            </p>
+          <p>
+            {{ review.summary }}
+          </p>
+          </div>
+        {% endfor %}
+      {% endif %}    
+    </div>
+  
   </section>
 {% endblock %}
 

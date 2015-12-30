@@ -1,12 +1,36 @@
+{# This is actually the same macro I edited inside of templates/security/_macros.html #}
+{# TODO: This can be removed if it hasn't been edited and you can just import _macros.html #}
+{% macro render_field_with_errors(field) %}
+
+    {# I added this so that if I include the placeholder keyword argument then it won't render a label #}
+
+    {% if not kwargs.placeholder %}
+      {{ field.label }}
+    {% endif %}
+
+    {{ field(**kwargs)|safe }}
+
+    {% if field.errors %}
+      <ul>
+      {% for error in field.errors %}
+        <li>{{ error }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+{% endmacro %}
+
+
 <form method="post" action="{{ url_for('public.add_new') }}">
   {{ new_review_form.csrf_token }}
   {{ new_review_form.hidden_tag() }}
-  {{ new_review_form.doc_url.label }} {{ new_review_form.doc_url(size=100) }}
-  {{ new_review_form.rating.label }} {{ new_review_form.rating(size=100) }}
-  {{ new_review_form.review.label }} {{ new_review_form.review(size=100) }}
-  {{ new_review_form.summary.label }} {{ new_review_form.summary(size=100) }}
-  {{ new_review_form.detour.label }} {{ new_review_form.detour(size=100) }}
-  {{ new_review_form.tags.label }} {{ new_review_form.tags(size=100) }}
+  {{render_field_with_errors(new_review_form.doc_url) }}
+  {{render_field_with_errors(new_review_form.rating) }}
+  {{render_field_with_errors(new_review_form.review) }}
+  {{render_field_with_errors(new_review_form.summary) }}
+  {{render_field_with_errors(new_review_form.detour) }}
+  {{render_field_with_errors(new_review_form.tags) }}
 
-  <input type="submit" value="Add Review"/>
+  <input type="submit" class="button" value="Add Review"/>
+  <input type="submit" class="button alert" value="Reset"/>
+
 </form>

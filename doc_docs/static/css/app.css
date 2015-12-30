@@ -50,7 +50,11 @@ p {
 .profile-fields .label.field {
   font-size: 1.025rem;
   font-weight: bold;
-  border-radius: 2px; }
+  border-radius: 2px;
+  margin: 0.62rem 0 .275rem; }
+
+.profile-fields .profile-field-container {
+  min-height: 0.62rem; }
 
 .row.top-nav {
   max-width: 100%; }

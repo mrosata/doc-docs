@@ -1,3 +1,2 @@
-from user_models import db, User, Role, UserProfile, UserBioText
-from doc_docs_models import DocDoc, DocRating, DocDetour, DocReview, DocReviewBody
-
+from models import User, Role, UserProfile, UserBioText
+from models import DocDoc, DocRating, DocDetour, DocReviewBody, DocReview
