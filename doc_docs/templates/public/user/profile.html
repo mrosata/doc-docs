@@ -125,15 +125,29 @@
 
       {% else %}
         <h3>Past Reviews</h3>
-        {% for review in reviews %}
+        {% for data in reviews %}
           <div class="profile-review">
             <h5>Doc: {{ None }}</h5>
             <p>
-              {{ review.review }}
+              {{ data.username }}
             </p>
           <p>
-            {{ review.summary }}
+            Review: {{ data.review.rating }}
           </p>
+          <p>
+            URL: {{ data.doc.full_url }}
+          </p>
+          <p>
+            Summary: {{ data.review.summary }}
+          </p>
+          <p>
+            Review: {{ data.review.doc_review_body.review_body }}
+          </p>
+          <p>
+            Tags: {{ data.review.tags }}
+          </p>
+            <hr>
+            <br>
           </div>
         {% endfor %}
       {% endif %}    

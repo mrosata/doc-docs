@@ -108,14 +108,16 @@ def profile():
 
     profile_bio = db.session.query(models.UserBioText).filter_by(bio_text_id=user_profile.bio_text_id).first()
 
-    # Get a list of all the users reviews to showcase on their profile page
     reviews = list()
-    reviews_q = db.session.query(models.DocReview).filter_by(reviewer=current_user.id).all()
-    if reviews_q is not None:
-        for review in reviews_q:
-            reviews.append(review)
+    for r, p in db.session.query(models.DocReview, models.UserProfile).\
+            filter(models.DocReview.reviewer == models.UserProfile.user_id).\
+            filter(models.UserProfile.user_id == current_user.id).all():
+        reviews.append(dict(review=r, username=p.user.username, doc=r.doc_doc))
 
     utils.log("These are the reviews this user has made thus far::::::: %r", reviews)
+
+    body = db.session.query(models.DocReviewBody).all()
+    utils.log("This is the labor of your review!!!!::  %r", body)
 
     return render_template(resources.personal_profile['html'], profile=user_profile, bio=profile_bio, reviews=reviews)
 

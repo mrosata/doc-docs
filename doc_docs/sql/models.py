@@ -208,9 +208,12 @@ class DocReview(db.Model):
     reviewer = db.Column(db.Integer, db.ForeignKey('user.id'))
     reviewed_on = db.Column(db.DateTime, default=datetime.utcnow())
     summary = db.Column(db.Text(350))
-
     review_body_id = db.Column(db.Integer, db.ForeignKey('doc_review_body.review_body_id'))
-    doc_review_body = DocReviewBody("DocReviewBody")
+
+    # doc_review_body = DocReviewBody("DocReviewBody")
+    doc_review_body = db.relationship("DocReviewBody")
+    user = db.relationship("User")
+    doc_doc = db.relationship("DocDoc")
 
     def __init__(self, doc_id, reviewer, review, summary, reviewed_on=None):
         self.doc_id = doc_id
@@ -221,6 +224,9 @@ class DocReview(db.Model):
         if reviewed_on is None:
             reviewed_on = datetime.utcnow()
         self.reviewed_on = reviewed_on
+
+        # We create the review and then sqlalchemy will reference it in the review_body_id field
+        self.doc_review_body = DocReviewBody(review)
 
         db.session.add(self)
         db.session.commit()

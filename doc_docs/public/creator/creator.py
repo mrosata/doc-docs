@@ -23,7 +23,6 @@ class Creator:
     @staticmethod
     def return_or_create_doc(self, doc_url):
         url = utils.get_url_parts(doc_url)
-        utils.log('this si URL %r', url)
         doc = None
         if db.session.query(models.DocDoc).all().count > 0:
             doc = db.session.query(models.DocDoc).\
