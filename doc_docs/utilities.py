@@ -21,13 +21,17 @@ class DocDocsUtilities:
         pass
 
     @staticmethod
-    def log(msg, obj=None):
+    def log(msg=None, obj=None):
         """
         Log a message to current app stdout
+        If the caller doesn't pass any arguments then the function will return the logging function. This is so that
+        the logger will give an acurrate file location in the std
         :param msg:
         :param obj:
         :return:
         """
+        if msg is None and obj is None:
+            return current_app.logger.info
         current_app.logger.info(msg, obj)
 
     @staticmethod
@@ -56,9 +60,16 @@ class DocDocsUtilities:
             url = '//' + url
 
         parts = urlparse(url)
-        current_app.logger.info('THis is URL %s', parts)
-        url_dict = dict(pathname=parts.path, query_string=parts.query, fragment=parts.fragment, params=parts.params, base_url=parts.netloc, full_url=parts.geturl(), scheme=parts.scheme)
-        current_app.logger.info("URL DICT %r", url_dict)
+        url_dict = {
+            'pathname': parts.path,
+            'query_string': parts.query,
+            'fragment': parts.fragment,
+            'params': parts.params,
+            'base_url': parts.netloc,
+            'full_url': parts.geturl(),
+            'scheme': parts.scheme
+        }
+
         return url_dict
 
     @staticmethod

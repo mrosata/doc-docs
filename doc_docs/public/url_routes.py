@@ -64,11 +64,11 @@ def add_new():
             creator.create()
 
             return render_template(resources.add_new['html'], new_review_form=review_form)
-        utils.log("YOU HAVE FAILED ME BIG TIME BRO!")
+        # There was a problem with the form, so we will return the from w/errors
         return render_template(resources.add_new['html'], new_review_form=review_form)
     else:
         review_form = site_forms.ReviewForm()
-        """PAGE VIEW (we must assume for now)"""
+        # The regular page with form for adding a new review/rating/detour
         return render_template(resources.add_new['html'], new_review_form=review_form)
 
 
@@ -111,13 +111,37 @@ def profile():
     reviews = list()
     for r, p in db.session.query(models.DocReview, models.UserProfile).\
             filter(models.DocReview.reviewer == models.UserProfile.user_id).\
-            filter(models.UserProfile.user_id == current_user.id).all():
-        reviews.append(dict(review=r, username=p.user.username, doc=r.doc_doc))
+            filter(models.UserProfile.user_id == current_user.id).\
+            order_by(models.DocReview.reviewed_on.desc()).all():
+
+        # TODO: Put this into an abstracted class to litter less in the url_routes page
+        """Need to get the tags that are related to this review. First make a join from the term_relationship
+        table to the term table matching relationships between the current doc_review in loop. We then make
+        a list and populate it with any results before appending the next review to the list
+
+        a_alias = db.aliased(models.DocTerm)
+        _terms = db.session.query(models.DocTermRelationship).\
+            join(a_alias, models.DocTermRelationship.term).\
+            filter(a_alias.term_id == models.DocTermRelationship.term_id).\
+            filter(models.DocTermRelationship.object_id == r.doc_review_id).\
+            limit(5)
+        """
+        _terms = db.session.query(models.DocTerm).\
+            join(models.DocTermRelationship).\
+            filter(models.DocTermRelationship.object_id == r.doc_review_id).limit(5)
+        terms = list()
+        if _terms is not None:
+            for term in _terms:
+                terms.append({"term": term.term, "term_id": term.term_id})
+
+        utils.log()("TERMS QUERIED THROUGH JOIN IN Profile Page: %r", terms)
+
+        # Finally, we append all the data for this review and then goto next review
+        reviews.append(dict(review=r, tags=terms, username=p.user.username, doc=r.doc_doc))
 
     utils.log("These are the reviews this user has made thus far::::::: %r", reviews)
 
     body = db.session.query(models.DocReviewBody).all()
-    utils.log("This is the labor of your review!!!!::  %r", body)
 
     return render_template(resources.personal_profile['html'], profile=user_profile, bio=profile_bio, reviews=reviews)
 
@@ -157,6 +181,39 @@ def edit_profile():
             db.session.commit()
 
     return render_template(resources.edit_profile['html'], profile_form=the_form, profile=user_profile, bio=bio)
+
+
+@public.route('/tag/<string:term_name>/')
+@public.route('/tag/<int:term_id>/')
+def tag(term_name=None, term_id=None):
+    """
+    The Tags page is where all the resources on the site which have been filed using a certain tag are listed. This
+    makes searching for relevant content a bit simplier.
+    :param term_name:
+    :param term_id:
+    :return:
+    """
+    site_objects = list()
+    if term_name is not None:
+        _objects = db.session.query(models.DocTermRelationship).join(models.DocTerm).\
+            filter(models.DocTermRelationship.term_id == models.DocTerm.term_id).\
+            filter(models.DocTerm.term == term_name)
+        if _objects is not None:
+            for obj in _objects:
+                _doc_review = db.session.query(models.DocReview).filter_by(doc_review_id=obj.object_id).first()
+                doc_review = dict()
+                if _doc_review is not None:
+                    doc_review["summary"] = _doc_review.summary
+                    doc_review["doc_doc"] = _doc_review.doc_doc
+                    doc_review["reviewer"] = _doc_review.reviewer
+
+                site_objects.append({
+                    "term_id": obj.term_id,
+                    "object_id": obj.object_id,
+                    "doc_review": _doc_review
+                })
+
+    return "You wanna see my %s: %r" % (term_name, site_objects)
 
 
 @public.route('/discussion')

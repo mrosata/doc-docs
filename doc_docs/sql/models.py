@@ -160,7 +160,6 @@ class DocDoc(db.Model):
         self.base_url = url_parts["base_url"]
         self.pathname = url_parts["pathname"]
         self.fragment = url_parts["fragment"]
-        self.scheme = url_parts["scheme"]
         self.query_string = url_parts["query_string"]
         self.params = url_parts["params"]
         self.discoverer = discoverer.id
@@ -173,7 +172,10 @@ class DocDoc(db.Model):
         db.session.commit()
 
     def __repr__(self):
-        return '<DocDoc %r>' % self.doc_id
+        return '<class DocDoc doc_id: %r, base_url: %r, pathname: %r, fragment: %r, query_string: %r, ' \
+               'params %r, discoverer: %r, discovered: %r, visits: %r>' %\
+               (self.doc_id, self.base_url, self.pathname, self.fragment,
+                self.query_string, self.params, self.discoverer, self.discovered, self.visits)
 
 
 class DocReviewBody(db.Model):
@@ -193,7 +195,8 @@ class DocReviewBody(db.Model):
         db.session.add(self)
 
     def __repr__(self):
-        return '<class DocReviewBody %r>' % self.doc_review_id
+        return '<class DocReviewBody review_body_id: %r, review_body: %r>' % \
+               (self.review_body_id, self.review_body)
 
 
 class DocReview(db.Model):
@@ -210,6 +213,7 @@ class DocReview(db.Model):
     summary = db.Column(db.Text(350))
     review_body_id = db.Column(db.Integer, db.ForeignKey('doc_review_body.review_body_id'))
 
+    # terms = db.relationship("DocTerm", backref="doc_review")
     # doc_review_body = DocReviewBody("DocReviewBody")
     doc_review_body = db.relationship("DocReviewBody")
     user = db.relationship("User")
@@ -232,7 +236,10 @@ class DocReview(db.Model):
         db.session.commit()
 
     def __repr__(self):
-        return '<class DocReview %r>' % self.doc_review_id
+        return '<class DocReview doc_review_id: %r, doc_id: %r, review_body_id: %r, reviewer: %r, ' \
+               'reviewed_on: %r, summary: %r, user: %r, doc_doc: %r, doc_review_body: %r>' % \
+               (self.doc_review_id, self.doc_id, self.review_body_id, self.reviewer, self.reviewed_on, self.summary,
+                self.user, self.doc_doc, self.doc_review_body)
 
 
 class DocRating(db.Model):
@@ -287,6 +294,52 @@ class DocDetour(db.Model):
         return '<class DocReviewBody %r>' % self.doc_review_id
 
 
+class DocTerm(db.Model):
+    """
+    A Term can relate to any
+    """
+    __tablename__ = "term"
+    term_id = db.Column(db.Integer, primary_key=True)
+    term = db.Column(db.String(64))
+
+    def __init__(self, term):
+        self.term = term
+
+        db.session.add(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return "<class DocTerm term_id: %r, term: %r>" %\
+               (self.term_id, self.term)
+
+
+class DocTermRelationship(db.Model):
+    """
+    This sets the relationship from a term to a doc
+    """
+    __tablename__ = "term_relationship"
+    term_id = db.Column(db.Integer, db.ForeignKey("term.term_id"), primary_key=True)
+    object_id = db.Column(db.Integer, db.ForeignKey("doc_review.doc_review_id"), primary_key=True)
+    object_type = db.Column(db.String(16), default="doc")
+
+    db.PrimaryKeyConstraint("term_id", "object_id", name="term_relationship_pk")
+
+    doc_review = db.relationship("DocReview")
+    term = db.relationship("DocTerm")
+
+    def __init__(self, term_id, object_id, object_type="doc_review"):
+        self.term_id = term_id
+        self.object_id = object_id
+        self.object_type = object_type
+
+        db.session.add(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return "<class DocTermRelationship term_id: %r, object_id: %r, object_type: %r>" %\
+               (self.term_id, self.object_id, self.object_type)
+
+
 class CommunityApproval(db.Model):
     """
     Community Approvals are the votes made by users on reviews, ratings, and detours that other users have
@@ -311,7 +364,7 @@ class CommunityApproval(db.Model):
         db.session.commit()
 
     def __repr__(self):
-        return '<class DocReviewBody %r>' % self.doc_review_id
+        return """<class DocReviewBody %r>""" % self.doc_review_id
 
 
 db.create_all()

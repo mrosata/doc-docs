@@ -5,155 +5,286 @@
 
 {% block body %}
 
-  <section class="callout large">
+  <section class="callout medium">
     <div class="row column text-center">
       <h1><span class="docdocs-text-logo">Docdocs..</span> When Good Docs Go Bad.</h1>
     </div>
   </section>
 
-  <section class="row profile-fields">
-    <div class="small-10 medium-8 small-push-1 medium-push-2">
-      <div>
 
-        <div class="row profile-field-container{% if profile.first_name == '' and not _viewers_own_profile %} hide{% endif %}">
-          <div class="column small-12">
-            <span class="label field">First Name: </span>
-          </div>
-          <div class="column small-12">
-            {{ profile.first_name }}
-          </div>
-        </div>
+  <div class="row collapse" id="profile-tabs-container">
 
-        <div class="row profile-field-container{% if profile.last_name == '' and not _viewers_own_profile %} hide{% endif %}">
-          <div class="column small-12">
-            <span class="label field">Last Name: </span>
-          </div>
-          <div class="column small-12">
-            {{ profile.last_name }}
-          </div>
-        </div>
+    {# Tabbed Menu (User Information and User Reviews Listing) #}
+    <div class="column small-3 medium-2 tabs-menu-container">
+      <ul class="tabs vertical" data-tabs id="profile-tab-menu">
 
-        <div class="row profile-field-container{% if profile.homepage == '' and not _viewers_own_profile %} hide{% endif %}">
-          <div class="column small-12">
-            <span class="label field">Homepage URL: </span>
-          </div>
-          <div class="column small-12">
-            {{ profile.homepage }}
-          </div>
-        </div>
+        <li class="tabs-title is-active text-center">
+          <a href="#user-info" aria-selected="true">Info</a>
+        </li>
 
-        <div class="row profile-field-container{% if profile.github == '' and not _viewers_own_profile %} hide{% endif %}">
-          <div class="column small-12">
-            <span class="label field">Github: </span>
-          </div>
-          <div class="column small-12">
-            {{ profile.github }}
-          </div>
-        </div>
-
-        <div class="row profile-field-container{% if profile.facebook == '' and not _viewers_own_profile %} hide{% endif %}">
-          <div class="column small-12">
-            <span class="label field">Facebook: </span>
-          </div>
-          <div class="column small-12">
-            {{ profile.facebook }}
-          </div>
-        </div>
-
-        <div class="row profile-field-container{% if profile.stackoverflow == '' and not _viewers_own_profile %} hide{% endif %}">
-          <div class="column small-12">
-            <span class="label field">StackOverflow: </span>
-          </div>
-          <div class="column small-12">
-            {{ profile.stackoverflow }}
-          </div>
-        </div>
-
-        <div class="row profile-field-container{% if profile.twitter == '' and not _viewers_own_profile %} hide{% endif %}">
-          <div class="column small-12">
-            <span class="label field">Twitter: </span>
-          </div>
-          <div class="column small-12">
-            {{ profile.twitter }}
-          </div>
-        </div>
-
-        <div class="row profile-field-container
-        {% if bio.bio_text == '' and not _viewers_own_profile %} hide{% endif %}">
-          <div class="column small-12">
-            <span class="label field">Bio Text: </span>
-          </div>
-          <div class="column small-12">
-            {{ bio.bio_text }}
-          </div>
-        </div>
-
-        {# Only allow users to edit their own profiles (This includes even seeing the 'Edit' button) #}
-        {% if _viewers_own_profile %}
-
-        <div class="row">
-          <column class="small-12 center">
-            <div class="center text-center">
-              <a href="{{ url_for("public.edit_profile") }}" class="button hollow center">Edit Profile</a>
-            </div>
-          </column>
-
-          <hr>
-          <p>You last updated your profile on: <em>{{ profile.updated_at.date() }}</em></p>
-          <p>update time: <em>{{ profile.updated_at.time() }}</em></p>
-
-        </div>
-
-        {% endif %}
-
-      </div>
+        <li class="tabs-title text-center">
+          <a href="#user-reviews">Reviews</a>
+        </li>
+      </ul>
     </div>
-  </section>
-  
-  <section class="profile-doc-reviews">
-  
-    <div class="small-10 medium-8 small-push-1 medium-push-2">
-      {% if (reviews|length) == 0 %}
+
+
+    {# Tabbed Content (User Information and User Reviews Listing) #}
+    <div class="column small-9 medium-10">
+      <div class="tabs-content" data-tabs-content="profile-tab-menu">
+
+      <div class="tabs-panel is-active" id="user-info">
+        <section class="row profile-fields">
+        <div class="small-10 medium-8 small-push-1 medium-push-2">
+          <div>
+
+            <div class="row profile-field-container{% if profile.first_name == '' and not _viewers_own_profile %} hide{% endif %}">
+              <div class="column small-12">
+                <span class="label field">First Name: </span>
+              </div>
+              <div class="column small-12">
+                {{ profile.first_name }}
+              </div>
+            </div>
+
+            <div class="row profile-field-container{% if profile.last_name == '' and not _viewers_own_profile %} hide{% endif %}">
+              <div class="column small-12">
+                <span class="label field">Last Name: </span>
+              </div>
+              <div class="column small-12">
+                {{ profile.last_name }}
+              </div>
+            </div>
+
+            <div class="row profile-field-container{% if profile.homepage == '' and not _viewers_own_profile %} hide{% endif %}">
+              <div class="column small-12">
+                <span class="label field">Homepage URL: </span>
+              </div>
+              <div class="column small-12">
+                {{ profile.homepage }}
+              </div>
+            </div>
+
+            <div class="row profile-field-container{% if profile.github == '' and not _viewers_own_profile %} hide{% endif %}">
+              <div class="column small-12">
+                <span class="label field">Github: </span>
+              </div>
+              <div class="column small-12">
+                {{ profile.github }}
+              </div>
+            </div>
+
+            <div class="row profile-field-container{% if profile.facebook == '' and not _viewers_own_profile %} hide{% endif %}">
+              <div class="column small-12">
+                <span class="label field">Facebook: </span>
+              </div>
+              <div class="column small-12">
+                {{ profile.facebook }}
+              </div>
+            </div>
+
+            <div class="row profile-field-container{% if profile.stackoverflow == '' and not _viewers_own_profile %} hide{% endif %}">
+              <div class="column small-12">
+                <span class="label field">StackOverflow: </span>
+              </div>
+              <div class="column small-12">
+                {{ profile.stackoverflow }}
+              </div>
+            </div>
+
+            <div class="row profile-field-container{% if profile.twitter == '' and not _viewers_own_profile %} hide{% endif %}">
+              <div class="column small-12">
+                <span class="label field">Twitter: </span>
+              </div>
+              <div class="column small-12">
+                {{ profile.twitter }}
+              </div>
+            </div>
+
+            <div class="row profile-field-container
+            {% if bio.bio_text == '' and not _viewers_own_profile %} hide{% endif %}">
+              <div class="column small-12">
+                <span class="label field">Bio Text: </span>
+              </div>
+              <div class="column small-12">
+                {{ bio.bio_text }}
+              </div>
+            </div>
+
+            {# Only allow users to edit their own profiles (This includes even seeing the 'Edit' button) #}
+            {% if _viewers_own_profile %}
+
+            <div class="row profile-action-buttons">
+              <div class="column small-12 center">
+                <div class="center text-center">
+                  <a href="{{ url_for("public.edit_profile") }}" class="button hollow center">Edit Profile</a>
+                </div>
+              </div>
+            </div>
+
+            {% endif %}
+
+          </div>
+        </div>
+      </section>
+    </div>
+
+
+    <div class="tabs-panel" id="user-reviews">
+      <section class="row profile-doc-reviews">
+
+      <div class="small-10 medium-8 small-push-1 medium-push-2">
 
         {# The User Whos Profile this is has not made any reviews to display. #}
-        {% if _viewers_own_profile %}
-          <h3>You haven't made any reviews yet</h3>
+        {% set review_count = (reviews|length) -%}
+        {% if review_count == 0 %}
+          {% if _viewers_own_profile %}
+            <h4>You haven't made any reviews yet</h4>
           <a href="{{ url_for('public.add_new') }}" class="button medium hollow success">Add Review</a>
-        {% else %}
-          <h3>This user hasn't reviewed any docs yet</h3>
-        {% endif %}
+          {% else %}
+            <h4>This user hasn't reviewed any docs yet</h4>
+          {% endif %}
 
-      {% else %}
-        <h3>Past Reviews</h3>
-        {% for data in reviews %}
-          <div class="profile-review">
-            <h5>Doc: {{ None }}</h5>
-            <p>
-              {{ data.username }}
-            </p>
-          <p>
-            Review: {{ data.review.rating }}
-          </p>
-          <p>
-            URL: {{ data.doc.full_url }}
-          </p>
-          <p>
-            Summary: {{ data.review.summary }}
-          </p>
-          <p>
-            Review: {{ data.review.doc_review_body.review_body }}
-          </p>
-          <p>
-            Tags: {{ data.review.tags }}
-          </p>
-            <hr>
-            <br>
-          </div>
-        {% endfor %}
-      {% endif %}    
+        {% else %}          
+        {# There are reviews from this user to display #}
+          {% if _viewers_own_profile %}
+            <h4>You've written {{ reviews|length }} review{% if review_count > 1 %}s{% endif %} so far!</h4>
+            <a href="{{ url_for('public.add_new') }}" class="button medium hollow success">Add Review</a>
+          {% else %}
+            <h4>{{ reviews[0].username|e }} has {{ reviews|length|e }} reviews.</h4>
+          {% endif %}
+
+          {# Display all the past reviews #}
+          {% for data in reviews %}
+            <div class="profile-review">
+
+              <div class="row review-field-container">
+
+                <div class="column small-6">
+                  <div class="row">
+                    <div class="column small-12">
+                      <span class="label field">DocDoc Review Author: </span>
+                    </div>
+                    <div class="column small-12">
+                      {{ data.username|e }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="column small-6">
+                  <div class="row">
+                    <div class="column-12">
+                      <span class="label field">Written on: </span>
+                    </div>
+                    <div class="column-12">
+                      {{ data.review.reviewed_on.date()|e }}
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="row review-field-container">
+
+                <div class="column small-6">
+                  <div class="row">
+                    <div class="column small-12">
+                      <span class="label field">Reviewer Rating: </span>
+                    </div>
+                    <div class="column small-12">
+                      {{ data.review.rating|e }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="column small-6">
+                  <div class="row">
+                    <div class="column-12">
+                      <span class="label field">Community Rating: </span>
+                    </div>
+                    <div class="column-12">
+                      {{ data.review.rating|e }}
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="row review-field-container">
+                <div class="column small-12">
+                  <span class="label field">Full URL: </span>
+                </div>
+                <div class="column small-12">
+                  <a target="_blank" href="{{ data.doc.full_url|e }}" class="review-source-url">{{ data.doc.full_url|e }}</a>
+                </div>
+              </div>
+
+              <div class="row review-field-container">
+                <div class="column small-12">
+                  <span class="label field">URI Base: </span>
+                </div>
+                <div class="column small-12">
+                  {{ data.doc.base_url|e }}
+                </div>
+              </div>
+
+              <div class="row review-field-container">
+                <div class="column small-12">
+                  <span class="label field">URI Path: </span>
+                </div>
+                <div class="column small-12">
+                  {{ data.doc.pathname|e }}
+                </div>
+              </div>
+
+              <div class="row review-field-container">
+                <div class="column small-12">
+                  <span class="label field">Summary/Excerpt: </span>
+                </div>
+                <div class="column small-12">
+                  {{ data.review.summary|e }}
+                </div>
+              </div>
+
+              <div class="row review-field-container">
+                <div class="column small-12">
+                  <span class="label field">Full Review Text: </span>
+                </div>
+                <div class="column small-12">
+                  {{ data.review.doc_review_body.review_body|e }}
+                </div>
+              </div>
+
+              <div class="row review-field-container">
+                <div class="column small-12">
+                  <span class="label field">Tags: </span>
+                </div>
+                <div class="column small-12">
+                  {% if data.tags|length > 0 %}
+                  <ul class="menu term-tags">
+
+                    {% for tag in data.tags %}
+                      <li><a href="{{ url_for("public.tag", term_name=tag.term)|e }}">{{ tag.term }}</a></li>
+                    {% endfor %}
+
+                  {% endif %}
+
+                  </ul>
+                </div>
+              </div>
+
+
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+    </section>
     </div>
-  
-  </section>
+
+  </div>
+    </div>
+  </div>
 {% endblock %}
 
 
