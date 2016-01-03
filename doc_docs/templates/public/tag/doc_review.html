@@ -1,0 +1,99 @@
+{% extends "layouts/_main.html" %}
+
+{% block body %}
+
+  <section class="callout medium">
+    <div class="row column text-center">
+      <h1><span class="docdocs-text-logo">Docdocs..</span> When Good Docs Go Bad.</h1>
+    </div>
+  </section>
+
+
+  <div class="row collapse" id="term-review-container">
+
+    <section>
+
+      <div class="callout small">
+        {% set total_related = related_objects|length -%}
+
+        {% if total_related > 0 %}
+
+          <h3>
+            <strong>{{ total_related }}</strong> Review{% if total_related > 1 %}s{% endif %}
+            tagged as <strong>{{ term_name }}</strong>.
+          </h3>
+
+        {% else %}
+
+          <h3>The term <strong>{{ term_name }}</strong> hasn't been used in any reviews.</h3>
+
+        {% endif %}
+      </div> <!-- /.callout.small -->
+
+      <div class="small-10 medium-8 small-push-1 medium-push-2 reviews">
+
+      {% if total_related > 0 %}
+
+        {% for data in related_objects %}
+          <div class="review-listings">
+            <div class="row review-listing-container">
+              <div class="column small-12">
+                <span class="label field">Reviewed URL: </span>
+              </div>
+              <div class="column small-12">
+                {{ data.review.doc_doc.full_url}}
+              </div>
+            </div>
+
+            <div class="row review-listing-container">
+              <div class="column small-12">
+                <span class="label field">Reviewer: </span>
+              </div>
+              <div class="column small-12">
+                <a href="{{ url_for("public.public_profile", username=data.review.user.username) }}">{{ data.review.user.username }}</a>
+              </div>
+            </div>
+
+            <div class="row review-listing-container">
+              <div class="column small-12">
+                <span class="label field">Summary: </span>
+              </div>
+              <div class="column small-12">
+                <article>
+                  {{ data.review.summary|e }}
+                </article>
+                <span class="read-more">
+                <a href="{{ url_for("public.review", review_id=data.review.doc_review_id) }}">
+                  (... READ MORE)
+                </a></span>
+              </div>
+            </div>
+
+            <div class="row review-listing-container">
+              <div class="column small-12">
+                <span class="label field">Facebook: </span>
+              </div>
+              <div class="column small-12">
+                {{ data.review.doc_review_body.review_body|e }}
+              </div>
+            </div>
+
+          </div> <!-- .review-listings -->
+
+          <hr>
+        {% endfor %}
+        
+      {% endif %}
+
+      </div> <!-- .small-10.medium-8.small-push-1.medium-push-2.reviews -->
+
+    </section> <!-- .doc-review-listings -->
+
+  </div> <!-- #term-review-container.row.collapse -->
+{% endblock %}
+
+
+
+
+
+

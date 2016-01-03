@@ -1,0 +1,104 @@
+{% extends "layouts/_main.html" %}
+
+{% block body %}
+
+  <div class="callout large">
+    <div class="row column text-center">
+      <h1><span class="docdocs-text-logo">Docdocs..</span> When Good Docs Go Bad</h1>
+      <p class="lead">Review: {{ data.full_url }}</p>
+      <a href="#" class="button medium">Search</a>
+
+      {% if not current_user.is_active %}
+        {# User not logged in then we should offer Sign-Up #}
+        <a href="#" class="button medium hollow" data-open="signup-modal">Sign Up</a>
+      {% else %}
+        {# Active user then show button to add new Review #}
+        <a href="{{ url_for('public.add_new') }}" class="button medium hollow secondary">Add New</a>
+      {% endif %}
+
+    </div>
+  </div>
+
+
+
+  <div class="small-10 medium-8 small-push-1 medium-push-2 single-review">
+    <div class="spacer medium"></div>
+    <div class="row review-listing-container">
+      <div class="column small-12">
+        <span class="label field">Reviewed URL: </span>
+      </div>
+      <div class="column small-12">
+        {{ data.full_url}}
+      </div>
+    </div>
+
+    <div class="row review-listing-container">
+      <div class="column small-12">
+        <span class="label field">Reviewer: </span>
+      </div>
+      <div class="column small-12">
+        <a href="{{ url_for("public.public_profile", username=data.user.username) }}">{{ data.user.username }}</a>
+      </div>
+    </div>
+
+    <div class="row review-listing-container">
+      <div class="column small-12">
+        <span class="label field">Summary: </span>
+      </div>
+      <div class="column small-12">
+        <article>
+          {{ data.summary|e }}
+        </article>
+                <span class="read-more">
+                <a href="{{ url_for("public.review", review_id=data.doc_review_id) }}">
+                  (... READ MORE)
+                </a></span>
+      </div>
+    </div>
+
+
+    <div class="row review-listing-container">
+      <div class="column small-12">
+        <span class="label field">User Review: </span>
+      </div>
+      <div class="column small-12">
+        <article>
+          {{ data.doc_review_body.review_body|e }}
+        </article>
+      </div>
+    </div>
+
+  </div> <!-- .single-review -->
+
+
+
+
+  <div class="row medium-up-2">
+
+    <div class="column recently-added">
+
+      <header class="section-header">
+        <div class="section-title">
+          <h3>Recently added:</h3>
+        </div>
+      </header>
+      <div class="feed">
+        {% include "public/partials/_recently_added_list.html" %}
+      </div>
+
+    </div>
+
+    <div class="column recent-activity">
+      <header class="section-header">
+        <div class="section-title">
+          <h3>Recent activity:</h3>
+        </div>
+      </header>
+      <div class="feed">
+        {% include "public/partials/_recent_activity_list.html" %}
+      </div>
+    </div>
+
+  </div>
+
+{% endblock %}

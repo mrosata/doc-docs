@@ -7,7 +7,7 @@
     {% endblock %}
 
   </head>
-  <body>
+  <body class="{% if body_classes|length %}{% for class_name in body_classes %}{{ class_name }} {% endfor %}{% endif %}">
 
   {% include "layouts/partials/_top-nav-menu.html" %}
 

@@ -296,7 +296,7 @@ class DocDetour(db.Model):
 
 class DocTerm(db.Model):
     """
-    A Term can relate to any
+    A Term can relate to any object. They should link to a term through a table such as DocTermRelationship
     """
     __tablename__ = "term"
     term_id = db.Column(db.Integer, primary_key=True)

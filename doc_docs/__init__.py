@@ -60,6 +60,13 @@ def create_user_one():
     db.session.commit()
 
 
+# TODO: I want to create a function to be able to add class names onto the body based on the template. Template done.
+@app.context_processor
+def check_body_classes():
+    body_classes = ("home",)
+    return dict(body_classes=body_classes)
+
+
 # We should try to handle some errors
 # ( 500 )
 @app.errorhandler(500)

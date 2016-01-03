@@ -18,7 +18,8 @@ from doc_docs.utilities import utils
 
 
 from doc_docs import db
-from doc_docs.sql import models
+from doc_docs.sql.models import UserMixin, User, RoleMixin, Role, UserProfile, UserBioText, CommunityApproval
+from doc_docs.sql.models import DocDoc, DocReviewBody, DocReview, DocRating, DocDetour, DocTerm, DocTermRelationship
 from sqlalchemy.orm.exc import NoResultFound
 
 public = Blueprint('public', __name__, template_folder='../templates')
@@ -81,11 +82,11 @@ def new_review():
 
 @public.route('/profile/<string:username>/')
 def public_profile(username):
-    user = db.session.query(models.User).filter_by(username=username).first()
+    user = db.session.query(User).filter_by(username=username).first()
     if user is not None:
-        user_profile = db.session.query(models.UserProfile).filter_by(user_id=user.id).first()
+        user_profile = db.session.query(UserProfile).filter_by(user_id=user.id).first()
         if user_profile is not None:
-            profile_bio = db.session.query(models.UserBioText).filter_by(bio_text_id=user_profile.bio_text_id).first()
+            profile_bio = db.session.query(UserBioText).filter_by(bio_text_id=user_profile.bio_text_id).first()
             return render_template(resources.personal_profile['html'], profile=user_profile, bio=profile_bio)
 
     # There is no user profile associated with the username used in the url, so redirect users to profile, else index
@@ -101,34 +102,34 @@ def profile():
     :return:
     """
     try:
-        user_profile = db.session.query(models.UserProfile).filter_by(user_id=current_user.id).one()
+        user_profile = db.session.query(UserProfile).filter_by(user_id=current_user.id).one()
     except NoResultFound, e:
         current_app.logger.info("Current user %s had no profile! <<GENERATING PROFILE>>", current_user.id)
-        user_profile = models.UserProfile(current_user)
+        user_profile = UserProfile(current_user)
 
-    profile_bio = db.session.query(models.UserBioText).filter_by(bio_text_id=user_profile.bio_text_id).first()
+    profile_bio = db.session.query(UserBioText).filter_by(bio_text_id=user_profile.bio_text_id).first()
 
     reviews = list()
-    for r, p in db.session.query(models.DocReview, models.UserProfile).\
-            filter(models.DocReview.reviewer == models.UserProfile.user_id).\
-            filter(models.UserProfile.user_id == current_user.id).\
-            order_by(models.DocReview.reviewed_on.desc()).all():
+    for r, p in db.session.query(DocReview, UserProfile).\
+            filter(DocReview.reviewer == UserProfile.user_id).\
+            filter(UserProfile.user_id == current_user.id).\
+            order_by(DocReview.reviewed_on.desc()).all():
 
         # TODO: Put this into an abstracted class to litter less in the url_routes page
         """Need to get the tags that are related to this review. First make a join from the term_relationship
         table to the term table matching relationships between the current doc_review in loop. We then make
         a list and populate it with any results before appending the next review to the list
 
-        a_alias = db.aliased(models.DocTerm)
-        _terms = db.session.query(models.DocTermRelationship).\
-            join(a_alias, models.DocTermRelationship.term).\
-            filter(a_alias.term_id == models.DocTermRelationship.term_id).\
-            filter(models.DocTermRelationship.object_id == r.doc_review_id).\
+        a_alias = db.aliased(DocTerm)
+        _terms = db.session.query(DocTermRelationship).\
+            join(a_alias, DocTermRelationship.term).\
+            filter(a_alias.term_id == DocTermRelationship.term_id).\
+            filter(DocTermRelationship.object_id == r.doc_review_id).\
             limit(5)
         """
-        _terms = db.session.query(models.DocTerm).\
-            join(models.DocTermRelationship).\
-            filter(models.DocTermRelationship.object_id == r.doc_review_id).limit(5)
+        _terms = db.session.query(DocTerm).\
+            join(DocTermRelationship).\
+            filter(DocTermRelationship.object_id == r.doc_review_id).limit(5)
         terms = list()
         if _terms is not None:
             for term in _terms:
@@ -141,7 +142,7 @@ def profile():
 
     utils.log("These are the reviews this user has made thus far::::::: %r", reviews)
 
-    body = db.session.query(models.DocReviewBody).all()
+    body = db.session.query(DocReviewBody).all()
 
     return render_template(resources.personal_profile['html'], profile=user_profile, bio=profile_bio, reviews=reviews)
 
@@ -155,12 +156,12 @@ def edit_profile():
     :return:
     """
     the_form = site_forms.ProfileForm()
-    user_profile = db.session.query(models.UserProfile).filter_by(user_id=current_user.id).one()
+    user_profile = db.session.query(UserProfile).filter_by(user_id=current_user.id).one()
 
     if user_profile is None:
         current_app.logger.info("Current user %s had no profile! <<GENERATING PROFILE>>", current_user.id)
-        user_profile = models.UserProfile(current_user)
-    bio = db.session.query(models.UserBioText).filter_by(bio_text_id=user_profile.bio_text_id).first()
+        user_profile = UserProfile(current_user)
+    bio = db.session.query(UserBioText).filter_by(bio_text_id=user_profile.bio_text_id).first()
 
     if str(request.method).lower() == 'post':
         # This is a submission. We should update the users profile.
@@ -193,27 +194,38 @@ def tag(term_name=None, term_id=None):
     :param term_id:
     :return:
     """
-    site_objects = list()
-    if term_name is not None:
-        _objects = db.session.query(models.DocTermRelationship).join(models.DocTerm).\
-            filter(models.DocTermRelationship.term_id == models.DocTerm.term_id).\
-            filter(models.DocTerm.term == term_name)
-        if _objects is not None:
-            for obj in _objects:
-                _doc_review = db.session.query(models.DocReview).filter_by(doc_review_id=obj.object_id).first()
-                doc_review = dict()
-                if _doc_review is not None:
-                    doc_review["summary"] = _doc_review.summary
-                    doc_review["doc_doc"] = _doc_review.doc_doc
-                    doc_review["reviewer"] = _doc_review.reviewer
+    if term_name is None:
+        if term_id is None:
+            # Can't render a term without knowing its name or id
+            return redirect("/", 404)
+        term_name = str(db.session.query(DocTerm).filter_by(term_id=term_id).first())
 
-                site_objects.append({
-                    "term_id": obj.term_id,
-                    "object_id": obj.object_id,
-                    "doc_review": _doc_review
-                })
+    # related_objects will hold the data to be rendered in the template (reviews linked to term).
+    related_objects = list()
+    # We want to find any object (DocReview) which has term_name as a term to display on page.
+    linked_reviews = db.session.query(DocTermRelationship.term_id, DocTerm.term, DocReview).\
+        filter(DocReview.doc_review_id == DocTermRelationship.object_id).\
+        filter(DocTermRelationship.term_id == DocTerm.term_id).\
+        filter(DocTerm.term == term_name).all()
 
-    return "You wanna see my %s: %r" % (term_name, site_objects)
+    for r in linked_reviews:
+        related_objects.append({
+            "term_id": r[0],
+            "term": r[1],
+            "review": r[2],
+        })
+
+    return render_template(resources.single_term["html"], term_name=term_name, related_objects=related_objects)
+
+
+@public.route('/review/<int:review_id>')
+def review(review_id):
+    r = db.session.query(DocReview).filter_by(doc_review_id=review_id).first()
+
+    if r is None:
+        return redirect("/", 404)
+
+    return render_template(resources.doc_review["html"], data=r)
 
 
 @public.route('/discussion')

@@ -1,0 +1,25 @@
+/**
+ *  DocDocs Callout (The logo and slogan found on most pages).
+ */
+
+.docdocs-text-logo {
+  font-family: $display-font-family;
+  font-weight: $display-font-weight;
+  display: inline-block;
+  padding: 0.1rem 0.3rem 0.15rem;
+  line-height: 1;
+  align-content: center;
+  vertical-align: middle;
+  background: #2199E8;
+  transform: rotate(-2deg);
+  color: #FEFEFE;
+  border-radius: 2%/12%;
+  text-transform: uppercase;
+
+  @media screen and (max-width: $max-width-medium) and (min-width: $min-width-medium) {
+    padding: 0.1rem 0.4rem 0.15rem;
+  }
+  @media screen and (max-width: $max-width-large) and (min-width: $min-width-large) {
+    padding: 0.175rem 0.6rem 0.3rem;
+  }
+}
