@@ -1,16 +1,101 @@
+{# This is the Registration Form. It overwrites the security registration form. #}
+{# This template is required for when a registration model fails. #}
+
+{% extends "layouts/_main.html" %}
 {% from "security/_macros.html" import render_field_with_errors, render_field %}
-{% include "security/_messages.html" %}
-<h1>Register</h1>
-<form action="{{ url_for_security('register') }}" method="POST" name="register_user_form">
-  {{ register_user_form.hidden_tag() }}
-  {% if register_user_form.username %}
-    {{ render_field_with_errors(register_user_form.username) }}
-  {% endif %}
-  {{ render_field_with_errors(register_user_form.email) }}
-  {{ render_field_with_errors(register_user_form.password) }}
-  {% if register_user_form.password_confirm %}
-    {{ render_field_with_errors(register_user_form.password_confirm) }}
-  {% endif %}
-  {{ render_field(register_user_form.submit) }}
-</form>
-{% include "security/_menu.html" %}
+
+{% block body %}
+
+  <div class="callout large docdocs-main">
+    <div class="row column text-center">
+      <h1><span class="docdocs-text-logo">Docdocs..</span> When Good Docs Go Bad.</h1>
+      <p class="lead">It's like a documentation angel watching over you.</p>
+      <a href="#" class="button medium hollow">Search</a>
+
+      {% if not current_user.is_active %}
+        {# User not logged in then we should offer Sign-Up #}
+        <a href="#" class="button medium hollow" data-open="signup-modal">Sign Up</a>
+      {% else %}
+        {# Active user then show button to add new Review #}
+        <a href="{{ url_for('public.add_new') }}" class="button medium hollow secondary">Add New</a>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <section>
+
+    <div class="row">
+      <div class="small-12">{% include "security/_messages.html" %}</div>
+    </div>
+    <div class="row">
+
+      <div class="small-8 small-centered medium-7 medium-centered large-6 large-centered columns">
+
+
+        <div class="row column register-form">
+
+          <form action="{{ url_for_security('register') }}" method="POST" name="register_user_form">
+            {{ register_user_form.hidden_tag() }}
+            <h4 class="text-center">Register for FREE Account</h4>
+
+            <div class="row collapse">
+              <div class="small-2  columns">
+                <span class="prefix"><i class="fi-torso-female"></i></span>
+              </div>
+              <div class="small-10  columns">
+                {{ render_field_with_errors(register_user_form.username, placeholder="Public Username") }}
+              </div>
+
+            </div>
+
+            <div class="row collapse">
+              <div class="small-2  columns">
+                <span class="prefix"><i class="fi-torso-female"></i></span>
+              </div>
+              <div class="small-10  columns">
+                {{ render_field_with_errors(register_user_form.email, placeholder="Email Address") }}
+              </div>
+            </div>
+
+            <div class="row collapse">
+              <div class="small-2 columns ">
+                <span class="prefix"><i class="fi-lock"></i></span>
+              </div>
+              <div class="small-10 columns ">
+                {{ render_field_with_errors(register_user_form.password, placeholder="Type Password") }}
+              </div>
+            </div>
+
+            {% if register_user_form.password_confirm %}
+              <div class="row collapse">
+                <div class="small-2 columns ">
+                  <span class="prefix"><i class="fi-lock"></i></span>
+                </div>
+                <div class="small-10 columns ">
+                  {{ render_field_with_errors(register_user_form.password_confirm, placeholder="Re-Type Password") }}
+                </div>
+              </div>
+            {% endif %}
+
+            {{ render_field(register_user_form.submit, class="expanded button") }}
+
+            <p class="text-center">
+              <a href="{{ url_for('public.forgot_password') }}">Don't remember password?</a>
+            </p>
+          </form>
+
+        </div>
+
+        <br>
+
+      </div>
+    </div>
+
+  </section>
+{% endblock %}
+
+
+{% block footer %}
+  {% include "public/partials/_page-footer.html" %}
+{% endblock %}

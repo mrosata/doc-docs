@@ -6,6 +6,8 @@ from doc_docs import app, db, utils
 from doc_docs.sql.models import UserProfile, User, UserBioText, UserMixin, CommunityApproval, \
     DocTerm, DocReview, DocTermRelationship, DocDetour, DocDoc, DocRating, DocReviewBody, Role, RoleMixin
 
+from doc_docs.sql.retriever import _q
+
 
 def setup():
     print "\n\n\n" \
@@ -24,14 +26,8 @@ def q():
     return db.session.query
 
 
-def get_context():
-    ctx = app.test_request_context()
+def get_context(*args):
+    ctx = app.test_request_context(*args)
     ctx.push()
     return ctx
-
-
-if __name__ != '__main__':
-    exit()
-
-setup()
 

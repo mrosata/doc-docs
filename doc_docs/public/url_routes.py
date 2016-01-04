@@ -10,16 +10,17 @@ from flask import Blueprint, render_template, current_app, request, url_for, red
 
 from flask_security import current_user, login_required, logout_user, forms
 
-from . import resources, site_forms
+from . import site_forms
 
 from doc_docs.public.security_forms import ExtendedRegistrationForm
 from doc_docs.public.creator import DocReviewCreator
 from doc_docs.utilities import utils
 
-
-from doc_docs import db
+from doc_docs import db, resources
+from doc_docs.sql.retriever import _q
 from doc_docs.sql.models import UserMixin, User, RoleMixin, Role, UserProfile, UserBioText, CommunityApproval
 from doc_docs.sql.models import DocDoc, DocReviewBody, DocReview, DocRating, DocDetour, DocTerm, DocTermRelationship
+from doc_docs.sql.retriever import _q
 from sqlalchemy.orm.exc import NoResultFound
 
 public = Blueprint('public', __name__, template_folder='../templates')
@@ -28,12 +29,19 @@ public = Blueprint('public', __name__, template_folder='../templates')
 @public.context_processor
 def public_context_processor():
     # Need to include the login form because integrating flask-security as sub template.
-    register_user_form = ExtendedRegistrationForm()
-    return dict(login_user_form=forms.LoginForm(), register_user_form=register_user_form)
+    register_form = ExtendedRegistrationForm()
+    login_form = forms.LoginForm()
+
+    return dict(login_user_form=login_form, register_user_form=register_form)
+
+
+@public.route('/forgot')
+def forgot_password():
+    return "I don't care! Be more careful next time!"
 
 
 @public.route('/')
-@public.route('/index')
+@public.route('/index/')
 def index():
     return render_template(resources.index['html'])
 
@@ -80,71 +88,22 @@ def new_review():
     return render_template(resources.add_new['html'], new_review_form=review_form)
 
 
-@public.route('/profile/<string:username>/')
-def public_profile(username):
-    user = db.session.query(User).filter_by(username=username).first()
-    if user is not None:
-        user_profile = db.session.query(UserProfile).filter_by(user_id=user.id).first()
-        if user_profile is not None:
-            profile_bio = db.session.query(UserBioText).filter_by(bio_text_id=user_profile.bio_text_id).first()
-            return render_template(resources.personal_profile['html'], profile=user_profile, bio=profile_bio)
-
-    # There is no user profile associated with the username used in the url, so redirect users to profile, else index
-    return redirect(url_for('public.profile'))
-
-
-@login_required
 @public.route('/profile/')
-def profile():
-    """
-    /profile - a user is able to see their own profile. It is the same as the view to view another persons profile
-               except no "Edit Profile" button.
-    :return:
-    """
-    try:
-        user_profile = db.session.query(UserProfile).filter_by(user_id=current_user.id).one()
-    except NoResultFound, e:
-        current_app.logger.info("Current user %s had no profile! <<GENERATING PROFILE>>", current_user.id)
-        user_profile = UserProfile(current_user)
-
-    profile_bio = db.session.query(UserBioText).filter_by(bio_text_id=user_profile.bio_text_id).first()
+@public.route('/profile/<string:username>/')
+def profile(username=None):
+    if username is None:
+        # If the current user doesn't have a profile we will have it created by using the create kwarg
+        p = _q.profile.by_name(current_user.username, create=True)
+    else:
+        p = _q.profile.by_name(username)
 
     reviews = list()
-    for r, p in db.session.query(DocReview, UserProfile).\
-            filter(DocReview.reviewer == UserProfile.user_id).\
-            filter(UserProfile.user_id == current_user.id).\
-            order_by(DocReview.reviewed_on.desc()).all():
+    for r in _q.review.by_user_id(current_user.id):
+        terms = _q.term.by_object_id(r.doc_review_id)
+        reviews.append(dict(review=r, tags=terms, username=p.username))
 
-        # TODO: Put this into an abstracted class to litter less in the url_routes page
-        """Need to get the tags that are related to this review. First make a join from the term_relationship
-        table to the term table matching relationships between the current doc_review in loop. We then make
-        a list and populate it with any results before appending the next review to the list
-
-        a_alias = db.aliased(DocTerm)
-        _terms = db.session.query(DocTermRelationship).\
-            join(a_alias, DocTermRelationship.term).\
-            filter(a_alias.term_id == DocTermRelationship.term_id).\
-            filter(DocTermRelationship.object_id == r.doc_review_id).\
-            limit(5)
-        """
-        _terms = db.session.query(DocTerm).\
-            join(DocTermRelationship).\
-            filter(DocTermRelationship.object_id == r.doc_review_id).limit(5)
-        terms = list()
-        if _terms is not None:
-            for term in _terms:
-                terms.append({"term": term.term, "term_id": term.term_id})
-
-        utils.log()("TERMS QUERIED THROUGH JOIN IN Profile Page: %r", terms)
-
-        # Finally, we append all the data for this review and then goto next review
-        reviews.append(dict(review=r, tags=terms, username=p.user.username, doc=r.doc_doc))
-
-    utils.log("These are the reviews this user has made thus far::::::: %r", reviews)
-
-    body = db.session.query(DocReviewBody).all()
-
-    return render_template(resources.personal_profile['html'], profile=user_profile, bio=profile_bio, reviews=reviews)
+    return render_template(resources.personal_profile['html'], profile=p, reviews=reviews)
+    # There is no user profile associated with the username used in the url, so redirect users to profile, else index
 
 
 @login_required
@@ -156,17 +115,16 @@ def edit_profile():
     :return:
     """
     the_form = site_forms.ProfileForm()
-    user_profile = db.session.query(UserProfile).filter_by(user_id=current_user.id).one()
+    user_profile = db.session.query(UserProfile).filter_by(user_id=current_user.id).first()
 
     if user_profile is None:
-        current_app.logger.info("Current user %s had no profile! <<GENERATING PROFILE>>", current_user.id)
         user_profile = UserProfile(current_user)
+
     bio = db.session.query(UserBioText).filter_by(bio_text_id=user_profile.bio_text_id).first()
 
     if str(request.method).lower() == 'post':
         # This is a submission. We should update the users profile.
         if the_form.validate_on_submit():
-            utils.log(request.form)
             rform = request.form
 
             user_profile.first_name = rform['first_name']
@@ -181,6 +139,10 @@ def edit_profile():
             db.session.add(user_profile)
             db.session.commit()
 
+            # On Successful Edit we will redirect the user back to their profile
+            return redirect(url_for("public.profile"))
+
+    # On non-successful update or initial page load/GET request we will show the edit form
     return render_template(resources.edit_profile['html'], profile_form=the_form, profile=user_profile, bio=bio)
 
 

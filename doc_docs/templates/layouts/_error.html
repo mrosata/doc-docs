@@ -1,0 +1,101 @@
+{% set navigation_links = [
+    (url_for("public.the_feeds"), "fi-burst-new", " Feeds ", "the-feeds"),
+    (url_for("public.the_archive"), "fi-page-search", " Archive ", "the-archive"),
+    (url_for("public.the_blog"), "fi-clipboard-notes", " Blog ", "the-blog"),
+ ] -%}
+{% set active_link = active_page|default("index") -%}
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+
+  {% block header %}
+    {% include "layouts/partials/_head.html" %}
+  {% endblock %}
+
+</head>
+<body class="{% if body_classes|length %}{% for class_name in body_classes %}{{ class_name }} {% endfor %}{% endif %}">
+
+
+<div class="row top-nav">
+  <nav class="menu">
+
+    <a href="{{ url_for('public.index') }}">
+      <h1 class="name header-logo"><i class="fi-shield"></i> HERE BE DRAGONS</h1>
+    </a>
+
+    <ul class="inline-list">
+      {% for href, icon_class, title, route_name in navigation_links %}
+        <li{% if active_link == route_name %} class="active"{% endif %}><a href="{{ href|e }}"> <i class="{{ icon_class }}"> </i> {{ title|e }} </a> </li> &nbsp;
+      {% endfor %}
+
+    </ul>
+
+  </nav>
+
+</div>
+
+{% block body %}
+  <div class="callout medium">
+    <h1 class="docdocs-text-logo error">Ooops, Did I do that?</h1>
+  </div>
+  <div class="callout large alert">
+
+    <section class="apology">
+
+      <br>
+      <div class="row">
+        <div class="column small-12">
+          <h3><em>We'z take em'</em> <strong>{{ error_code|safe }}</strong> dern serious roun' her' strangah!</h3>
+        </div>
+      </div>
+
+      <br>
+      <div class="row">
+        <div class="column small-12 medium-10 medium-push-1">
+          <p>
+            There's been some error, it's probably your own fault but our calculations also show a 0.000023% chance that
+            it could be something on our end. In that microscopic percentile that your not the person to blame an email
+            has been sent to the site admin and we'll get this hoop-lah sorted. We hope the fact that you like breaking other
+            peoples websites doesn't stop you from coming back and enjoying DocDocs!
+          </p>
+        </div>
+
+        <br>
+        <div class="column small-12 medium-6 medium-pull-5">
+          <p class="text-justify left">
+            Sincerly,<br>
+            The DocDocs Team...<br>
+            Michael Rosata,<br>
+            <a target="_blank" href="mailto:mrosata1984@gmail.com">mrosata1984@gmail.com</a>
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <br>
+
+  </div>
+  <div class="row">
+
+    <div class="column small-12 medium-6">
+      <br>
+      <p class="text-justify right">
+        <a href="{{ url_for("public.index") }}" class="button info">Click Here, Return to Index!</a>
+      </p>
+    </div>
+
+  </div>
+
+{% endblock %}
+
+{% block footer %}
+  {% include "public/partials/_page-footer.html" %}
+{% endblock %}
+
+{% block close %}
+  {% include "layouts/partials/_close-body.html" %}
+{% endblock %}
+
+</body>
+</html>

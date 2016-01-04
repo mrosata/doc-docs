@@ -2,6 +2,22 @@
 jQuery(function($){
     var Foundation = $(document).foundation();
 
+
+    /**
+     * Check if a form inside of a reveal modal was submitted with errors
+     * and if so then have it be open. I will add validation and ajax
+     * checks as well so this probably won't be used too much in the future.
+     * At the moment though it's needed or when submitting login/register forms
+     * on site with errors it just looks as if the index page reloaded.
+     */
+    function openModelFormWithErrors () {
+        var formsWithErrors = $('.reveal[data-errors-present="true"]');
+        if (formsWithErrors.length) {
+            formsWithErrors.foundation("open");
+        }
+    }
+    openModelFormWithErrors()
+
     /*
     // Sticky profile menu object to hold all vars/props
     var profileSticky = {};

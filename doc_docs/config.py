@@ -43,6 +43,7 @@ class BaseConfig(object):
     SECURITY_TRACKABLE = True
     SECURITY_PASSWORD_HASH = 'plaintext' #'pbkdf2_sha512'
     SECURITY_PASSWORD_SALT = 'pizza-party-exo-skeleton-base-bass-bayshe'
+    SECURITY_POST_LOGIN_VIEW = None
     # These are defaults of the Flask Security, I just like them listed
     SECURITY_TOKEN_AUTHENTICATION_KEY = 'auth_token'
     SECURITY_TOKEN_AUTHENTICATION_HEADER = 'Authentication-Token'
@@ -54,8 +55,7 @@ class BaseConfig(object):
     SECURITY_RESET_URL = '/reset'
     SECURITY_CHANGE_URL = '/change'
     # SECURITY_CONFIRM_URL = '/confirm'
-    SECURITY_POST_LOGIN_VIEW = '/'
-    SECURITY_POST_LOGOUT_VIEW = '/'
+    SECURITY_POST_LOGOUT_VIEW = None
     SECURITY_CONFIRM_ERROR_VIEW = None
     SECURITY_POST_REGISTER_VIEW = None
     SECURITY_POST_CONFIRM_VIEW = None
@@ -89,7 +89,12 @@ class DevConfig(BaseConfig):
     SEND_REGISTER_EMAIL = False
     SECURITY_SEND_REGISTER_EMAIL = False
     SECRET_KEY = '213nlSEal-EASc35Lhfsd-34gkl-LF'
-    SECURITY_UNAUTHORIZED_VIEW = '/index'
+    SECURITY_UNAUTHORIZED_VIEW = '/'
+    SECURITY_LOGIN_URL = '/'
+    SECURITY_LOGOUT_URL = '/logout'
+    SECURITY_REGISTER_URL = '/register'
+    SECURITY_POST_LOGOUT_VIEW = None
+    SECURITY_POST_REGISTER_VIEW = None
 
 
 class ProductionConfig(BaseConfig):

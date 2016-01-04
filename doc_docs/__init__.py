@@ -6,11 +6,13 @@ Doc Docs >> 2015 - 2016
 import pprint
 
 # Third party imports.
-from flask import Flask
+from flask import Flask, render_template, request, redirect, url_for
 from flask_security import SQLAlchemyUserDatastore, Security, current_user
+from flask_security import utils as security_utils
 from flask_mail import Mail
 from flask.ext.sqlalchemy import SQLAlchemy
 
+from . import resources
 from doc_docs.config import configure_app
 from doc_docs.utilities import utils
 # Create the app, this will be the main object which runs this entire application.
@@ -28,6 +30,7 @@ app.register_blueprint(public.url_routes.public)
 
 from public import security_forms
 from sql import models
+from sql.retriever import _q
 
 
 # Need to setup email. Flask Security seems to try to use mail even if I set all config options against it.
@@ -53,10 +56,6 @@ def create_user_one():
         user_datastore.create_user(email="mike@mike.com", username="mrosata", password="password")
         user_datastore.add_role_to_user("mike@mike.com", 'member')
 
-    _first_docdoc = db.session.query(models.DocDoc).first()
-    if _first_docdoc is None:
-        models.DocDoc('http://helooworld.com/first_one/article.html', _main_user)
-
     db.session.commit()
 
 
@@ -64,24 +63,20 @@ def create_user_one():
 @app.context_processor
 def check_body_classes():
     body_classes = ("home",)
-    return dict(body_classes=body_classes)
+    register_form = security_forms.ExtendedRegistrationForm()
+    login_form = security_forms.LoginForm()
+    return dict(body_classes=body_classes, register_user_form=register_form, login_user_form=login_form)
 
 
 # We should try to handle some errors
 # ( 500 )
-@app.errorhandler(500)
-def errors_and_stuff(error=None):
-    if error is not None:
-        print error
-    return '500'
-
-
 # ( 404 )
+@app.errorhandler(500)
 @app.errorhandler(404)
 def errors_and_stuff(error=None):
     if error is not None:
         print error
-    return '404'
+    return render_template(resources.error["html"], error_code=404)
 
 
 

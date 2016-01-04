@@ -153,10 +153,33 @@
 }
 
 
-.login-panel form label {
-  font-weight: bold;
-}
-.login-panel form input[type=checkbox] {
-  width: 1.25em;
-  height: 1.25em;
+.login-panel,
+.login-form,
+.register-form {
+
+  .welcome {
+    margin-bottom: 1.2rem;
+  }
+  form {
+    i {
+      font-size: 1.5rem;
+      vertical-align: bottom;
+    }
+    label {
+      font-weight: bold;
+    }
+
+    input[type=checkbox] {
+      width: 1.25em;
+      height: 1.25em;
+    }
+    .error-message {
+      li {
+        color: #ff3349;
+        list-style: none;
+        margin-top: -0.7rem;
+        font-weight: bold;
+      }
+    }
+  }
 }

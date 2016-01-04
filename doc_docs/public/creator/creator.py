@@ -48,6 +48,28 @@ class Creator:
                 self.data[key] = kwargs[key]
 
 
+class DocRatingCreator(Creator):
+
+    @staticmethod
+    def rate(doc_doc, user, rating):
+        """
+        Pass in a DocDoc, User and rating to set it in the database. It's really just a buffer between the
+        model.DocRating object and potentially could depracate in near future. Depends on usefulness.
+        :param doc_doc:
+        :param user:
+        :param rating:
+        :return:
+        """
+        if not (isinstance(doc_doc, models.DocDoc) or isinstance(user, models.User)):
+            return False
+
+        doc_id = doc_doc.doc_id
+        user_id = user.id
+        rating = int(rating)
+
+        return models.DocRating(doc_id, user_id, rating)
+
+
 class DocReviewCreator(Creator):
 
     _data = ('summary', 'review', 'rating', 'discoverer', 'tags')
@@ -66,9 +88,9 @@ class DocReviewCreator(Creator):
         if self.doc is None:
             return False
 
+        # Check for all the required fields before moving on.
         for x in self._data:
             if x not in self.data:
-                utils.log("Couldn't find %s in DocReviewCreator", x)
                 return False
 
         self.doc = models.DocReview(self.doc.doc_id, self.user, self.data["review"], self.data["summary"])
@@ -77,6 +99,8 @@ class DocReviewCreator(Creator):
             return None
 
         self.update_terms()
+        if self.data["rating"] and int(self.data["rating"]):
+            DocRatingCreator().rate(self.doc, self.user, int(self.data["rating"]))
 
         return self.doc
 
@@ -98,13 +122,12 @@ class DocReviewCreator(Creator):
         # Create the relationship between the tag and this review
         term_rel = models.DocTermRelationship(term.term_id, self.doc.doc_review_id)
 
-        if term_rel is not None:
-            utils.log()("CRA CRA ADDED TAG ! %r", term_rel)
+        # Keep track of tag count in order to enforce set limits
         self._tag_count += 1
 
     def update_terms(self):
         if self.data["tags"] is not None:
             _tags = str(self.data["tags"]).split(",")
-            # We only allow a max of 5 tags per doc
+            # We only allow a max of 5 tags per doc TODO: Abstract that value to a config setting might be better.
             for _tag in _tags:
                 self._attach_tag(_tag)

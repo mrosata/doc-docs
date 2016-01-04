@@ -101,6 +101,7 @@ class UserProfile(db.Model, UserMixin):
         db.session.add(self)
         db.session.commit()
 
+
     def __repr__(self):
         return '<class UserProfile user_id: %r, first_name: %r, last_name: %r, homepage: %r, ' \
                'github: %r, facebook: %r, stackoverflow: %r, twitter: %r>'\
@@ -155,7 +156,6 @@ class DocDoc(db.Model):
         # Sanitize the url (break it into parts)
         url_parts = utils.get_url_parts(url)
 
-        utils.log("DocDocs %r", db.session.query(DocDoc))
         self.full_url = url_parts["full_url"]
         self.base_url = url_parts["base_url"]
         self.pathname = url_parts["pathname"]
@@ -218,6 +218,7 @@ class DocReview(db.Model):
     doc_review_body = db.relationship("DocReviewBody")
     user = db.relationship("User")
     doc_doc = db.relationship("DocDoc")
+    term_relationship = db.relationship("DocTermRelationship")
 
     def __init__(self, doc_id, reviewer, review, summary, reviewed_on=None):
         self.doc_id = doc_id
@@ -249,8 +250,8 @@ class DocRating(db.Model):
     key.
     """
     __tablename__ = 'doc_rating'
-    doc_doc_id = db.Column('doc_doc_id', db.Integer, db.ForeignKey('doc_doc.doc_id'), primary_key=True)
-    user_id = db.Column('reviewer', db.Integer, db.ForeignKey('user.id'))
+    doc_doc_id = db.Column(db.Integer, db.ForeignKey('doc_doc.doc_id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     rating = db.Column(db.Integer(2))
     rated_on = db.Column(db.DateTime, default=datetime.utcnow())
     db.PrimaryKeyConstraint('doc_doc_id', 'reviewer', name='doc_review_pk')

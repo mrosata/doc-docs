@@ -1,10 +1,20 @@
 
 from doc_docs import utils
 
-from flask_security.forms import RegisterForm, Required, StringField, Length
+from flask_security.forms import LoginForm, RegisterForm, Required, StringField, Length
 
 from doc_docs import db
 from doc_docs.sql.models import User
+
+
+class ExtendedLoginForm(LoginForm):
+    """
+    At the moment this is just the same as the regular login form. I will have to extend it in the future though
+    to support the OAuth login
+    """
+    def __init__(self, *args, **kwargs):
+        super(ExtendedLoginForm, self).__init__(*args, **kwargs)
+
 
 class ExtendedRegistrationForm(RegisterForm):
     """

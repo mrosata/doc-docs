@@ -8,3 +8,6 @@ vagrant
 nohup.out
 
 *.db
+
+mrosata*
+*mrosata*

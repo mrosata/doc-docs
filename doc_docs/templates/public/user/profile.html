@@ -101,12 +101,12 @@
             </div>
 
             <div class="row profile-field-container
-            {% if bio.bio_text == '' and not _viewers_own_profile %} hide{% endif %}">
+            {% if profile.bio_text == '' and not _viewers_own_profile %} hide{% endif %}">
               <div class="column small-12">
                 <span class="label field">Bio Text: </span>
               </div>
               <div class="column small-12">
-                {{ bio.bio_text }}
+                {{ profile.bio_text }}
               </div>
             </div>
 
@@ -138,8 +138,12 @@
         {% set review_count = (reviews|length) -%}
         {% if review_count == 0 %}
           {% if _viewers_own_profile %}
-            <h4>You haven't made any reviews yet</h4>
-          <a href="{{ url_for('public.add_new') }}" class="button medium hollow success">Add Review</a>
+            <h4 class="float-left">You haven't made any reviews yet</h4>
+            <div>
+              <a href="{{ url_for('public.add_new') }}" class="button medium hollow success">Add Review</a>
+            </div>
+            <div class="clearfix"></div>
+
           {% else %}
             <h4>This user hasn't reviewed any docs yet</h4>
           {% endif %}
@@ -147,8 +151,11 @@
         {% else %}          
         {# There are reviews from this user to display #}
           {% if _viewers_own_profile %}
-            <h4>You've written {{ reviews|length }} review{% if review_count > 1 %}s{% endif %} so far!</h4>
-            <a href="{{ url_for('public.add_new') }}" class="button medium hollow success">Add Review</a>
+            <h4 class="float-left">You've written {{ reviews|length }} review{% if review_count > 1 %}s{% endif %} so far!</h4>
+            <div>
+              <a href="{{ url_for('public.add_new') }}" class="float-right button medium hollow success">Add Review</a>
+            </div>
+            <div class="clearfix"></div>
           {% else %}
             <h4>{{ reviews[0].username|e }} has {{ reviews|length|e }} reviews.</h4>
           {% endif %}
@@ -214,7 +221,7 @@
                   <span class="label field">Full URL: </span>
                 </div>
                 <div class="column small-12">
-                  <a target="_blank" href="{{ data.doc.full_url|e }}" class="review-source-url">{{ data.doc.full_url|e }}</a>
+                  <a target="_blank" href="{{ data.review.doc_doc.full_url|e }}" class="review-source-url">{{ data.review.doc_doc.full_url|e }}</a>
                 </div>
               </div>
 
@@ -223,7 +230,7 @@
                   <span class="label field">URI Base: </span>
                 </div>
                 <div class="column small-12">
-                  {{ data.doc.base_url|e }}
+                  {{ data.review.doc_doc.base_url|e }}
                 </div>
               </div>
 
@@ -232,7 +239,7 @@
                   <span class="label field">URI Path: </span>
                 </div>
                 <div class="column small-12">
-                  {{ data.doc.pathname|e }}
+                  {{ data.review.doc_doc.pathname|e }}
                 </div>
               </div>
 
