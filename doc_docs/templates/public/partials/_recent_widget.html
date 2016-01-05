@@ -1,0 +1,32 @@
+{# Recent Widget -  #}
+{#     It's not really a widget, but it shall have the honorary title of widget because #}
+{#     it will just be placed at random places on the site to be templated in. #}
+
+
+<div class="row medium-up-2">
+
+  <div class="column recently-added">
+
+    <header class="section-header">
+      <div class="section-title">
+        <h3>Recently added:</h3>
+      </div>
+    </header>
+    <div class="feed">
+      {% include "public/partials/_recently_added_list.html" %}
+    </div>
+
+  </div>
+
+  <div class="column recent-activity">
+    <header class="section-header">
+      <div class="section-title">
+        <h3>Recent activity:</h3>
+      </div>
+    </header>
+    <div class="feed">
+      {% include "public/partials/_recent_activity_list.html" %}
+    </div>
+  </div>
+
+</div>

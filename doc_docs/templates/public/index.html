@@ -19,141 +19,144 @@
     </div>
   </div>
 
-  <div class="row">
-    <div class="medium-6 columns medium-push-6">
-      <img class="thumbnail" src="http://placehold.it/750x350">
-    </div>
-    <div class="medium-6 columns medium-pull-6">
-      <h2>The Why.</h2>
-      <p>
-        The online community is fantastic about posting documentation, it is part of the reason that we make new
-        progress so often.  New standards are constantly being implemented and with that change comes entirely new
-        principles of best practice. An article written last year might not be as accurate as when it was first
-        written.  Comments can be a good indicator of an articles correctness, however, comments normally display the
-        earliest comments at the top and the comments thereafter get buried in arguments and one-off debates. There
-        should be a way to know what the community thinks about an articles accuracy before reading it... and now there
-        is.
-      </p><p>
-      </p>
-    </div>
-  </div>
-  <div class="row">
-    <div class="medium-4 columns">
-      <h3>The What</h3>
-      <p>
-        Doc-docs will keep track of what the community thinks about articles around the web and catalog those reviews,
-        ratings, and also the authors who write them. Just like the standards which are in constant flux, the Doc-docs
-        system will evolve over time to try to fit the times. Similar to the way which
-        <a href="//stackoverflow.com" target="_blank">Stack Overflow</a> not only tracks the "ups" and "downs" on an
-        answer, they track the contribution of authors.  We at Doc-docs intend to do the same with our reviewers.
-      </p>
-      <p>Eventually the entire Doc-docs experience should be integrated into your browsing flow so that you never have to
-        actually have to take extra steps towards checking the accuracty of a document or the trustworthiness of the
-        ratings, reviews and detours listed on an article. Hopefully the usefulness of our archives and browser plugin
-        will attract a large community and effortlessly people will always find the best documentation sources online.
-      </p>
-    </div>
-    <div class="medium-4 columns">
-      <h3>The How</h3>
-      <p>
-        When you search for or surf to an article which has been classified inaccurate or outdated by other members of
-        the Doc-Docs community a non-obtrusive flag will briefly appear telling you as much. You will have the ability
-        to check any flag to find out how the article became flagged and by whom. In addition, users are able to cast
-        votes on both articles/documentation they read and also reviews written by Doc-docs members.
-      </p>
-      <p>
-        Any rating, review or detours author will have an accessible profile for viewing and will be avialable from
-        both the plugin and the main website.
-        If an article has not been rated or reviewed and you would like to be the first to make a rating it would help
-        to lead future readers in the right direction based on your approval or disapproval.
-        Votes from users who contribute more often will hold more weight.
-        Doc-docs provides a quick
-        1 - 10 rating system through a 5 star graphical display. You also can write reviews, comment on your rating and
-        provide alternatives to the current documentation in the form of a url called a "detour".
-      </p>
-    </div>
-    <div class="medium-4 columns">
-      <h3>The Plan</h3>
-      <p>
-        For the time being Doc-docs is soley available via our web platform. A browser plugin is in development for the
-        Chrome internet browser. Community members are not only encouraged to start reviewing and rating docs that they
-        run across in their day to day routines and encouraging other communitys to join the initiative and to do the
-        same. This product is all about knowledge and helping the open-source community. In that spirit it will always
-        be a free service. Additionally, we hope that community members will help develop the Doc-docs platform by
-        creating browser extensions to for additional browsers so that users don't have to interface with the main
-        website.
-      </p>
-      <p>
-        There are a lot of features in the planning stage and we welcome developers to
-        <a href="{{ url_for("public.discussion") }}">join in on the discussion</a>.
-        The main goal at Doc-docs is to make life easier and bad information scarcer for those out there who build
-        the tech which powers our world and for those who aspire to do as much. We are Doc-docs and we are community.
-        <a href="{{ url_for("public.developers") }}">Join the Doc-docs developer community!</a>
-        development team
-      </p>
-    </div>
-  </div>
-  <hr>
-  <div class="row">
-    {# Show how many reviews, ratings, detours, documents todo: Create queries which shows real values for all these. #}
-    <ul class="vertical medium-horizontal menu expanded text-center">
-      <li class="column"><a href="#">
-        <div class="stat">28</div>
-        <span>Documents</span></a></li>
-      <li class="column"><a href="#">
-        <div class="stat">43</div>
-        <span>Ratings</span></a></li>
-      <li class="column"><a href="#">
-        <div class="stat">95</div>
-        <span>Reviews</span></a></li>
-      <li class="column"><a href="#">
-        <div class="stat">59</div>
-        <span>Detours</span></a></li>
-    </ul>
-  </div>
-  <hr>
+  <section class="main-content">
 
-  <div class="row column">
+    <div class="row">
+      <div class="medium-6 columns medium-push-6">
+        <img class="thumbnail" src="http://placehold.it/750x350">
+      </div>
+      <div class="medium-6 columns medium-pull-6">
+        <h2>The Why.</h2>
+        <p>
+          The online community is fantastic about posting documentation, it is part of the reason that we make new
+          progress so often.  New standards are constantly being implemented and with that change comes entirely new
+          principles of best practice. An article written last year might not be as accurate as when it was first
+          written.  Comments can be a good indicator of an articles correctness, however, comments normally display the
+          earliest comments at the top and the comments thereafter get buried in arguments and one-off debates. There
+          should be a way to know what the community thinks about an articles accuracy before reading it... and now there
+          is.
+        </p><p>
+      </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="medium-4 columns">
+        <h3>The What</h3>
+        <p>
+          Doc-docs will keep track of what the community thinks about articles around the web and catalog those reviews,
+          ratings, and also the authors who write them. Just like the standards which are in constant flux, the Doc-docs
+          system will evolve over time to try to fit the times. Similar to the way which
+          <a href="//stackoverflow.com" target="_blank">Stack Overflow</a> not only tracks the "ups" and "downs" on an
+          answer, they track the contribution of authors.  We at Doc-docs intend to do the same with our reviewers.
+        </p>
+        <p>Eventually the entire Doc-docs experience should be integrated into your browsing flow so that you never have to
+          actually have to take extra steps towards checking the accuracty of a document or the trustworthiness of the
+          ratings, reviews and detours listed on an article. Hopefully the usefulness of our archives and browser plugin
+          will attract a large community and effortlessly people will always find the best documentation sources online.
+        </p>
+      </div>
+      <div class="medium-4 columns">
+        <h3>The How</h3>
+        <p>
+          When you search for or surf to an article which has been classified inaccurate or outdated by other members of
+          the Doc-Docs community a non-obtrusive flag will briefly appear telling you as much. You will have the ability
+          to check any flag to find out how the article became flagged and by whom. In addition, users are able to cast
+          votes on both articles/documentation they read and also reviews written by Doc-docs members.
+        </p>
+        <p>
+          Any rating, review or detours author will have an accessible profile for viewing and will be avialable from
+          both the plugin and the main website.
+          If an article has not been rated or reviewed and you would like to be the first to make a rating it would help
+          to lead future readers in the right direction based on your approval or disapproval.
+          Votes from users who contribute more often will hold more weight.
+          Doc-docs provides a quick
+          1 - 10 rating system through a 5 star graphical display. You also can write reviews, comment on your rating and
+          provide alternatives to the current documentation in the form of a url called a "detour".
+        </p>
+      </div>
+      <div class="medium-4 columns">
+        <h3>The Plan</h3>
+        <p>
+          For the time being Doc-docs is soley available via our web platform. A browser plugin is in development for the
+          Chrome internet browser. Community members are not only encouraged to start reviewing and rating docs that they
+          run across in their day to day routines and encouraging other communitys to join the initiative and to do the
+          same. This product is all about knowledge and helping the open-source community. In that spirit it will always
+          be a free service. Additionally, we hope that community members will help develop the Doc-docs platform by
+          creating browser extensions to for additional browsers so that users don't have to interface with the main
+          website.
+        </p>
+        <p>
+          There are a lot of features in the planning stage and we welcome developers to
+          <a href="{{ url_for("public.discussion") }}">join in on the discussion</a>.
+          The main goal at Doc-docs is to make life easier and bad information scarcer for those out there who build
+          the tech which powers our world and for those who aspire to do as much. We are Doc-docs and we are community.
+          <a href="{{ url_for("public.developers") }}">Join the Doc-docs developer community!</a>
+          development team
+        </p>
+      </div>
+    </div>
+    <hr>
+    <div class="row">
+      {# Show how many reviews, ratings, detours, documents todo: Create queries which shows real values for all these. #}
+      <ul class="vertical medium-horizontal menu expanded text-center">
+        <li class="column"><a href="#">
+          <div class="stat">28</div>
+          <span>Documents</span></a></li>
+        <li class="column"><a href="#">
+          <div class="stat">43</div>
+          <span>Ratings</span></a></li>
+        <li class="column"><a href="#">
+          <div class="stat">95</div>
+          <span>Reviews</span></a></li>
+        <li class="column"><a href="#">
+          <div class="stat">59</div>
+          <span>Detours</span></a></li>
+      </ul>
+    </div>
+    <hr>
 
-  </div>
+    <div class="row column">
 
-  <div class="row medium-up-2">
+    </div>
 
-    <div class="column recently-added">
+    <div class="row medium-up-2">
 
-      <header class="section-header">
-        <div class="section-title">
-          <h3>Recently added:</h3>
+      <div class="column recently-added">
+
+        <header class="section-header">
+          <div class="section-title">
+            <h3>Recently added:</h3>
+          </div>
+        </header>
+        <div class="feed">
+          {% include "public/partials/_recently_added_list.html" %}
         </div>
-      </header>
-      <div class="feed">
-        {% include "public/partials/_recently_added_list.html" %}
+
+      </div>
+
+      <div class="column recent-activity">
+        <header class="section-header">
+          <div class="section-title">
+            <h3>Recent activity:</h3>
+          </div>
+        </header>
+        <div class="feed">
+          {% include "public/partials/_recent_activity_list.html" %}
+        </div>
       </div>
 
     </div>
 
-    <div class="column recent-activity">
-      <header class="section-header">
-        <div class="section-title">
-          <h3>Recent activity:</h3>
-        </div>
-      </header>
-      <div class="feed">
-        {% include "public/partials/_recent_activity_list.html" %}
+    <hr>
+
+    <div class="row column">
+      <div class="centered thumbnail small-12">
+        <img class="image fill" src="{{ url_for('static', filename="img/too-many-docs-to-handle.jpg") }}">
+
       </div>
     </div>
 
-  </div>
-
-  <hr>
-
-  <div class="row column">
-    <div class="centered thumbnail small-12">
-      <img class="image fill" src="{{ url_for('static', filename="img/too-many-docs-to-handle.jpg") }}">
-
-    </div>
-  </div>
-
+  </section>
 {% endblock %}
 
 

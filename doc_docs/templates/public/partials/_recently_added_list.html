@@ -1,22 +1,22 @@
 <div class="row">
   <div class="small-11 columns small-centered">
 
-    {% for review in reviews %}
+    {% for review in recently_added %}
     <article class="activity row">
 
         <div class="activity-info medium-6 large-4 small-11 columns">
           <div class="row">
-            <p class="activity-datetime small-6 medium-12 columns">12/20/2015 <br> 11:14am</p>
-            <p class="activity-author small-6 medium-12 columns"><span class="username">AwesomeKoder</span><br>Member<br>1210 pts.</p>
+            <p class="activity-datetime small-6 medium-12 columns">{{ review.reviewed_on.date() }} <br> {{ review.reviewed_on.time() }}</p>
+            <p class="activity-author small-6 medium-12 columns"><span class="username">{{ review.user.username }}</span><br>{{ review.user.roles|e }}<br>1210 pts.</p>
           </div>
         </div>
 
         <div class="activity-desc medium-6 large-8 small-12 columns wrap">
-          <h4 class="activity-desc-header">Day in the Life of Foundation for Apps</h4>
+          <h4 class="activity-desc-header">{{ review.doc_doc.doc_site_meta.title }} //need title here</h4>
           <p class="activity-desc-detail">
-            <span class="activity-desc-time">This will be the title of the page</span>
-            This will show the rating and the first 25 words or so of the review submitted by the user.
+            <span class="activity-desc-time"><a target="_blank" href="{{ review.doc_doc.full_url }}">{{ review.doc_doc.full_url }}</a></span>
           </p>
+          <p>{{ review.summary }}</p>
           <a href="http://bdconf.com/speakers/brandon-arnold/" class="rsvp button">View Details</a>
         </div>
 

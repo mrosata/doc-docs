@@ -22,6 +22,8 @@ body {
       font-size: 2.34rem; } }
   body .callout {
     margin-bottom: 0; }
+  body .main-content {
+    padding-top: 1.7rem; }
 
 .section-title {
   width: 100%; }
@@ -37,34 +39,16 @@ body {
   .section-title h4 {
     font-size: 1.43em; }
 
-.spacer.small::before {
-  content: ' ';
-  display: block;
-  width: 100%;
-  height: 1.2rem;
-  clear: both;
-  float: none !important; }
-
-.spacer.medium::before {
-  content: ' ';
-  display: block;
-  width: 100%;
+.spacer {
   height: 1.7rem;
-  clear: both;
-  float: none !important; }
-
-.spacer.large::before {
-  content: ' ';
-  display: block;
   width: 100%;
-  height: 2.2rem;
-  clear: both;
-  float: none !important; }
+  float: none;
+  clear: both; }
 
-.spacer::after {
-  content: ' ';
-  display: block;
-  width: 100%; }
+.add-new-form {
+  font-size: 0.9rem; }
+  .add-new-form label {
+    font-size: 1rem; }
 
 /*
  *  Profile Pages
@@ -181,29 +165,29 @@ body {
         float: left; } }
 
 .login-panel .welcome,
-.login-form .welcome,
+.login-form .welcome, .add-new-form .welcome,
 .register-form .welcome {
   margin-bottom: 1.2rem; }
 
 .login-panel form i,
-.login-form form i,
+.login-form form i, .add-new-form form i,
 .register-form form i {
   font-size: 1.5rem;
   vertical-align: bottom; }
 
 .login-panel form label,
-.login-form form label,
+.login-form form label, .add-new-form form label,
 .register-form form label {
   font-weight: bold; }
 
 .login-panel form input[type=checkbox],
-.login-form form input[type=checkbox],
+.login-form form input[type=checkbox], .add-new-form form input[type=checkbox],
 .register-form form input[type=checkbox] {
   width: 1.25em;
   height: 1.25em; }
 
 .login-panel form .error-message li,
-.login-form form .error-message li,
+.login-form form .error-message li, .add-new-form form .error-message li,
 .register-form form .error-message li {
   color: #ff3349;
   list-style: none;
@@ -298,8 +282,46 @@ body {
     color: #fafbfa;
     background-color: #22bb5b; }
 
-.login-form, .register-form {
+.login-form, .add-new-form, .register-form {
   margin-top: 1.8rem;
   border: 1px solid #cacaca;
   padding: 1rem;
   border-radius: 3px; }
+
+body.the-blog .main-content {
+  background: #b9b9b9; }
+
+.header.panel {
+  margin: 3rem auto;
+  border: 2px solid #444;
+  background: #fefafe; }
+  .header.panel p {
+    font: 1.075rem "Avenir Next";
+    padding: 1rem 2rem 2rem 2rem;
+    margin-top: -1.25rem;
+    color: #464646; }
+    .header.panel p span {
+      text-transform: uppercase;
+      text-decoration: underline;
+      letter-spacing: 1px;
+      font-size: 0.85rem;
+      font-weight: bold; }
+  .header.panel .sign {
+    background: #fff;
+    width: 20rem;
+    height: 2.25rem;
+    max-width: 100%;
+    border: 2px solid #555;
+    border-bottom: 1px solid #555;
+    position: relative;
+    top: -2.3rem;
+    z-index: 2;
+    margin: auto; }
+    .header.panel .sign h1 {
+      text-transform: uppercase;
+      font: bolder 0.875rem "Avenir Next";
+      letter-spacing: 3px;
+      color: #555;
+      font-size: 0.75rem;
+      text-align: center;
+      line-height: 2.375rem; }

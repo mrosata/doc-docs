@@ -23,37 +23,10 @@
     <div class="spacer large"></div>
   </div>
   <div class="row">
-    <div class="column small-8 small-push-2 medium-6 medium-push-3">
+    <div class="column small-12 medium-9 large-7 medium-centered">
       {% include "public/partials/_add-new-forms.html" %}
     </div>
   </div>
 
-  <div class="row medium-up-2">
-
-    <div class="column recently-added">
-
-      <header class="section-header">
-        <div class="section-title">
-          <h3>Recently added:</h3>
-        </div>
-      </header>
-      <div class="feed">
-        {% include "public/partials/_recently_added_list.html" %}
-      </div>
-
-    </div>
-
-    <div class="column recent-activity">
-      <header class="section-header">
-        <div class="section-title">
-          <h3>Recent activity:</h3>
-        </div>
-      </header>
-      <div class="feed">
-        {% include "public/partials/_recent_activity_list.html" %}
-      </div>
-    </div>
-
-  </div>
-
+  {% include "public/partials/_recent_widget.html" %}
 {% endblock %}

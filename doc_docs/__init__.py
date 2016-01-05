@@ -1,6 +1,10 @@
 """
 Doc Docs >> 2015 - 2016
-    by: Michael Rosata <<
+    by: Michael Rosata << doc_docs.__init__.py
+
+---------
+This is the main access point for everything in the app. This file isn't run to start the app though.
+The run.py in the root folder is used to access the application.
 """
 # System modules
 import pprint
@@ -13,6 +17,7 @@ from flask_mail import Mail
 from flask.ext.sqlalchemy import SQLAlchemy
 
 from . import resources
+from doc_doc_errors import PreviousReviewException
 from doc_docs.config import configure_app
 from doc_docs.utilities import utils
 # Create the app, this will be the main object which runs this entire application.

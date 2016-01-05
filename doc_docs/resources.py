@@ -9,6 +9,7 @@ and there is already enough clutter from all the different options provided by f
 error = {'html': 'layouts/_error.html'}
 # The main page for both logged in and anonymous users
 index = {'html': 'public/index.html'}
+site_blog = {'html': 'public/blog.html'}
 # Forms for logged in users to add a new {review/detour/rating}
 add_new = {'html': 'public/doc-data/add-new.html'}
 personal_profile = {'html': 'public/user/profile.html'}

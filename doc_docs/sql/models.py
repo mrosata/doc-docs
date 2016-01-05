@@ -101,7 +101,6 @@ class UserProfile(db.Model, UserMixin):
         db.session.add(self)
         db.session.commit()
 
-
     def __repr__(self):
         return '<class UserProfile user_id: %r, first_name: %r, last_name: %r, homepage: %r, ' \
                'github: %r, facebook: %r, stackoverflow: %r, twitter: %r>'\
@@ -128,6 +127,45 @@ class UserBioText(db.Model):
         return '<class BioText bio_text_id: %r, bio_text: %r>' % (self.bio_text_id, self.bio_text)
 
 
+class DocSiteMeta(db.Model):
+    """
+    Site meta is the og:meta data parsed from a site when it is initially added to DocDocs. The image right now will
+    just be a link but in the future it would probably be good to save the image. I'm not sure. I know that a lot of
+    sites are trying to stop people from remotely displaying their content so it might be needed to actually download
+    the images from sites. But that's a lot of images, although they could be compressed a lot.
+    """
+
+    meta_id = db.Column(db.Integer, primary_key=True)
+    image = db.Column(db.String(255))
+    title = db.Column(db.String(255))
+    url = db.Column(db.String(300))
+    site_type = db.Column(db.String(255), nullable=True)
+    locale = db.Column(db.String(20), nullable=True)
+    locale_alternate = db.Column(db.String(100), nullable=True)
+    site_name = db.Column(db.String(255), nullable=True)
+    description = db.Column(db.String(300), nullable=True)
+    determiner = db.Column(db.String(10), nullable=True)
+    video = db.Column(db.String(140), nullable=True)
+    audio = db.Column(db.String(140), nullable=True)
+    
+    def __init__(self, url, description='', image='', title='', site_type='', locale='', locale_alternate='',
+                 site_name='', determiner='', video='', audio=''):
+        self.url = url
+        self.image = image
+        self.title = title
+        self.type = site_type
+        self.locale = locale 
+        self.locale_alternate = locale_alternate 
+        self.site_name = site_name 
+        self.description = description 
+        self.determiner = determiner 
+        self.video = video 
+        self.audio = audio 
+        
+        db.session.add(self)
+        db.session.commit()
+
+
 class DocDoc(db.Model):
     """
     Every Document or Article will be stored similar to a user. This will make it easier to
@@ -149,10 +187,21 @@ class DocDoc(db.Model):
     discoverer = db.Column(db.Integer, db.ForeignKey("user.id"))
     discovered = db.Column(db.DateTime, default=datetime.utcnow())
     visits = db.Column(db.Integer, default=1)
+    meta_data = db.Column(db.Integer, db.ForeignKey("doc_site_meta.meta_id"))
 
+    db.UniqueConstraint("discoverer", "doc_id")
+    doc_site_meta = db.relationship("DocSiteMeta")
     user = db.relationship("User")
 
-    def __init__(self, url, discoverer, discovered=None):
+    def __init__(self, url, discoverer, discovered=None, site_meta=None):
+        """
+
+        :param url:
+        :param discoverer:
+        :param discovered:
+        :param site_meta: dict with all the kwargs to create DocSiteMeta
+        :return:
+        """
         # Sanitize the url (break it into parts)
         url_parts = utils.get_url_parts(url)
 
@@ -169,6 +218,11 @@ class DocDoc(db.Model):
         self.visits = 1
 
         db.session.add(self)
+        # Only if DocSiteMeta is created already and passed in through site_meta_entry will we attach it here
+        if isinstance(site_meta, dict):
+            site_meta = DocSiteMeta(**site_meta)
+            db.session.add(site_meta)
+
         db.session.commit()
 
     def __repr__(self):
@@ -222,7 +276,9 @@ class DocReview(db.Model):
 
     def __init__(self, doc_id, reviewer, review, summary, reviewed_on=None):
         self.doc_id = doc_id
-        self.reviewer = reviewer.id
+        if isinstance(reviewer, User):
+            reviewer = reviewer.id
+        self.reviewer = reviewer
         self.review = review
         self.summary = summary
         # Set the time to be current time if wasn't passed in.
@@ -252,14 +308,16 @@ class DocRating(db.Model):
     __tablename__ = 'doc_rating'
     doc_doc_id = db.Column(db.Integer, db.ForeignKey('doc_doc.doc_id'), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    rating = db.Column(db.Integer(2))
+    rating = db.Column(db.Integer)
     rated_on = db.Column(db.DateTime, default=datetime.utcnow())
     db.PrimaryKeyConstraint('doc_doc_id', 'reviewer', name='doc_review_pk')
 
     def __init__(self, doc_id, user_id, rating, rated_on=None):
-        self.doc_id = doc_id
+        self.doc_doc_id = doc_id
         self.user_id = user_id
         self.rating = rating
+        if rated_on is None:
+            rated_on = datetime.utcnow()
         self.rated_on = rated_on
 
         db.session.add(self)

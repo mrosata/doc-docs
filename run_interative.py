@@ -4,7 +4,7 @@ from sqlalchemy import func
 
 from doc_docs import app, db, utils
 from doc_docs.sql.models import UserProfile, User, UserBioText, UserMixin, CommunityApproval, \
-    DocTerm, DocReview, DocTermRelationship, DocDetour, DocDoc, DocRating, DocReviewBody, Role, RoleMixin
+    DocTerm, DocReview, DocTermRelationship, DocDetour, DocDoc, DocRating, DocReviewBody, Role, RoleMixin, DocSiteMeta
 
 from doc_docs.sql.retriever import _q
 

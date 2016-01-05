@@ -14,9 +14,10 @@ from . import site_forms
 
 from doc_docs.public.security_forms import ExtendedRegistrationForm
 from doc_docs.public.creator import DocReviewCreator
+
 from doc_docs.utilities import utils
 
-from doc_docs import db, resources
+from doc_docs import db, resources, PreviousReviewException
 from doc_docs.sql.retriever import _q
 from doc_docs.sql.models import UserMixin, User, RoleMixin, Role, UserProfile, UserBioText, CommunityApproval
 from doc_docs.sql.models import DocDoc, DocReviewBody, DocReview, DocRating, DocDetour, DocTerm, DocTermRelationship
@@ -32,7 +33,9 @@ def public_context_processor():
     register_form = ExtendedRegistrationForm()
     login_form = forms.LoginForm()
 
-    return dict(login_user_form=login_form, register_user_form=register_form)
+    recent_reviews = db.session.query(DocReview).order_by(DocReview.reviewed_on.desc()).limit(10).all()
+    utils.log("db ------- %r", recent_reviews)
+    return dict(login_user_form=login_form, register_user_form=register_form, recently_added=recent_reviews)
 
 
 @public.route('/forgot')
@@ -66,11 +69,17 @@ def add_new():
         review_form = creator.form()
         # Shortcut for is_submitted() and validate()
         if review_form.validate_on_submit():
-            doc = creator.return_or_create_doc(creator, review_form.doc_url.data)
+            doc = creator.return_or_create_doc(review_form.doc_url.data)
             creator.push(rating=review_form.rating.data, review=review_form.review.data, tags=review_form.tags.data,
                          detour=review_form.detour.data, summary=review_form.summary.data, discoverer=current_user)
 
-            creator.create()
+            try:
+                creator.create()
+                # TODO: This is temporary, send back to profile after successful review posted
+                return redirect("/profile")
+            except PreviousReviewException:
+                # We want to render the error to the review form to let user know they can't make 2 reviews on 1 doc.
+                review_form.doc_url.errors.append("It seems you have already reviewed this Document in the past!")
 
             return render_template(resources.add_new['html'], new_review_form=review_form)
         # There was a problem with the form, so we will return the from w/errors
@@ -212,4 +221,4 @@ def the_archive():
 
 @public.route('/blog')
 def the_blog():
-    return "coming soon to a browser near you!"
+    return render_template(resources.site_blog["html"], body_classes=["the-blog"])

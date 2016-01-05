@@ -1,0 +1,48 @@
+body.the-blog .main-content {
+  background: #b9b9b9;
+}
+
+.header.panel {
+  margin: 3rem auto;
+  border: 2px solid #444;
+  background: #fefafe;
+
+  p {
+    font: 1.075rem "Avenir Next";
+    padding: 1rem 2rem 2rem 2rem;
+    margin-top: -1.25rem;
+    color: #464646;
+
+    span {
+      text-transform: uppercase;
+      text-decoration: underline;
+      letter-spacing: 1px;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+  }
+
+  .sign {
+    background:#fff;
+    width: 20rem;
+    height: 2.25rem;
+    max-width: 100%;
+    border: 2px solid #555;
+    border-bottom: 1px solid #555;
+    position: relative;
+    top: -2.3rem;
+    z-index: 2;
+    margin: auto;
+
+    h1 {
+      text-transform: uppercase;
+      font: bolder 0.875rem "Avenir Next";
+      letter-spacing: 3px;
+      color: #555;
+      font-size: 0.75rem;
+      text-align: center;
+      line-height: 2.375rem;
+    }
+  }
+}
+

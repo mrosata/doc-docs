@@ -1,11 +1,16 @@
 """
+Doc Docs >> 2015 - 2016
+    by: Michael Rosata << doc_doc/public/creator/creator.py
+
+------
 Creator will assist in creating things like doc_docs by combining logic from database models and from site forms
 """
 from sqlalchemy import and_
+from .doc_scraper import fetch_meta
 from doc_docs.sql import models
 from doc_docs.public.site_forms import ReviewForm
 from doc_docs.utilities import utils
-from doc_docs import db, current_user
+from doc_docs import db, current_user, PreviousReviewException
 
 
 class Creator:
@@ -15,27 +20,29 @@ class Creator:
     """
     _data = tuple()
     data = dict()
+    doc = None
 
     def __init__(self):
         self.session = db.session
         pass
 
-    @staticmethod
     def return_or_create_doc(self, doc_url):
         parsed_url = utils.get_url_parts(doc_url)
         doc = None
-        if db.session.query(models.DocDoc).all().count > 0:
-            doc = db.session.query(models.DocDoc).\
+        if self.session.query(models.DocDoc).all().count > 0:
+            doc = self.session.query(models.DocDoc).\
                 filter(models.DocDoc.full_url == parsed_url['full_url']).\
                 filter(models.DocDoc.base_url == parsed_url['base_url']).\
                 filter(models.DocDoc.pathname == parsed_url['pathname']).\
                 filter(models.DocDoc.fragment == parsed_url['fragment']).first()
 
         if doc is None:
-            doc = models.DocDoc(doc_url, current_user, None)
+            # Create the og_meta and the doc
+            og_meta = fetch_meta(doc_url)
+            doc = models.DocDoc(doc_url, current_user, None, og_meta)
 
         self.doc = doc
-        return self.doc
+        return doc
 
     def push(self, **kwargs):
         """
@@ -61,13 +68,15 @@ class DocRatingCreator(Creator):
         :return:
         """
         if not (isinstance(doc_doc, models.DocDoc) or isinstance(user, models.User)):
-            return False
+            utils.log("INSTANCE TROUBLE IN DocRatingCreator %r", doc_doc)
+            utils.log("INSTANCE TROUBLE IN DocRatingCreator %r", user)
 
         doc_id = doc_doc.doc_id
         user_id = user.id
-        rating = int(rating)
+        rating = rating
 
-        return models.DocRating(doc_id, user_id, rating)
+        the_rating = models.DocRating(doc_id, user_id, rating)
+        return the_rating
 
 
 class DocReviewCreator(Creator):
@@ -93,13 +102,22 @@ class DocReviewCreator(Creator):
             if x not in self.data:
                 return False
 
+        previous_review = self.session.query(models.DocReview).\
+            filter_by(doc_id=self.doc.doc_id).\
+            filter_by(reviewer=self.user.id).\
+            first()
+
+        # A Reviewer may only review an article/document 1 time.
+        if previous_review is not None:
+            raise PreviousReviewException()
+
         self.doc = models.DocReview(self.doc.doc_id, self.user, self.data["review"], self.data["summary"])
 
         if self.doc is None:
             return None
 
         self.update_terms()
-        if self.data["rating"] and int(self.data["rating"]):
+        if self.data["rating"]:
             DocRatingCreator().rate(self.doc, self.user, int(self.data["rating"]))
 
         return self.doc
