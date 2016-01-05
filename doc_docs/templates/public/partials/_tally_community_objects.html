@@ -1,0 +1,27 @@
+{# Show how many reviews, ratings, detours, documents todo: Create queries which shows real values for all these. #}
+
+{% macro count_total_of(item) %}
+
+  {% if not item or item == 0 %}
+    0
+  {% else %}
+    {{ item }}
+  {% endif %}
+
+{% endmacro %}
+<section>
+  <ul class="vertical medium-horizontal menu expanded text-center">
+    <li class="column"><a href="#">
+      <div class="stat">{{ count_total_of(doc_count) }}</div>
+      <span>Documents</span></a></li>
+    <li class="column"><a href="#">
+      <div class="stat">{{ count_total_of(rating_count) }}</div>
+      <span>Ratings</span></a></li>
+    <li class="column"><a href="#">
+      <div class="stat">{{ count_total_of(review_count) }}</div>
+      <span>Reviews</span></a></li>
+    <li class="column"><a href="#">
+      <div class="stat">{{ count_total_of(detour_count) }}</div>
+      <span>Detours</span></a></li>
+  </ul>
+</section>

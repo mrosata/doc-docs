@@ -1,3 +1,4 @@
+# DocDocs gitignore file
 .git
 .idea
 .vagrant
@@ -5,9 +6,17 @@
 node_modules
 vagrant
 
-nohup.out
-
+# No need to store devlopment database files
 *.db
 
+# I was using nohup to pipe stdout from ipython for awhile. I only used it for a day or two but still
+# am going to keep the entry in gitignore file
+nohup.out
+
+# Formats for files I use as scrap/scratch
 mrosata*
 *mrosata*
+ipython-*
+
+
+docs/

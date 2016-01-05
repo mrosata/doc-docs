@@ -97,21 +97,10 @@
     </div>
     <hr>
     <div class="row">
-      {# Show how many reviews, ratings, detours, documents todo: Create queries which shows real values for all these. #}
-      <ul class="vertical medium-horizontal menu expanded text-center">
-        <li class="column"><a href="#">
-          <div class="stat">28</div>
-          <span>Documents</span></a></li>
-        <li class="column"><a href="#">
-          <div class="stat">43</div>
-          <span>Ratings</span></a></li>
-        <li class="column"><a href="#">
-          <div class="stat">95</div>
-          <span>Reviews</span></a></li>
-        <li class="column"><a href="#">
-          <div class="stat">59</div>
-          <span>Detours</span></a></li>
-      </ul>
+
+      {% include "public/partials/_tally_community_objects.html" %}
+      {# Show how many reviews, ratings, detours, documents #}
+
     </div>
     <hr>
 
@@ -125,7 +114,7 @@
 
         <header class="section-header">
           <div class="section-title">
-            <h3>Recently added:</h3>
+            <h3 class="docdocs-text-logo feed-title">Recently added</h3>
           </div>
         </header>
         <div class="feed">
@@ -137,7 +126,7 @@
       <div class="column recent-activity">
         <header class="section-header">
           <div class="section-title">
-            <h3>Recent activity:</h3>
+            <h3 class="docdocs-text-logo feed-title">Recent activity</h3>
           </div>
         </header>
         <div class="feed">

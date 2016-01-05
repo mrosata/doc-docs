@@ -31,3 +31,5 @@ def get_context(*args):
     ctx.push()
     return ctx
 
+
+setup()

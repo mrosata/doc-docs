@@ -20,7 +20,8 @@ from doc_docs.utilities import utils
 from doc_docs import db, resources, PreviousReviewException
 from doc_docs.sql.retriever import _q
 from doc_docs.sql.models import UserMixin, User, RoleMixin, Role, UserProfile, UserBioText, CommunityApproval
-from doc_docs.sql.models import DocDoc, DocReviewBody, DocReview, DocRating, DocDetour, DocTerm, DocTermRelationship
+from doc_docs.sql.models import DocReviewBody, DocReview, DocRating, DocDetour, DocTerm, DocTermRelationship
+from doc_docs.sql.models import DocDoc, DocSiteMeta
 from doc_docs.sql.retriever import _q
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -33,9 +34,10 @@ def public_context_processor():
     register_form = ExtendedRegistrationForm()
     login_form = forms.LoginForm()
 
-    recent_reviews = db.session.query(DocReview).order_by(DocReview.reviewed_on.desc()).limit(10).all()
-    utils.log("db ------- %r", recent_reviews)
-    return dict(login_user_form=login_form, register_user_form=register_form, recently_added=recent_reviews)
+    item_totals = _q.site_totals()
+    recent_reviews = _q.review.get_feed(10)
+    return dict(login_user_form=login_form, register_user_form=register_form, recently_added=recent_reviews,
+                **item_totals)
 
 
 @public.route('/forgot')
@@ -107,9 +109,9 @@ def profile(username=None):
         p = _q.profile.by_name(username)
 
     reviews = list()
-    for r in _q.review.by_user_id(current_user.id):
+    for r, m in _q.review.by_user_id(current_user.id, with_meta=True):
         terms = _q.term.by_object_id(r.doc_review_id)
-        reviews.append(dict(review=r, tags=terms, username=p.username))
+        reviews.append(dict(review=r, doc_meta=m, tags=terms, username=p.username))
 
     return render_template(resources.personal_profile['html'], profile=p, reviews=reviews)
     # There is no user profile associated with the username used in the url, so redirect users to profile, else index
@@ -191,7 +193,8 @@ def tag(term_name=None, term_id=None):
 
 @public.route('/review/<int:review_id>')
 def review(review_id):
-    r = db.session.query(DocReview).filter_by(doc_review_id=review_id).first()
+
+    r = db.session.query(DocReview, ).filter_by(doc_review_id=review_id).first()
 
     if r is None:
         return redirect("/", 404)

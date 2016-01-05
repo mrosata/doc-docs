@@ -147,6 +147,8 @@ class DocSiteMeta(db.Model):
     determiner = db.Column(db.String(10), nullable=True)
     video = db.Column(db.String(140), nullable=True)
     audio = db.Column(db.String(140), nullable=True)
+
+    db.relationship("DocDoc", backref="doc_site_meta")
     
     def __init__(self, url, description='', image='', title='', site_type='', locale='', locale_alternate='',
                  site_name='', determiner='', video='', audio=''):
@@ -190,7 +192,7 @@ class DocDoc(db.Model):
     meta_data = db.Column(db.Integer, db.ForeignKey("doc_site_meta.meta_id"))
 
     db.UniqueConstraint("discoverer", "doc_id")
-    doc_site_meta = db.relationship("DocSiteMeta")
+    doc_site_meta = db.relationship("DocSiteMeta", lazy="joined")
     user = db.relationship("User")
 
     def __init__(self, url, discoverer, discovered=None, site_meta=None):

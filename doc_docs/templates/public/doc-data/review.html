@@ -23,6 +23,16 @@
 
   <div class="small-10 medium-8 small-push-1 medium-push-2 single-review">
     <div class="spacer medium"></div>
+
+
+    {% if data.doc_meta and data.doc_meta.image %}
+      <div class="row review-field-container">
+        <div class="thumbnail">
+          <img src="{{ data.doc_meta.image|e }}" alt="">
+        </div>
+      </div>
+    {% endif %}
+  
     <div class="row review-listing-container">
       <div class="column small-12">
         <span class="label field">Reviewed URL: </span>
@@ -71,34 +81,11 @@
   </div> <!-- .single-review -->
 
 
-
-
-  <div class="row medium-up-2">
-
-    <div class="column recently-added">
-
-      <header class="section-header">
-        <div class="section-title">
-          <h3>Recently added:</h3>
-        </div>
-      </header>
-      <div class="feed">
-        {% include "public/partials/_recently_added_list.html" %}
-      </div>
-
-    </div>
-
-    <div class="column recent-activity">
-      <header class="section-header">
-        <div class="section-title">
-          <h3>Recent activity:</h3>
-        </div>
-      </header>
-      <div class="feed">
-        {% include "public/partials/_recent_activity_list.html" %}
-      </div>
-    </div>
-
+  <br>
+  <hr>
+  <br>
+  
+  <div class="row collapse">
+    {% include "public/partials/_recent_widget.html" %}
   </div>
-
 {% endblock %}

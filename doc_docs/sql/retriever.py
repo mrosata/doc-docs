@@ -2,6 +2,8 @@
 Doc Docs >> 2015 - 2016
     by: Michael Rosata <<  doc_docs/sql/retriever.py
 """
+from sqlalchemy import func
+
 from doc_docs import app, db
 from doc_docs.sql import models
 
@@ -16,6 +18,7 @@ class Finder:
     Profile = models.UserProfile
     Bio = models.UserBioText
     Doc = models.DocDoc
+    Meta = models.DocSiteMeta
     Review = models.DocReview
     Body = models.DocReviewBody
     Term = models.DocTerm
@@ -92,18 +95,40 @@ class ProfileFinder(Finder):
 
 class ReviewFinder(Finder):
 
-    def by_username(self, username, full_text=False):
+    def get_feed(self, _limit=10, _offset=0):
+        """
+        Get a feed of recent reviews along with the doc_doc that belongs to it.
+
+        :param _offset: default 10 - to help with paging the offset value
+        :param _limit: default 10 - the amount of results to be returned at most.
+        :return: - list of results with props doc_review_id, reviewed_on, summary, user, term_relationship,
+                    doc_doc, site_meta
+        """
+        r = self.Review
+        # p = db.aliased(self.Profile, name="user_profile")
+        u = db.aliased(self.User, name="user_info")
+        m = db.aliased(self.Meta, name="doc_site_meta")
+        d = db.aliased(self.Doc, name="doc_doc")
+
+        recent_feed = db.session.query(r.doc_review_id, r.reviewed_on, r.summary, u, r.term_relationship, d, m).\
+            filter(r.doc_id == d.doc_id).\
+            filter(r.reviewer == u.id).\
+            order_by(r.reviewed_on.desc()).offset(_offset).limit(_limit).all()
+
+        return recent_feed
+
+    def by_username(self, username, full_text=False, with_meta=False):
         user = _q.user.by_username(username)
         user_id = None
         if isinstance(user, self.User):
             user_id = user.id
         return self.query(self.Review.reviewer, user_id)
 
-    def by_user_id(self, user_id, full_text=False):
-        return self.query(self.Review.reviewer, user_id, full_text=full_text)
+    def by_user_id(self, user_id, full_text=False, with_meta=False):
+        return self.query(self.Review.reviewer, user_id, full_text=full_text, with_meta=with_meta)
         pass
 
-    def query(self, constraint, constraint_value, full_text=False):
+    def query(self, constraint, constraint_value, full_text=False, with_meta=False):
         """
         Make a query for a Review. This method is best called using one of the other methods provided on this class.
         :param full_text:
@@ -112,12 +137,20 @@ class ReviewFinder(Finder):
         :return:
         """
         r = self.Review
+        d = self.Doc
+        m = db.aliased(self.Meta, name="site_doc_meta")
         b = self.Body
         u = self.User
 
-        reviews = db.session.query(r). \
-            filter(constraint == constraint_value). \
-            order_by(r.reviewed_on.desc()).all()
+        if with_meta is True:
+            reviews = db.session.query(r, m). \
+                filter(r.doc_id == d.doc_id).\
+                filter(constraint == constraint_value). \
+                order_by(r.reviewed_on.desc()).all()
+        else:
+            reviews = db.session.query(r). \
+                filter(constraint == constraint_value). \
+                order_by(r.reviewed_on.desc()).all()
         return reviews
 
 
@@ -153,6 +186,20 @@ class QueryHelper:
         self.user = UserFinder(self)
         self.term = TermFinder(self)
         pass
+
+    @staticmethod
+    def site_totals():
+        """
+        Total up all objects for displaying count information on the main page. Just for showing the community
+        what all the work adds up to.
+        :return: dict with doc_doc, doc_detour, doc_rating, doc_review
+        """
+        # TODO: Check how effecient this is.
+        the_totals = {"doc_count": db.session.query(func.count("*")).select_from(models.DocDoc).scalar(),
+                      "detour_count": db.session.query(func.count("*")).select_from(models.DocDetour).scalar(),
+                      "rating_count": db.session.query(func.count("*")).select_from(models.DocRating).scalar(),
+                      "review_count": db.session.query(func.count("*")).select_from(models.DocReview).scalar()}
+        return the_totals
 
     def __call__(self, *args, **kwargs):
         """

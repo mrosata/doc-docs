@@ -73,6 +73,9 @@ body {
 .profile-fields .profile-field-container {
   min-height: 0.62rem; }
 
+.profile-review .row {
+  margin-bottom: 0.62rem; }
+
 .row.top-nav {
   max-width: 100%; }
   .row.top-nav .menu {
@@ -195,13 +198,13 @@ body {
   font-weight: bold; }
 
 .activity {
-  padding: 1rem 1rem 1rem 0; }
+  padding: 0.6rem 0.6rem 0.6rem 0; }
 
 .activity-info .activity-datetime {
   margin: 0;
   background: #eee;
-  font-size: 0.9rem;
-  padding: 0.33rem 1.75rem;
+  font-size: 0.8rem;
+  padding: 0.23rem 1.35rem;
   text-align: center; }
 
 .activity-info .activity-author {
@@ -211,25 +214,26 @@ body {
   font-size: 0.75rem;
   text-align: center; }
   .activity-info .activity-author span.username {
+    color: #ff3349;
     font-weight: bold;
     text-align: left;
     margin: 0.25rem; }
+  .activity-info .activity-author .user-role {
+    color: #333333;
+    font-weight: bold; }
 
 .activity-desc {
-  padding: 0 0 0 1rem;
+  padding: 0.2rem 0 0 0.6rem;
   text-align: left;
   vertical-align: top; }
-  .activity-desc .activity-desc-header {
-    font-size: 1.15rem;
-    font-weight: bold;
-    margin: 0 0 0.5rem 0;
-    padding: 0; }
   .activity-desc .activity-desc-detail {
     margin: 0 0 0.25rem;
+    font-size: 0.9rem;
+    line-height: 1;
     padding: 0; }
   .activity-desc .activity-desc-time {
     font-weight: bold; }
-  .activity-desc .rsvp.button {
+  .activity-desc .button {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     margin: 0; }
