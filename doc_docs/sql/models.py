@@ -12,9 +12,15 @@ from flask.ext.security import UserMixin, RoleMixin
 from doc_docs import utils, app, db
 
 
+# This is the association for Flask_Security linking Users and Roles One-to-Many
 roles_users = db.Table('roles_users',
                        db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
                        db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
+
+# This is the apps association linking Reviews to Terms (Tags) Many-to-Many
+reviews_terms = db.Table('reviews_terms', db.metadata,
+                         db.Column("review", db.Integer, db.ForeignKey("doc_review.doc_review_id")),
+                         db.Column("term", db.Integer, db.ForeignKey("doc_term.term_id")))
 
 
 class Role(db.Model, RoleMixin):
@@ -58,6 +64,8 @@ class UserProfile(db.Model, UserMixin):
     """
     User Profile Data. I'm torn between keeping social data on the profile. It could be just as easily done as
     meta data. I will do this for now to keep the application simple though.
+    Note that the UserProfile is one of the only tables that is using a custom __init__ method. This makes the
+    insert with the bio easier.
     """
     __tablename__ = 'user_profile'
     profile_id = db.Column(db.Integer, primary_key=True)
@@ -78,7 +86,7 @@ class UserProfile(db.Model, UserMixin):
     bio_text = None
 
     def __init__(self, user, first_name='', last_name='', homepage='', github='', facebook='',
-                       stackoverflow='', twitter='', updated_at=None):
+                       stackoverflow='', twitter='', updated_at=None, bio_text=""):
         self.user = user
         self.first_name = first_name
         self.last_name = last_name
@@ -99,7 +107,7 @@ class UserProfile(db.Model, UserMixin):
         self.bio_text = bio_text.bio_text
 
         db.session.add(self)
-        db.session.commit()
+        db.session.add(bio_text)
 
     def __repr__(self):
         return '<class UserProfile user_id: %r, first_name: %r, last_name: %r, homepage: %r, ' \
@@ -136,37 +144,20 @@ class DocSiteMeta(db.Model):
     """
 
     meta_id = db.Column(db.Integer, primary_key=True)
-    image = db.Column(db.String(255))
-    title = db.Column(db.String(255))
+    image = db.Column(db.String(255), nullable=True, default="")
+    title = db.Column(db.String(255), nullable=True, default="")
     url = db.Column(db.String(300))
-    site_type = db.Column(db.String(255), nullable=True)
-    locale = db.Column(db.String(20), nullable=True)
-    locale_alternate = db.Column(db.String(100), nullable=True)
-    site_name = db.Column(db.String(255), nullable=True)
-    description = db.Column(db.String(300), nullable=True)
-    determiner = db.Column(db.String(10), nullable=True)
-    video = db.Column(db.String(140), nullable=True)
-    audio = db.Column(db.String(140), nullable=True)
+    site_type = db.Column(db.String(255), nullable=True, default="")
+    locale = db.Column(db.String(20), nullable=True, default="")
+    locale_alternate = db.Column(db.String(100), nullable=True, default="")
+    site_name = db.Column(db.String(255), nullable=True, default="")
+    description = db.Column(db.String(300), nullable=True, default="")
+    determiner = db.Column(db.String(10), nullable=True, default="")
+    video = db.Column(db.String(140), nullable=True, default="")
+    audio = db.Column(db.String(140), nullable=True, default="")
 
     db.relationship("DocDoc", backref="doc_site_meta")
     
-    def __init__(self, url, description='', image='', title='', site_type='', locale='', locale_alternate='',
-                 site_name='', determiner='', video='', audio=''):
-        self.url = url
-        self.image = image
-        self.title = title
-        self.type = site_type
-        self.locale = locale 
-        self.locale_alternate = locale_alternate 
-        self.site_name = site_name 
-        self.description = description 
-        self.determiner = determiner 
-        self.video = video 
-        self.audio = audio 
-        
-        db.session.add(self)
-        db.session.commit()
-
 
 class DocDoc(db.Model):
     """
@@ -191,41 +182,9 @@ class DocDoc(db.Model):
     visits = db.Column(db.Integer, default=1)
     meta_data = db.Column(db.Integer, db.ForeignKey("doc_site_meta.meta_id"))
 
-    db.UniqueConstraint("discoverer", "doc_id")
-    doc_site_meta = db.relationship("DocSiteMeta", lazy="joined")
+    # doc_site_meta = db.relationship("DocSiteMeta", lazy="joined")
+    doc_site_meta = db.relationship("DocSiteMeta")
     user = db.relationship("User")
-
-    def __init__(self, url, discoverer, discovered=None, site_meta=None):
-        """
-
-        :param url:
-        :param discoverer:
-        :param discovered:
-        :param site_meta: dict with all the kwargs to create DocSiteMeta
-        :return:
-        """
-        # Sanitize the url (break it into parts)
-        url_parts = utils.get_url_parts(url)
-
-        self.full_url = url_parts["full_url"]
-        self.base_url = url_parts["base_url"]
-        self.pathname = url_parts["pathname"]
-        self.fragment = url_parts["fragment"]
-        self.query_string = url_parts["query_string"]
-        self.params = url_parts["params"]
-        self.discoverer = discoverer.id
-        if discovered is None:
-            discovered = datetime.utcnow()
-        self.discovered = discovered
-        self.visits = 1
-
-        db.session.add(self)
-        # Only if DocSiteMeta is created already and passed in through site_meta_entry will we attach it here
-        if isinstance(site_meta, dict):
-            site_meta = DocSiteMeta(**site_meta)
-            db.session.add(site_meta)
-
-        db.session.commit()
 
     def __repr__(self):
         return '<class DocDoc doc_id: %r, base_url: %r, pathname: %r, fragment: %r, query_string: %r, ' \
@@ -245,11 +204,6 @@ class DocReviewBody(db.Model):
     review_body_id = db.Column(db.Integer, primary_key=True)
     review_body = db.Column(db.Text)
 
-    def __init__(self, review_body):
-        self.review_body = review_body
-
-        db.session.add(self)
-
     def __repr__(self):
         return '<class DocReviewBody review_body_id: %r, review_body: %r>' % \
                (self.review_body_id, self.review_body)
@@ -266,37 +220,19 @@ class DocReview(db.Model):
     doc_id = db.Column('doc_id', db.Integer, db.ForeignKey('doc_doc.doc_id'))
     reviewer = db.Column(db.Integer, db.ForeignKey('user.id'))
     reviewed_on = db.Column(db.DateTime, default=datetime.utcnow())
+    review_body_id = db.Column(db.Integer, db.ForeignKey("doc_review_body"))
     summary = db.Column(db.Text(350))
-    review_body_id = db.Column(db.Integer, db.ForeignKey('doc_review_body.review_body_id'))
 
     # terms = db.relationship("DocTerm", backref="doc_review")
-    # doc_review_body = DocReviewBody("DocReviewBody")
+
+    terms = db.relationship("DocTerm", secondary=reviews_terms, back_populates="reviews")
     doc_review_body = db.relationship("DocReviewBody")
     user = db.relationship("User")
     doc_doc = db.relationship("DocDoc")
-    term_relationship = db.relationship("DocTermRelationship")
-
-    def __init__(self, doc_id, reviewer, review, summary, reviewed_on=None):
-        self.doc_id = doc_id
-        if isinstance(reviewer, User):
-            reviewer = reviewer.id
-        self.reviewer = reviewer
-        self.review = review
-        self.summary = summary
-        # Set the time to be current time if wasn't passed in.
-        if reviewed_on is None:
-            reviewed_on = datetime.utcnow()
-        self.reviewed_on = reviewed_on
-
-        # We create the review and then sqlalchemy will reference it in the review_body_id field
-        self.doc_review_body = DocReviewBody(review)
-
-        db.session.add(self)
-        db.session.commit()
 
     def __repr__(self):
-        return '<class DocReview doc_review_id: %r, doc_id: %r, review_body_id: %r, reviewer: %r, ' \
-               'reviewed_on: %r, summary: %r, user: %r, doc_doc: %r, doc_review_body: %r>' % \
+        return "<class DocReview doc_review_id: %r, doc_id: %r, review_body_id: %r, reviewer: %r, " \
+                "reviewed_on: %r, summary: %r, user: %r, doc_doc: %r, doc_review_body: %r>" % \
                (self.doc_review_id, self.doc_id, self.review_body_id, self.reviewer, self.reviewed_on, self.summary,
                 self.user, self.doc_doc, self.doc_review_body)
 
@@ -312,21 +248,14 @@ class DocRating(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     rating = db.Column(db.Integer)
     rated_on = db.Column(db.DateTime, default=datetime.utcnow())
-    db.PrimaryKeyConstraint('doc_doc_id', 'reviewer', name='doc_review_pk')
+    db.PrimaryKeyConstraint('doc_doc_id', 'user_id', name='doc_rating_pk')
 
-    def __init__(self, doc_id, user_id, rating, rated_on=None):
-        self.doc_doc_id = doc_id
-        self.user_id = user_id
-        self.rating = rating
-        if rated_on is None:
-            rated_on = datetime.utcnow()
-        self.rated_on = rated_on
-
-        db.session.add(self)
-        db.session.commit()
+    doc_doc = db.relationship("DocDoc")
+    user = db.relationship("User")
 
     def __repr__(self):
-        return '<class DocRating %r>' % self.doc_doc_id
+        return '<class DocRating doc_doc_id: %r, user_id: %r, rating: %r, rated_on: %r>' % \
+               (self.doc_doc_id, self.user_id, self.rating, self.rated_on)
 
 
 class DocDetour(db.Model):
@@ -344,61 +273,23 @@ class DocDetour(db.Model):
     db.PrimaryKeyConstraint('target_doc_id', 'detour_doc_id', 'user_id')
     review_body = db.Column(db.Text)
 
-    def __init__(self, doc_review_id, review_body):
-        self.doc_review_id = doc_review_id
-        self.review_body = review_body
-
-        db.session.add(self)
-        db.session.commit()
-
     def __repr__(self):
         return '<class DocReviewBody %r>' % self.doc_review_id
 
 
 class DocTerm(db.Model):
     """
-    A Term can relate to any object. They should link to a term through a table such as DocTermRelationship
+    A Term can relate to any object. Right now it only links using Reviews through the review_term association (top of
+    file). This is many-to-many relationship handled by SQL Alchemy.
     """
-    __tablename__ = "term"
+    __tablename__ = "doc_term"
     term_id = db.Column(db.Integer, primary_key=True)
     term = db.Column(db.String(64))
-
-    def __init__(self, term):
-        self.term = term
-
-        db.session.add(self)
-        db.session.commit()
+    reviews = db.relationship("DocReview", secondary=reviews_terms, back_populates="terms")
 
     def __repr__(self):
         return "<class DocTerm term_id: %r, term: %r>" %\
                (self.term_id, self.term)
-
-
-class DocTermRelationship(db.Model):
-    """
-    This sets the relationship from a term to a doc
-    """
-    __tablename__ = "term_relationship"
-    term_id = db.Column(db.Integer, db.ForeignKey("term.term_id"), primary_key=True)
-    object_id = db.Column(db.Integer, db.ForeignKey("doc_review.doc_review_id"), primary_key=True)
-    object_type = db.Column(db.String(16), default="doc")
-
-    db.PrimaryKeyConstraint("term_id", "object_id", name="term_relationship_pk")
-
-    doc_review = db.relationship("DocReview")
-    term = db.relationship("DocTerm")
-
-    def __init__(self, term_id, object_id, object_type="doc_review"):
-        self.term_id = term_id
-        self.object_id = object_id
-        self.object_type = object_type
-
-        db.session.add(self)
-        db.session.commit()
-
-    def __repr__(self):
-        return "<class DocTermRelationship term_id: %r, object_id: %r, object_type: %r>" %\
-               (self.term_id, self.object_id, self.object_type)
 
 
 class CommunityApproval(db.Model):
@@ -416,13 +307,6 @@ class CommunityApproval(db.Model):
     # True = up-vote and False = down-vote
     vote = db.Column(db.Boolean, default=True)
     db.UniqueConstraint('doc_id', 'user_id', 'type')
-
-    def __init__(self, doc_review_id, review_body):
-        self.doc_review_id = doc_review_id
-        self.review_body = review_body
-
-        db.session.add(self)
-        db.session.commit()
 
     def __repr__(self):
         return """<class DocReviewBody %r>""" % self.doc_review_id

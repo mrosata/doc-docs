@@ -3,7 +3,7 @@
 {% from "security/_macros.html" import render_field_with_errors, render_field %}
 
 <div class="add-new-form">
-  <form method="post" action="{{ url_for('public.add_new') }}">
+  <form method="post" action="{{ url_for('public.add_new') }}" name="add-new-review">
     {{ new_review_form.csrf_token }}
     {{ new_review_form.hidden_tag() }}
     {{render_field_with_errors(new_review_form.doc_url) }}

@@ -11,7 +11,7 @@ import pprint
 
 # Third party imports.
 from flask import Flask, render_template, request, redirect, url_for
-from flask_security import SQLAlchemyUserDatastore, Security, current_user
+from flask_security import SQLAlchemyUserDatastore, Security, current_user, user_registered
 from flask_security import utils as security_utils
 from flask_mail import Mail
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -49,6 +49,15 @@ mail.init_app(app)
 # This is to init Flask Security user and roles
 user_datastore = SQLAlchemyUserDatastore(db, models.User, models.Role)
 security = Security(app, user_datastore, register_form=security_forms.ExtendedRegistrationForm)
+
+
+# This will add "Member" role to new users.
+def newly_registered_user(app, user, confirm_token, **extra):
+    utils.log("USER USER, %r", user)
+    role = user_datastore.find_or_create_role(name="member", description="Typical Member")
+    user_datastore.add_role_to_user(user, role)
+
+user_registered.connect(newly_registered_user)
 
 
 @app.before_first_request

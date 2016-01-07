@@ -14,7 +14,8 @@
     <section>
 
       <div class="callout small">
-        {% set total_related = related_objects|length -%}
+
+        {% set total_related = term.reviews|length -%}
 
         {% if total_related > 0 %}
 
@@ -34,14 +35,14 @@
 
       {% if total_related > 0 %}
 
-        {% for data in related_objects %}
+        {% for data in term.reviews %}
           <div class="review-listings">
             <div class="row review-listing-container">
               <div class="column small-12">
                 <span class="label field">Reviewed URL: </span>
               </div>
               <div class="column small-12">
-                {{ data.review.doc_doc.full_url}}
+                {{ data.doc_doc.full_url}}
               </div>
             </div>
 
@@ -50,7 +51,7 @@
                 <span class="label field">Reviewer: </span>
               </div>
               <div class="column small-12">
-                <a href="{{ url_for("public.profile", username=data.review.user.username) }}">{{ data.review.user.username }}</a>
+                <a href="{{ url_for("public.profile", username=data.user.username) }}">{{ data.user.username }}</a>
               </div>
             </div>
 
@@ -60,10 +61,10 @@
               </div>
               <div class="column small-12">
                 <article>
-                  {{ data.review.summary|e }}
+                  {{ data.summary|e }}
                 </article>
                 <span class="read-more">
-                <a href="{{ url_for("public.review", review_id=data.review.doc_review_id) }}">
+                <a href="{{ url_for("public.review", review_id=data.doc_review_id) }}">
                   (... READ MORE)
                 </a></span>
               </div>
@@ -74,7 +75,7 @@
                 <span class="label field">Facebook: </span>
               </div>
               <div class="column small-12">
-                {{ data.review.doc_review_body.review_body|e }}
+                {{ data.doc_review_body.review_body|e }}
               </div>
             </div>
 

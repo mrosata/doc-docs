@@ -168,13 +168,13 @@
 
                   <br>
                   <div class="profile-review">
-                  {% if data.doc_meta and data.doc_meta.image %}
-                    <div class="row review-field-container">
-                      <div class="thumbnail">
-                        <img src="{{ data.doc_meta.image|e }}" alt="">
+                    {% if data.doc_meta and data.doc_meta.image %}
+                      <div class="row review-field-container">
+                        <div class="thumbnail">
+                          <img src="{{ data.doc_meta.image|e }}" alt="">
+                        </div>
                       </div>
-                    </div>
-                  {% endif %}
+                    {% endif %}
                     <div class="row review-field-container">
 
                       <div class="column small-6">
@@ -201,31 +201,34 @@
 
                     </div>
 
-                    <div class="row review-field-container">
 
-                      <div class="column small-6">
-                        <div class="row">
-                          <div class="column small-12">
-                            <span class="label field">Reviewer Rating: </span>
-                          </div>
-                          <div class="column small-12">
-                            {{ data.review.rating|e }}
+                    {% if data.ratings %}
+                      <div class="row review-field-container">
+                        <div class="column small-6">
+                          <div class="row">
+                            <div class="column small-12">
+                              <span class="label field">Reviewer Rating: </span>
+                            </div>
+                            <div class="column small-12">
+                              {{ data.ratings.user|e }}
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div class="column small-6">
-                        <div class="row">
-                          <div class="column-12">
-                            <span class="label field">Community Rating: </span>
-                          </div>
-                          <div class="column-12">
-                            {{ data.review.rating|e }}
+                        <div class="column small-6">
+                          <div class="row">
+                            <div class="column-12">
+                              <span class="label field">Community Rating: </span>
+                            </div>
+                            <div class="column-12">
+                              {{ data.ratings.community|e }}
+                            </div>
                           </div>
                         </div>
+
                       </div>
 
-                    </div>
+                    {% endif %}
 
                     <div class="row review-field-container">
                       <div class="column small-12">
@@ -277,10 +280,10 @@
                         <span class="label field">Tags: </span>
                       </div>
                       <div class="column small-12">
-                        {% if data.tags|length > 0 %}
+                        {% if data.review.terms|length > 0 %}
                           <ul class="menu term-tags">
 
-                          {% for tag in data.tags %}
+                          {% for tag in data.review.terms %}
                             <li><a href="{{ url_for("public.tag", term_name=tag.term)|e }}">{{ tag.term }}</a></li>
                           {% endfor %}
 

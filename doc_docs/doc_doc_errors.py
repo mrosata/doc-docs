@@ -8,6 +8,6 @@ Custom errors and exceptions for the app
 
 
 class PreviousReviewException(Exception):
+    pass
 
-    def __init__(self, *args, **kwargs):
-        super(PreviousReviewException, self).__init__(*args, **kwargs)
+

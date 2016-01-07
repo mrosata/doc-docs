@@ -5,6 +5,10 @@ Doc Docs >> 2015 - 2016
 Public URL Routes
 -----------------
 Most of the sites urls reside here in the public folder.
+
+http://onethingsimple.com/2015/07/thinking-forward-just-for-a-moment/
+This was a good article. It was not completely based in fact however. It seemed that the author came to a lot of the conclusions on his own thinking. Which is ok, but that really isn't what a doc is now is it? I said now is it? I said that is not what a doc truely is now shouldn't we take this author out to the wood shed and end him? No no no, that would be too easy.
+
 """
 from flask import Blueprint, render_template, current_app, request, url_for, redirect, flash
 
@@ -20,7 +24,7 @@ from doc_docs.utilities import utils
 from doc_docs import db, resources, PreviousReviewException
 from doc_docs.sql.retriever import _q
 from doc_docs.sql.models import UserMixin, User, RoleMixin, Role, UserProfile, UserBioText, CommunityApproval
-from doc_docs.sql.models import DocReviewBody, DocReview, DocRating, DocDetour, DocTerm, DocTermRelationship
+from doc_docs.sql.models import DocReviewBody, DocReview, DocRating, DocDetour, DocTerm
 from doc_docs.sql.models import DocDoc, DocSiteMeta
 from doc_docs.sql.retriever import _q
 from sqlalchemy.orm.exc import NoResultFound
@@ -68,7 +72,7 @@ def add_new():
     creator = DocReviewCreator(current_user)
     if str(request.method).upper() == 'POST':
         """FROM SUBMISSION"""
-        review_form = creator.form()
+        review_form = site_forms.ReviewForm()
         # Shortcut for is_submitted() and validate()
         if review_form.validate_on_submit():
             doc = creator.return_or_create_doc(review_form.doc_url.data)
@@ -103,15 +107,14 @@ def new_review():
 @public.route('/profile/<string:username>/')
 def profile(username=None):
     if username is None:
-        # If the current user doesn't have a profile we will have it created by using the create kwarg
-        p = _q.profile.by_name(current_user.username, create=True)
-    else:
-        p = _q.profile.by_name(username)
+        username = current_user.username
+
+    p = _q.profile.by_name(username, create=True)
 
     reviews = list()
-    for r, m in _q.review.by_user_id(current_user.id, with_meta=True):
-        terms = _q.term.by_object_id(r.doc_review_id)
-        reviews.append(dict(review=r, doc_meta=m, tags=terms, username=p.username))
+    for r, m in _q.review.by_user_id(current_user.id, with_meta=True, with_rating=False):
+        ratings = _q.rating.by_review(r, community=True)
+        reviews.append(dict(review=r, doc_meta=m, username=username, ratings=ratings))
 
     return render_template(resources.personal_profile['html'], profile=p, reviews=reviews)
     # There is no user profile associated with the username used in the url, so redirect users to profile, else index
@@ -130,6 +133,7 @@ def edit_profile():
 
     if user_profile is None:
         user_profile = UserProfile(current_user)
+        db.session.commit()
 
     bio = db.session.query(UserBioText).filter_by(bio_text_id=user_profile.bio_text_id).first()
 
@@ -171,24 +175,12 @@ def tag(term_name=None, term_id=None):
         if term_id is None:
             # Can't render a term without knowing its name or id
             return redirect("/", 404)
-        term_name = str(db.session.query(DocTerm).filter_by(term_id=term_id).first())
-
-    # related_objects will hold the data to be rendered in the template (reviews linked to term).
-    related_objects = list()
-    # We want to find any object (DocReview) which has term_name as a term to display on page.
-    linked_reviews = db.session.query(DocTermRelationship.term_id, DocTerm.term, DocReview).\
-        filter(DocReview.doc_review_id == DocTermRelationship.object_id).\
-        filter(DocTermRelationship.term_id == DocTerm.term_id).\
-        filter(DocTerm.term == term_name).all()
-
-    for r in linked_reviews:
-        related_objects.append({
-            "term_id": r[0],
-            "term": r[1],
-            "review": r[2],
-        })
-
-    return render_template(resources.single_term["html"], term_name=term_name, related_objects=related_objects)
+        term = str(db.session.query(DocTerm).filter_by(term_id=term_id).first())
+    else:
+        # We want to find any object (DocReview) which has term_name as a term to display on page.
+        term = db.session.query(DocTerm).\
+            filter(DocTerm.term == term_name).first()
+    return render_template(resources.single_term["html"], term=term)
 
 
 @public.route('/review/<int:review_id>')

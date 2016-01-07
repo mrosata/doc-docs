@@ -19,19 +19,18 @@ class Finder:
     Bio = models.UserBioText
     Doc = models.DocDoc
     Meta = models.DocSiteMeta
+    Rating = models.DocRating
     Review = models.DocReview
     Body = models.DocReviewBody
     Term = models.DocTerm
-    TermRelationship = models.DocTermRelationship
 
     def __init__(self, _q):
         self._q = _q
 
     def __repr__(self):
-        return "<class Finder User: %, Profile: {0!r:s}, Bio: {1!r:s}, Doc: {2!r:s}, Review: {3!r:s}, Body: {4!r:s}, " \
-               "Term: {0!r:s}, TermRelationship: {1!r:s}>" \
-            .format(self.User, self.Profile, self.Bio, self.Doc, self.Review, self.Body, self.Term,
-                    self.TermRelationship)
+        return "<class Finder User: {0!r:s}, Profile: {1!r:s}, Bio: {2!r:s}, Doc: {3!r:s}, Review: {4!r:s}, " \
+               "Body: {5!r:s}, Term: {6!r:s}>". \
+                format(self.User, self.Profile, self.Bio, self.Doc, self.Review, self.Body, self.Term)
 
 
 class UserFinder(Finder):
@@ -56,6 +55,7 @@ class ProfileFinder(Finder):
             user = db.session.query(self.User).filter_by(username=username).first()
             if user is not None:
                 profile = self.Profile(user)
+                db.session.commit()
 
         return profile
 
@@ -93,6 +93,35 @@ class ProfileFinder(Finder):
         return profile
 
 
+class RatingFinder(Finder):
+
+    def by_review(self, review, community=True):
+        if not isinstance(review, self.Review):
+            return None
+        doc_id = review.doc_id
+        user_id = review.reviewer
+
+        return self.query(doc_id, user_id=user_id, community=community)
+
+    def query(self, doc_id, user_id=None, community=True):
+        ra = self.Rating
+
+        results = dict()
+        if user_id is not None:
+            results["user"] = (db.session.query(ra.rating).filter_by(doc_doc_id=doc_id, user_id=user_id).scalar())
+        if community is True:
+            results["community"] = (db.session.query(func.avg(ra.rating).label("average")).\
+                           filter(ra.doc_doc_id == doc_id).scalar())
+        if community is False:
+            # If community is False then we will return all ratings. If no user_id then just return ratings no dict()
+            ratings = (db.session.query(ra).filter_by(doc_doc_id=doc_id).all())
+            if user_id is None:
+                return ratings
+            results["ratings"] = ratings
+
+        return results
+
+
 class ReviewFinder(Finder):
 
     def get_feed(self, _limit=10, _offset=0):
@@ -110,63 +139,58 @@ class ReviewFinder(Finder):
         m = db.aliased(self.Meta, name="doc_site_meta")
         d = db.aliased(self.Doc, name="doc_doc")
 
-        recent_feed = db.session.query(r.doc_review_id, r.reviewed_on, r.summary, u, r.term_relationship, d, m).\
+        recent_feed = db.session.query(r.doc_review_id, r.reviewed_on, r.summary, u, r.terms, d, m).\
             filter(r.doc_id == d.doc_id).\
             filter(r.reviewer == u.id).\
             order_by(r.reviewed_on.desc()).offset(_offset).limit(_limit).all()
 
         return recent_feed
 
-    def by_username(self, username, full_text=False, with_meta=False):
+    def by_username(self, username, with_rating=False, full_text=False, with_meta=False):
         user = _q.user.by_username(username)
         user_id = None
         if isinstance(user, self.User):
             user_id = user.id
-        return self.query(self.Review.reviewer, user_id)
+        return self.query(self.Review.reviewer, user_id, with_rating=with_rating)
 
-    def by_user_id(self, user_id, full_text=False, with_meta=False):
-        return self.query(self.Review.reviewer, user_id, full_text=full_text, with_meta=with_meta)
+    def by_user_id(self, user_id, with_rating=False, full_text=False, with_meta=False):
+        return self.query(self.Review.reviewer, user_id, with_rating=with_rating, full_text=full_text, with_meta=with_meta)
         pass
 
-    def query(self, constraint, constraint_value, full_text=False, with_meta=False):
+    def query(self, constraint, constraint_value, with_rating=False, full_text=False, with_meta=False):
         """
         Make a query for a Review. This method is best called using one of the other methods provided on this class.
+        :type with_rating: object
         :param full_text:
         :param constraint_value:
         :param constraint:
         :return:
         """
         r = self.Review
+        ra = self.Rating
         d = self.Doc
         m = db.aliased(self.Meta, name="site_doc_meta")
-        b = self.Body
-        u = self.User
 
         if with_meta is True:
-            reviews = db.session.query(r, m). \
-                filter(r.doc_id == d.doc_id).\
+            # Get reviews and meta (and optionally rating)
+            if with_rating is True:
+                r_query = db.session.query(r, m, ra).filter(ra.doc_doc_id == r.doc_id).filter(ra.user_id == r.reviewer)
+            else:
+                r_query = db.session.query(r, m)
+            reviews = r_query. \
+                filter(r.doc_id == d.doc_id). \
                 filter(constraint == constraint_value). \
                 order_by(r.reviewed_on.desc()).all()
         else:
-            reviews = db.session.query(r). \
+            # get reviews without meta (and optionally rating)
+            if with_rating is True:
+                r_query = db.session.query(r, ra).filter(ra.doc_doc_id == r.doc_id).filter(ra.user_id == r.reviewer)
+            else:
+                r_query = db.session.query(r)
+            reviews = r_query. \
                 filter(constraint == constraint_value). \
                 order_by(r.reviewed_on.desc()).all()
         return reviews
-
-
-class TermFinder(Finder):
-
-    def by_object_id(self, object_id):
-        return self.query(self.TermRelationship.object_id, object_id)
-
-    def query(self, constraint, constraint_value, max_results=5):
-        t = self.Term
-        dt = self.TermRelationship
-
-        terms = db.session.query(t). \
-            join(dt).filter(constraint == constraint_value).limit(max_results).all()
-
-        return terms
 
 
 class QueryHelper:
@@ -183,8 +207,8 @@ class QueryHelper:
     def __init__(self):
         self.profile = ProfileFinder(self)
         self.review = ReviewFinder(self)
+        self.rating = RatingFinder(self)
         self.user = UserFinder(self)
-        self.term = TermFinder(self)
         pass
 
     @staticmethod
