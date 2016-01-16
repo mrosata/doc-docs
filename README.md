@@ -1,28 +1,46 @@
 # Doc Doc[ument]s
-### A Michael does Udacity production.
+### By: Michael Rosata.
 
 Opensource documentation and articles fuel the drive for knowledge in anyone who has a spark to learn.
 Everyday there are people who write articles sharing the knowledge they found back to the
-community which paved the way for their own successes. *all praise o.s.*
+community which paved the way for their own successes. *all praise o.s.* As an FYI, the remainder of this 
+documentation I will use the word "materials" to describe a webpage which provides documentation, 
+an article or other resource of information.
 
-#### But who is watching the watchers?
-So that article which you read today may not even be correct, maybe it was at one time and maybe it never had been. 
-Stack Overflow does an amazing job at archiving questions and answers and then allowing the
-community to moderate those answer. Doc docs "DD" wants to do for OS documentation what SO did for OS questions.
-This project is under heavy development right now, but so far it's moving at a decent pace. Hopefully no one tries to 
-pay me to do work anytime soon so I may continue to develop in isolation `;p`
+#### Who is watching the watchers?
+Just because material is great doesn't mean that its accuracy and relavance will be preserved with time. 
+Material which you read today may not even be correct, maybe it was at one time and maybe it never had been. 
+Stack Overflow does an amazing job at cataloging community Q&A and displaying tracked community approval and popularity 
+data. Doc Docs "DD" wishes to perform a similar feat but in the realm of reference materials 
+(docs, articles, blog posts).
+This project is under heavy development right now, but so far it's moving at a decent pace. Being that it's a 
+side project there will be gaps with my dev and iteration time but this is happening one way or another.
 
 
 ### Why?
-A phenomena known as "Doc rot", information grows stale over time, best practices change and technologies 
-expand into new standards. Keeping up on learning and research is hard enough without having to do research 
-about the material that find to do research on the things which you are trying to learn. (*I mean that's painful just to think about really*). Let the Doc docs community do the research.
+A phenomena known as "Doc rot", informational materials grow stale over time, best practices change and technologies 
+expand or collapse, the community migrates into new standards. But the rate of decay is often quicker than the rate at 
+which that same material drops from search listings and external links. Keeping up on learning and research is time 
+consuming enough without having to do research 
+on the material which you use to do research on other material you'r trying to learn. 
+(*I mean that's painful just to think about really*). 
+So Doc Docs will have a website, but more importantly Doc Docs will integrate into your browser so you can be 
+warned without adding another link in the search chain (so to speak). 
+Let the Doc Docs community do the research and hopefully people who find it useful will contribute 
+their findings as well.
 
 ### How?
 First we start by collecting ratings and reviews for online articles and documentation. Anyone will be able to search 
-the Doc docs archives for website reviews, but where Doc docs will shine is through browser extensions
-which informs users in real time about the quality of the documentation that they are about to read and 
-even offers alternatives to the currently loaded article if possible.
+the Doc docs archives for material reviews, but where Doc docs will shine is through browser extensions
+which can inform users in real time about the quality of the material that they are currently about to read and 
+even offer safer alternatives to the currently loaded article if possible. These alternatives are called "detours". 
+A detour is a url of another material which teaches on the same niche but with better or more reliable information. 
+Detours must route users to material covering the same topic, different standards perhaps but never different 
+technologies. IE: a Python material detour may never route a user to a NodeJS material page centered around the same 
+concept. 
+
+Every review, rating or detour a user makes adds to their trustworthiness and other users may vote up/down another 
+users review which will help the Doc Docs community build faith in recomendations.
 
 
 Just like on Stack overflow you will be able to see the contribution level of the users who have reviewed

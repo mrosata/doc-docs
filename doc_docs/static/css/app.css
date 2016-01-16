@@ -197,6 +197,19 @@ body {
   margin-top: -0.7rem;
   font-weight: bold; }
 
+/*
+ *  Flash Message Modals
+ */
+.flash-message-modal {
+  margin-top: 0;
+  padding: 0; }
+  .flash-message-modal .title-bar {
+    font-size: 1.1rem;
+    text-indent: 0.2rem;
+    vertical-align: baseline;
+    padding: 0.65rem 0.65rem 0.3rem;
+    margin: 0; }
+
 .activity {
   padding: 0.6rem 0.6rem 0.6rem 0; }
 

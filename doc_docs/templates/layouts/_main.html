@@ -9,6 +9,10 @@
   </head>
   <body class="{% if body_classes|length %}{% for class_name in body_classes %}{{ class_name }} {% endfor %}{% endif %}">
 
+  {# Flash Message Modals #}
+  {% include "layouts/partials/_flash-message-modals.html" %}
+
+  {# Nav menu present on majority of pages #}
   {% include "layouts/partials/_top-nav-menu.html" %}
 
     {% block body %}

@@ -8,6 +8,8 @@ from doc_docs.sql.models import UserProfile, User, UserBioText, UserMixin, Commu
 
 from doc_docs.sql.retriever import _q
 
+silent = True
+
 
 def setup():
     print "\n\n\n" \
@@ -33,12 +35,16 @@ def delete_all(delete_docdocs=True):
     :param delete_docdocs:
     :return:
     """
-    print "Deleting all "
+    _silent = silent
+    if _silent is False:
+        print "Deleting all "
     if delete_docdocs is True:
-        print "DocDoc and DocSiteMeta, "
+        if _silent is False:
+            print "DocDoc and DocSiteMeta, "
         _q()(DocDoc).delete()
         _q()(DocSiteMeta).delete()
-    print "DocTerm, DocReview, DocReviewBody, DocRating, DocDetour"
+    if _silent is False:
+        print "DocTerm, DocReview, DocReviewBody, DocRating, DocDetour"
     _q()(DocReviewBody).delete()
     _q()(DocReview).delete()
     _q()(DocRating).delete()
@@ -58,5 +64,7 @@ def get_context(*args):
     ctx.push()
     return ctx
 
-
-setup()
+if __name__ == '__main__':
+    silent = False
+    # I only want to show the print if this is run directly.
+    setup()

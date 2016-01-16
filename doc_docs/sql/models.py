@@ -142,7 +142,7 @@ class DocSiteMeta(db.Model):
     sites are trying to stop people from remotely displaying their content so it might be needed to actually download
     the images from sites. But that's a lot of images, although they could be compressed a lot.
     """
-
+    __tablename__ = "doc_site_meta"
     meta_id = db.Column(db.Integer, primary_key=True)
     image = db.Column(db.String(255), nullable=True, default="")
     title = db.Column(db.String(255), nullable=True, default="")
@@ -156,7 +156,7 @@ class DocSiteMeta(db.Model):
     video = db.Column(db.String(140), nullable=True, default="")
     audio = db.Column(db.String(140), nullable=True, default="")
 
-    db.relationship("DocDoc", backref="doc_site_meta")
+    db.relationship("DocDoc")
     
 
 class DocDoc(db.Model):

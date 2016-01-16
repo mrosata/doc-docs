@@ -142,6 +142,7 @@ class ReviewFinder(Finder):
         recent_feed = db.session.query(r.doc_review_id, r.reviewed_on, r.summary, u, r.terms, d, m).\
             filter(r.doc_id == d.doc_id).\
             filter(r.reviewer == u.id).\
+            group_by(r.doc_review_id).\
             order_by(r.reviewed_on.desc()).offset(_offset).limit(_limit).all()
 
         return recent_feed
@@ -155,7 +156,6 @@ class ReviewFinder(Finder):
 
     def by_user_id(self, user_id, with_rating=False, full_text=False, with_meta=False):
         return self.query(self.Review.reviewer, user_id, with_rating=with_rating, full_text=full_text, with_meta=with_meta)
-        pass
 
     def query(self, constraint, constraint_value, with_rating=False, full_text=False, with_meta=False):
         """

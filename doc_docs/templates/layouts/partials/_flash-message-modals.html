@@ -1,0 +1,73 @@
+{# templates/layouts/partials/_flash-message-modals.html #}
+
+{# When flask flash messages are made throughout the app they will show in either a modal or as a static
+   message at the top of the page. Use categories for all messages. Messages of category "debug" will show
+   inline at the top of the page and everything else will popup onload as a reveal modal through Foundation
+   #}
+
+
+{# Begin Flash Messages with category "debug" #}
+{% with debug_messages = get_flashed_messages(category_filter=["debug"]) %}
+  {% if debug_messages %}
+    {% for message in debug_messages %}
+      <ol class="system-debug-messages">
+        <li class="debug log">
+          <code>
+            {{ message }}
+          </code>
+        </li>
+      </ol>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+
+{# Begin Flash Messages with all other categories #}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+
+    <section class="flash-messages">
+
+      {% for category, message in messages %}
+        {# Don't show debug messages in the main flash message feed #}
+        {% if category != "debug" %}
+
+          <!-- <a class="button" href="#" zf-open="advancedModal">Open modal</a> -->
+          <div id="flash-{{ category }}-modal" class="reveal collapse flash-message-modal"
+               data-reveal aria-labelledby="{{ category|capitalize }} Flash Message" aria-hidden="true" role="dialog"
+               animation-in="slideInUp" animation-out="hingeOutFromMiddleY">
+            <div class="grid-block vertical">
+              <div class="primary title-bar">
+                <div class="center title">{{ category|upper }}</div>
+              </div>
+
+              <div class="row">
+                <div class="column small-8 small-centered">
+                  <br>
+                  <div class="grid-content padding">
+                    <p>
+                      <img src="http://placehold.it/300x200">
+                    </p>
+                  </div>
+                  <div class="grid-content padding">
+                    <p>
+                      {{ message }}
+                    </p>
+                    <a data-close="" aria-label="Close Flash Message Modal" class="button">Done</a>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+        {% endif %}
+
+      {% endfor %}
+
+    </section>
+
+  {% endif %}
+{% endwith %}
+{# End Flash Messages with category #}

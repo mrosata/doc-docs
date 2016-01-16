@@ -10,11 +10,12 @@ The run.py in the root folder is used to access the application.
 import pprint
 
 # Third party imports.
-from flask import Flask, render_template, request, redirect, url_for
-from flask_security import SQLAlchemyUserDatastore, Security, current_user, user_registered
+from flask import Flask, render_template, request, redirect, url_for, flash, g
+from flask_security import SQLAlchemyUserDatastore, Security, current_user, user_registered, login_user, logout_user
 from flask_security import utils as security_utils
 from flask_mail import Mail
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.principal import identity_loaded, identity_changed
 
 from . import resources
 from doc_doc_errors import PreviousReviewException
@@ -61,7 +62,7 @@ user_registered.connect(newly_registered_user)
 
 
 @app.before_first_request
-def create_user_one():
+def init_app_db():
     # user_datastore.delete_user('mike@mike.com')
     user_datastore.find_or_create_role(name="member", description="Typical Member")
     # user_datastore.create_role(name="member", description="Typical Member")
@@ -76,10 +77,41 @@ def create_user_one():
 # TODO: I want to create a function to be able to add class names onto the body based on the template. Template done.
 @app.context_processor
 def check_body_classes():
+    # g.user = current_user is for testing ATM
+    g.user = current_user or None
     body_classes = ("home",)
     register_form = security_forms.ExtendedRegistrationForm()
     login_form = security_forms.LoginForm()
     return dict(body_classes=body_classes, register_user_form=register_form, login_user_form=login_form)
+
+
+@identity_loaded.connect
+def signal_identity_loaded_handler(sender, identity):
+    """This is the signal flask security fires when a user is logged in. So every request made while a user is logged
+    into the app should trigger this signal
+    :param sender:
+    :param identity:
+    :return:
+    """
+    g.user_id = identity.id
+
+
+@identity_changed.connect
+def signal_identity_changed_handler(sender, identity):
+    """This is the signal flask security fires when a user is logged in. So every request made while a user is logged
+    into the app should trigger this signal
+    :param sender:
+    :param identity:
+    :return:
+    """
+    g.user_id = identity.id or None
+
+    if g.user_id is None:
+        g.logged_off = True
+        flash("Successfully Logged Out.", category="doc doc system message")
+    else:
+        g.logged_in = True
+        flash("Successfully Logged In.", category="doc doc system message")
 
 
 # We should try to handle some errors

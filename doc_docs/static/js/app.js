@@ -4,20 +4,27 @@ jQuery(function ($) {
 
 
   /**
+   * Open Modals with Errors or Flash Message Modals on load
+   *
    * Check if a form inside of a reveal modal was submitted with errors
-   * and if so then have it be open. I will add validation and ajax
-   * checks as well so this probably won't be used too much in the future.
-   * At the moment though it's needed or when submitting login/register forms
-   * on site with errors it just looks as if the index page reloaded.
+   * and if so then have it be open. If no forms have error messages then
+   * this function will also check for Flask Flash Messages and show them
+   * inside modals.
    */
-  function openModelFormWithErrors () {
-    var formsWithErrors = $('.reveal[data-errors-present="true"]');
+  function openFlashMessageAndErrorModalsOnLoad () {
+    var formsWithErrors = $('.reveal[data-errors-present="true"]'),
+        flaskFlashMessages = $('.flash-messages .reveal');
     if (formsWithErrors.length) {
       formsWithErrors.foundation("open");
+    } else if (flaskFlashMessages.length) {
+      // We only pop open flash messages if there aren't any forms with errors open.
+      flaskFlashMessages.each(function(t, n, a){
+        $(this).foundation("open");
+      });
     }
   }
 
-  openModelFormWithErrors();
+  openFlashMessageAndErrorModalsOnLoad();
 
   /*
    // Sticky profile menu object to hold all vars/props

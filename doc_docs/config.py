@@ -12,7 +12,8 @@ import os
 # Map of configuration options
 configurations = {
     "development": "doc_docs.config.DevConfig",
-    "default": "doc_docs.config.DevConfig"
+    "default": "doc_docs.config.DevConfig",
+    "testing": "doc_docs.config.TestConfig"
 }
 options = {
     "REGISTER_USERNAME_EMPTY_MSG": "The Username field Can't be empty.",
@@ -49,24 +50,24 @@ class BaseConfig(object):
     SECURITY_TOKEN_AUTHENTICATION_HEADER = 'Authentication-Token'
     SECURITY_FLASH_MESSAGES = True
     SECURITY_BLUEPRINT_NAME = 'security'
-    SECURITY_LOGIN_URL = '/login'
-    SECURITY_LOGOUT_URL = '/logout'
-    SECURITY_REGISTER_URL = '/register'
     SECURITY_RESET_URL = '/reset'
     SECURITY_CHANGE_URL = '/change'
     # SECURITY_CONFIRM_URL = '/confirm'
-    SECURITY_POST_LOGOUT_VIEW = None
     SECURITY_CONFIRM_ERROR_VIEW = None
-    SECURITY_POST_REGISTER_VIEW = None
     SECURITY_POST_CONFIRM_VIEW = None
     SECURITY_POST_RESET_VIEW = None
     SECURITY_POST_CHANGE_VIEW = None
-    SECURITY_UNAUTHORIZED_VIEW = None
     SECURITY_PASSWORDLESS = False
     SECURITY_CHANGEABLE = False
     SECURITY_RECOVERABLE = False
-
     SEND_REGISTER_EMAIL = None
+
+    SECURITY_UNAUTHORIZED_VIEW = '/'
+    SECURITY_LOGIN_URL = '/'
+    SECURITY_LOGOUT_URL = '/logout'
+    SECURITY_REGISTER_URL = '/register'
+    SECURITY_POST_LOGOUT_VIEW = None
+    SECURITY_POST_REGISTER_VIEW = None
 
 
 class DevConfig(BaseConfig):
@@ -84,17 +85,29 @@ class DevConfig(BaseConfig):
     # We don't need to verify email addresses in development
     SECURITY_CONFIRMABLE = None
     SECURITY_CONFIRM_URL = None
-    SECURITY_REGISTERABLE = True
     SECURITY_CONFIRM_ERROR_VIEW = '/error'
     SEND_REGISTER_EMAIL = False
     SECURITY_SEND_REGISTER_EMAIL = False
+    SECRET_KEY = '213nlSEal-EdsfsdSADF436-hfsd-34gkl-LF'
+
+
+class TestConfig(BaseConfig):
+    """
+    This is the configuration for the app in Development mode.
+    Show debug messages, host on 0,0,0,0 which port forwards from
+    Vagrant to localhost 127.0.0.1, don't require email confirmations
+    when user signup is done in DevConfig.
+    """
+    DEBUG = True
+    TESTING = True
+    HOST = '0.0.0.0'
+    PORT = 5000
+    SQLALCHEMY_DATABASE_URI = 'sqlite:////vagrant/test-docdocs.db'
+    SEND_REGISTER_EMAIL = False
+    SECURITY_SEND_REGISTER_EMAIL = False
     SECRET_KEY = '213nlSEal-EASc35Lhfsd-34gkl-LF'
-    SECURITY_UNAUTHORIZED_VIEW = '/'
-    SECURITY_LOGIN_URL = '/'
-    SECURITY_LOGOUT_URL = '/logout'
-    SECURITY_REGISTER_URL = '/register'
-    SECURITY_POST_LOGOUT_VIEW = None
-    SECURITY_POST_REGISTER_VIEW = None
+    # We don't want to have the CSRF because it'll make post requests hit a security wall.
+    WTF_CSRF_ENABLED = False
 
 
 class ProductionConfig(BaseConfig):

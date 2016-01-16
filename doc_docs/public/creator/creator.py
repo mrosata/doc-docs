@@ -52,6 +52,7 @@ class Creator:
                                 discoverer=user_id, discovered=datetime.utcnow(), visits=1)
             doc_meta = models.DocSiteMeta(**og_meta)
 
+            doc.doc_site_meta = doc_meta
             db.session.add(doc)
             db.session.add(doc_meta)
             db.session.commit()
@@ -113,9 +114,11 @@ class DocReviewCreator(Creator):
         :param max_words:  70
         """
         summary = ""
-        words = str(passage).split(' ')
+
+        words = passage.encode('ascii', 'ignore').split(' ')
+        utils.log("WORKDS %r", words)
         word_count = 0
-        while len(words) and word_count < max_words and (len(summary) + len(words[0])) <= max_chars:
+        while len(words) > 0 and word_count < max_words and (len(summary) + len(words[0])) <= max_chars:
             summary = "{0}{1} ".format(summary, words[0])
             words = words[1:]
             word_count += 1
@@ -145,11 +148,12 @@ class DocReviewCreator(Creator):
         if previous_review is not None:
             raise PreviousReviewException()
 
+        review_text = self.data["review"].encode('ascii', 'ignore')
         if self.data["summary"] == '' or not self.data["summary"]:
-            self.data["summary"] = self.convert_to_summary(self.data["review"])
+            self.data["summary"] = self.convert_to_summary(review_text)
 
         self.review = models.DocReview(doc_id=self.doc.doc_id, reviewer=self.user.id, summary=self.data["summary"])
-        body = models.DocReviewBody(review_body=self.data["review"])
+        review_body = models.DocReviewBody(review_body=review_text)
 
         if self.review is None:
             return None
@@ -160,9 +164,9 @@ class DocReviewCreator(Creator):
             # This will add the rating but not commit
             DocRatingCreator().rate(self.doc.doc_id, self.user.id, int(self.data["rating"]))
 
-        self.review.doc_review_body = body
+        self.review.doc_review_body = review_body
         db.session.add(self.review)
-        db.session.add(body)
+        db.session.add(review_body)
         # Now we commit them all together.
         db.session.commit()
         return self.doc
