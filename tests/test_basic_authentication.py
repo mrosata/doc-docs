@@ -77,5 +77,21 @@ class TestUserLoginLogoff(TestingSetupAndTearDown, unittest.TestCase):
                               "current_user equal to None after logout")
 
 
+class TestingUserProfile(TestingSetupAndTearDown, unittest.TestCase):
+    pass
+
+
+class TestingDocDoc(TestingSetupAndTearDown, unittest.TestCase):
+    pass
+
+
+class TestingDocReview(TestingSetupAndTearDown, unittest.TestCase):
+    pass
+
+
+class TestingDocRating(TestingSetupAndTearDown, unittest.TestCase):
+    pass
+
+
 if __name__ == '__main__':
     unittest.main()
