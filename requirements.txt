@@ -24,3 +24,4 @@ oauth==1.0.1
 oauth2client==1.5.2
 requests==2.2.1
 urllib3==1.7.1
+gunicorn==19.4.5
