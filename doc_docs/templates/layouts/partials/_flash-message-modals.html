@@ -10,7 +10,8 @@
 {% with debug_messages = get_flashed_messages(category_filter=["debug"]) %}
   {% if debug_messages %}
     {% for message in debug_messages %}
-      <ol class="system-debug-messages">
+      {# TODO: This should be removed... It's just for my debugging.  #}
+      <ol class="system-debug-messages" style="display:none;">
         <li class="debug log">
           <code>
             {{ message }}
