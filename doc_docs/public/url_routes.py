@@ -71,7 +71,7 @@ def logout():
 def add_new():
     creator = DocReviewCreator(current_user)
     if str(request.method).upper() == 'POST':
-        """FROM SUBMISSION"""
+        # This is the submitted form to add review
         review_form = site_forms.ReviewForm()
         # Shortcut for is_submitted() and validate()
         if review_form.validate_on_submit():

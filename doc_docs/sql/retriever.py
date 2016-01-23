@@ -180,6 +180,7 @@ class ReviewFinder(Finder):
             reviews = r_query. \
                 filter(r.doc_id == d.doc_id). \
                 filter(constraint == constraint_value). \
+                group_by(r.doc_id). \
                 order_by(r.reviewed_on.desc()).all()
         else:
             # get reviews without meta (and optionally rating)
@@ -189,6 +190,7 @@ class ReviewFinder(Finder):
                 r_query = db.session.query(r)
             reviews = r_query. \
                 filter(constraint == constraint_value). \
+                group_by(r.doc_id). \
                 order_by(r.reviewed_on.desc()).all()
         return reviews
 
