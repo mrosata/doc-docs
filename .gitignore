@@ -5,6 +5,7 @@
 *.pyc
 node_modules
 vagrant
+venv
 
 # No need to store devlopment database files
 *.db
