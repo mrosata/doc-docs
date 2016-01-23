@@ -79,9 +79,10 @@ class DevConfig(BaseConfig):
     """
     DEBUG = True
     TESTING = False
-    HOST = '0.0.0.0'
+    #HOST = '0.0.0.0'
     PORT = 5000
-    SQLALCHEMY_DATABASE_URI = 'sqlite:////vagrant/dev-docdocs.db'
+    # SQLALCHEMY_DATABASE_URI = 'sqlite:////vagrant/dev-docdocs.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///dev-docdocs.db'
     # We don't need to verify email addresses in development
     SECURITY_CONFIRMABLE = None
     SECURITY_CONFIRM_URL = None
@@ -100,9 +101,10 @@ class TestConfig(BaseConfig):
     """
     DEBUG = True
     TESTING = True
-    HOST = '0.0.0.0'
+    #HOST = '0.0.0.0'
     PORT = 5000
-    SQLALCHEMY_DATABASE_URI = 'sqlite:////vagrant/test-docdocs.db'
+    # SQLALCHEMY_DATABASE_URI = 'sqlite:////vagrant/test-docdocs.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///test-docdocs.db'
     SEND_REGISTER_EMAIL = False
     SECURITY_SEND_REGISTER_EMAIL = False
     SECRET_KEY = '213nlSEal-EASc35Lhfsd-34gkl-LF'
