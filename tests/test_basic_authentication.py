@@ -5,14 +5,26 @@ import pprint
 from contextlib import contextmanager
 from flask import appcontext_pushed, url_for
 
-os.environ.__setitem__('FLASK_CONFIGURATION', 'testing')
-from run_interactive import delete_all
+os.environ['FLASK_CONFIGURATION'] = 'testing'
 
-import flask
-import flask_security
-import flask_sqlalchemy
-from doc_docs import app, db, models, utils, security, security_forms, \
-    security_utils, current_user
+from doc_docs import app, db, models, current_user
+
+
+# Before starting any of the tests the database should be empty
+db.session.query(models.DocDoc).delete()
+db.session.query(models.User).delete()
+db.session.query(models.UserProfile).delete()
+db.session.query(models.UserBioText).delete()
+db.session.query(models.UserBioText).delete()
+db.session.query(models.Role).delete()
+db.session.query(models.DocRating).delete()
+db.session.query(models.DocReview).delete()
+db.session.query(models.DocReviewBody).delete()
+db.session.query(models.DocTerm).delete()
+db.session.query(models.DocDetour).delete()
+db.session.query(models.DocSiteMeta).delete()
+db.session.query(models.CommunityApproval).delete()
+db.session.commit()
 
 
 class TestingAppCommonFunctionality(unittest.TestCase):
@@ -22,11 +34,16 @@ class TestingAppCommonFunctionality(unittest.TestCase):
         self.app = app.test_client()
 
     def tearDown(self):
+        """
+        Cleanup that has to be done inbetween tests
+        :return:
+        """
         pass
 
     def login(self, username, password):
+        """Login a user from inside a test."""
         ctx = self._ctx or self.app
-        return ctx.post(app.config['SECURITY_LOGIN_URL'],
+        resp = ctx.post(app.config['SECURITY_LOGIN_URL'],
                         data=dict(
                               cfrf_token="",
                               email=username,
@@ -36,8 +53,10 @@ class TestingAppCommonFunctionality(unittest.TestCase):
                         ),
                         follow_redirects=True,
                         content_type='application/x-www-form-urlencoded')
+        return resp
 
     def logout(self):
+        """Logoff a user from inside one of the tests."""
         ctx = self._ctx or self.app
         return ctx.post('/logout', follow_redirects=True)
 
@@ -113,25 +132,12 @@ class TestingDocReview(TestingAppCommonFunctionality, unittest.TestCase):
         csrf_token="",
         doc_url="https://userbase.kde.org/Plasma/Krunner",
         rating="8",
-        review="This was an informative piece of documentation. It helpe"
-               "d me not only to understand more about Krunner but to un"
-               "derstand more about myself. Who am I? Where did I come f"
-               "rom? Where am I going and when will I get there? These a"
-               "re all questions that we as human beings tend to ask our"
-               "selves. Many of us will never get any answers. But I hop"
-               "e, and I think that I speak for the documentators of Kru"
-               "nner, that through good operating systems and through op"
-               "en source software we will find the answer to these ques"
-               "tions. For what am I without a machine if I am not a mac"
-               "hine myself? My thoughts are input, stimuli from the wor"
-               "ld is input from a network. The electrical pulses which "
-               "move my limbs aren't they but drivers to my hardware? Wh"
-               "en I do 2 things at once, is my OS not managing system p"
-               "rocess? Do we not share similiar hardware and implementa"
-               "tion? We do, we are machine, and we are all opensource. "
-               "Thank you and goodnight citizens of Boop-Bop County.",
-        summary="I never actually read anything on this page. I'm just a"
-                " very good judge of quality. An thus I review!",
+        review="This was an informative piece of documentation. It helped me not only to "
+               "understand more about Krunner but to understand more about myself. Who am "
+               "I. Where did I come from? Where am I going and when will I get there? These"
+               " are all questions that we as human beings tend to ask ourselves.",
+        summary="I never actually read anything on this page. I'm just a very good judge "
+                "of quality. An thus I review!",
         detour="",
         tags="os, linux, arch linux, desktop"
     )
@@ -142,7 +148,7 @@ class TestingDocReview(TestingAppCommonFunctionality, unittest.TestCase):
         # ??? We first need to log into the system to make a post
         with self.app as ctx:
             self._ctx = ctx
-            ctx.post('/')
+            ctx.get('/')
             self.login("mike@mike.com", "password")
             user = db.session.query(models.User).\
                 filter_by(email="mike@mike.com").first()
@@ -152,21 +158,21 @@ class TestingDocReview(TestingAppCommonFunctionality, unittest.TestCase):
             self.assertEquals(rc, 0, "Should be no reviews by user yet")
 
     def test_2_create_new_doc_review(self):
-        """Create a new doc doc and check that it is in the database"""
-        pass
+        """Create a new doc doc and check that it is in the database, first the function
+        needs to login a user and then create the doc_review"""
         with self.app as ctx:
             self._ctx = ctx
+            ctx.get('/')
 
+            self.login("mike@mike.com", "password")
             # Check if a review was made by this user
-            rv = ctx.get(url_for('public.add_new'))
             ctx.post(url_for('public.add_new'), data=self.doc_review_data,
                      content_type="application/x-www-form-urlencoded",
-                     follow_redirects=True,
-                     referer=url_for('public.add_new'))
-            pprint.pprint(rv.data)
-            self.assertTrue(
-                  current_user.email == "mike@mike.com",
-                  "Current user doesn't have the correct email property")
+                     follow_redirects=True)
+            rc = db.session.query(models.DocReview). \
+                filter_by(reviewer=current_user.id).count()
+            self.assertEquals(rc, 1, "Should be 1 review by user now")
+
 
 
 class TestingDocRating(TestingAppCommonFunctionality, unittest.TestCase):

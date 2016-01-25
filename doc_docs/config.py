@@ -8,6 +8,7 @@ Extend the BaseConfig class to create new configuration setups.
 """
 
 import os
+import sys
 
 # Map of configuration options
 configurations = {
@@ -17,7 +18,8 @@ configurations = {
 }
 options = {
     "REGISTER_USERNAME_EMPTY_MSG": "The Username field Can't be empty.",
-    "REGISTER_USERNAME_UNAVAILABLE_MSG": "Please choose another username, that name is unavailable.",
+    "REGISTER_USERNAME_UNAVAILABLE_MSG": "Please choose another usernam"
+                                         "e, that name is unavailable.",
 }
 
 
@@ -34,8 +36,6 @@ class BaseConfig(object):
     would need to run. Every other setting class shall simply extend
     this base class and overwrite/add options for that particular setup.
     """
-    DEBUG = False
-    TESTING = False
     SQLALCHEMY_DATABASE_URI = 'sqlite:////vagrant/pro-docdocs.db'
     SECRET_KEY = '2-90d324d13nlSEa4l-EASc35Ldgfhfsd-34gkl-LF24s'
     SECURITY_CONFIRM = None
@@ -61,7 +61,6 @@ class BaseConfig(object):
     SECURITY_CHANGEABLE = False
     SECURITY_RECOVERABLE = False
     SEND_REGISTER_EMAIL = None
-
     SECURITY_UNAUTHORIZED_VIEW = '/'
     SECURITY_LOGIN_URL = '/'
     SECURITY_LOGOUT_URL = '/logout'
@@ -79,10 +78,7 @@ class DevConfig(BaseConfig):
     """
     DEBUG = True
     TESTING = False
-    #HOST = '0.0.0.0'
-    PORT = 5000
-    # SQLALCHEMY_DATABASE_URI = 'sqlite:////vagrant/dev-docdocs.db'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///dev-docdocs.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///../dev-docdocs.db'
     # We don't need to verify email addresses in development
     SECURITY_CONFIRMABLE = None
     SECURITY_CONFIRM_URL = None
@@ -101,10 +97,7 @@ class TestConfig(BaseConfig):
     """
     DEBUG = True
     TESTING = True
-    #HOST = '0.0.0.0'
-    PORT = 5000
-    # SQLALCHEMY_DATABASE_URI = 'sqlite:////vagrant/test-docdocs.db'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///test-docdocs.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///../test-docdocs.db'
     SEND_REGISTER_EMAIL = False
     SECURITY_SEND_REGISTER_EMAIL = False
     SECRET_KEY = '213nlSEal-EASc35Lhfsd-34gkl-LF'
@@ -117,3 +110,6 @@ class ProductionConfig(BaseConfig):
     Configuration to use on live (production) servers.
     """
     # TODO: Define production configuration
+    DEBUG = False
+    TESTING = False
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///../docdocs.db'

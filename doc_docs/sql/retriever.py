@@ -107,15 +107,20 @@ class RatingFinder(Finder):
         ra = self.Rating
 
         results = dict()
+
         if user_id is not None:
-            results["user"] = (db.session.query(ra.rating).filter_by(doc_doc_id=doc_id, user_id=user_id).scalar())
+            results["user"] = (db.session.query(ra.rating).
+                               filter_by(doc_doc_id=doc_id, user_id=user_id).scalar())
         if community is True:
-            results["community"] = (db.session.query(func.avg(ra.rating).label("average")).\
-                           filter(ra.doc_doc_id == doc_id).scalar())
+            results["community"] = \
+                (db.session.query(func.avg(ra.rating).label("average")).
+                 filter(ra.doc_doc_id == doc_id).scalar())
+
         if community is False:
-            # If community is False then we will return all ratings. If no user_id then just return ratings no dict()
+            # return all ratings.
             ratings = (db.session.query(ra).filter_by(doc_doc_id=doc_id).all())
             if user_id is None:
+                # then just return ratings no dict()
                 return ratings
             results["ratings"] = ratings
 
@@ -169,14 +174,18 @@ class ReviewFinder(Finder):
         r = self.Review
         ra = self.Rating
         d = self.Doc
-        m = db.aliased(self.Meta, name="site_doc_meta")
 
         if with_meta is True:
             # Get reviews and meta (and optionally rating)
             if with_rating is True:
-                r_query = db.session.query(r, m, ra).filter(ra.doc_doc_id == r.doc_id).filter(ra.user_id == r.reviewer)
+                r_query = db.session.query(r, ra).\
+                    filter(ra.doc_doc_id == r.doc_id).\
+                    filter(
+                      ra.user_id == r.reviewer)
             else:
-                r_query = db.session.query(r, m)
+                r_query = db.session.query(r)
+
+            # Now that the r_query is settled we can get reviews
             reviews = r_query. \
                 filter(r.doc_id == d.doc_id). \
                 filter(constraint == constraint_value). \

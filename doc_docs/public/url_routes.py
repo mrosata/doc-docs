@@ -31,6 +31,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 public = Blueprint('public', __name__, template_folder='../templates')
 
+
 @public.context_processor
 def public_context_processor():
     flash(current_user, category="debug")
@@ -112,19 +113,19 @@ def profile(username=None):
     p = _q.profile.by_name(username, create=True)
 
     reviews = list()
-    for r, m in _q.review.by_user_id(current_user.id, with_meta=True, with_rating=False):
+    for r in _q.review.by_user_id(current_user.id, with_meta=True, with_rating=False):
         ratings = _q.rating.by_review(r, community=True)
-        reviews.append(dict(review=r, doc_meta=m, username=username, ratings=ratings))
-
+        reviews.append(dict(review=r, doc_meta=r.doc_doc.doc_site_meta, username=username,
+                            ratings=ratings))
+        utils.log()("Here is a review doc: %r", r.doc_doc)
     return render_template(resources.personal_profile['html'], profile=p, reviews=reviews)
-    # There is no user profile associated with the username used in the url, so redirect users to profile, else index
 
 
 @login_required
 @public.route('/profile/edit', methods=['POST', 'GET'])
 def edit_profile():
     """
-    This is the Edit Profile page. Upon POST it shall attempt to update the users profile before displaying the edit
+    Upon POST it shall attempt to update the users profile before displaying the edit
     form.
     :return:
     """

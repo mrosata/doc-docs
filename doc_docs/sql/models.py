@@ -156,7 +156,7 @@ class DocSiteMeta(db.Model):
     video = db.Column(db.String(140), nullable=True, default="")
     audio = db.Column(db.String(140), nullable=True, default="")
 
-    db.relationship("DocDoc")
+    doc_doc = db.relationship("DocDoc")
     
 
 class DocDoc(db.Model):
@@ -180,17 +180,19 @@ class DocDoc(db.Model):
     discoverer = db.Column(db.Integer, db.ForeignKey("user.id"))
     discovered = db.Column(db.DateTime, default=datetime.utcnow())
     visits = db.Column(db.Integer, default=1)
-    meta_data = db.Column(db.Integer, db.ForeignKey("doc_site_meta.meta_id"))
+    meta_data_id = db.Column(db.Integer, db.ForeignKey("doc_site_meta.meta_id"))
 
     # doc_site_meta = db.relationship("DocSiteMeta", lazy="joined")
     doc_site_meta = db.relationship("DocSiteMeta")
     user = db.relationship("User")
 
     def __repr__(self):
-        return '<class DocDoc doc_id: %r, base_url: %r, pathname: %r, fragment: %r, query_string: %r, ' \
-               'params %r, discoverer: %r, discovered: %r, visits: %r>' %\
+        return '<class DocDoc doc_id: %r, base_url: %r, pathname: %r, fragment: %r, ' \
+               'query_string: %r, params %r, discoverer: %r, discovered: %r, visits: %r, ' \
+               'meta_data_id: %r, doc_site_meta: %r, user: %r>' %\
                (self.doc_id, self.base_url, self.pathname, self.fragment,
-                self.query_string, self.params, self.discoverer, self.discovered, self.visits)
+                self.query_string, self.params, self.discoverer, self.discovered, self.visits,
+                self.meta_data_id, self.doc_site_meta, self.user)
 
 
 class DocReviewBody(db.Model):
