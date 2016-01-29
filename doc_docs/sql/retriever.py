@@ -162,7 +162,12 @@ class ReviewFinder(Finder):
     def by_user_id(self, user_id, with_rating=False, full_text=False, with_meta=False):
         return self.query(self.Review.reviewer, user_id, with_rating=with_rating, full_text=full_text, with_meta=with_meta)
 
-    def query(self, constraint, constraint_value, with_rating=False, full_text=False, with_meta=False):
+    def by_id(self, review_id, with_rating=True, full_text=False, with_meta=False):
+        return self.query(self.Review.doc_review_id, review_id, with_rating=with_rating,
+                          full_text=full_text, with_meta=with_meta, single=True)
+
+    def query(self, constraint, constraint_value, with_rating=False, full_text=False,
+              with_meta=False, single=False):
         """
         Make a query for a Review. This method is best called using one of the other methods provided on this class.
         :type with_rating: object
@@ -181,7 +186,7 @@ class ReviewFinder(Finder):
                 r_query = db.session.query(r, ra).\
                     filter(ra.doc_doc_id == r.doc_id).\
                     filter(
-                      ra.user_id == r.reviewer)
+                      constraint_value == constraint_value)
             else:
                 r_query = db.session.query(r)
 
@@ -190,7 +195,7 @@ class ReviewFinder(Finder):
                 filter(r.doc_id == d.doc_id). \
                 filter(constraint == constraint_value). \
                 group_by(r.doc_id). \
-                order_by(r.reviewed_on.desc()).all()
+                order_by(r.reviewed_on.desc())
         else:
             # get reviews without meta (and optionally rating)
             if with_rating is True:
@@ -200,7 +205,13 @@ class ReviewFinder(Finder):
             reviews = r_query. \
                 filter(constraint == constraint_value). \
                 group_by(r.doc_id). \
-                order_by(r.reviewed_on.desc()).all()
+                order_by(r.reviewed_on.desc())
+
+        if single is True:
+            reviews = reviews.first()
+        else:
+            reviews = reviews.all()
+
         return reviews
 
 

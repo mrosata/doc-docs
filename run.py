@@ -32,6 +32,9 @@ if __name__ == '__main__':
     #
     # vagrant:
     #    python run.py -c=testing
+    #       or
+    #    python -m run -c test
+    #
     # gunicorn:
     #    gunicorn --workers=2 doc_docs:run
     flask_conf = os.environ.get('FLASK_CONFIGURATION')

@@ -1,0 +1,43 @@
+{% extends "layouts/_main.html" %}
+
+{% block body %}
+
+  <section class="callout large">
+    <div class="row column text-center">
+      <h1><span class="docdocs-text-logo">Docdocs..</span> When Good Docs Go Bad.</h1>
+    </div>
+  </section>
+
+  <section class="row">
+    <div class="small-11 small-push-1 medium-push-1">
+      <h3>Edit Review</h3>
+    </div>
+
+    <div class="small-10 medium-8 small-push-1 medium-push-2">
+      <p>
+        While you should try your best to write a good and accurate review the first time, we do
+        understand that there are times when you either change your mind or realize that a mistake
+        may have been made and so we will give you the opportunity to edit your review for 24 hours
+        after writing it. After that point you will have to delete the review from the system and
+        write a new one. I assure you that this is in the best interest of this site and its users.
+      </p>
+    </div>
+
+    <div class="small-10 medium-8 small-push-1 medium-push-2">
+      <form action="{{ url_for('public.edit_review', review_id=review_id) }}" method="post">
+        {{ review_form.csrf_token }}
+        {{ review_form.hidden_tag() }}
+        {{ review_form.doc_url.label }} {{ review_form.doc_url(value=review.doc_doc.full_url) }}
+
+        <button type="submit" class="button large">Submit</button>
+        <button type="reset" class="button hollow large">Reset</button>
+      </form>
+    </div>
+  </section>
+{% endblock %}
+
+
+
+
+
+

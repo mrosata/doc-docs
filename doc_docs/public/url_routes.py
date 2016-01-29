@@ -122,6 +122,18 @@ def profile(username=None):
 
 
 @login_required
+@public.route('/review/edit/<review_id>')
+def edit_review(review_id):
+    _review = _q.review.by_id(review_id)
+    if _review is None or review.reviewer != current_user.id:
+        return redirect('/', 403)
+
+    utils.log("This is doc_review ok? %r", _review)
+    review_form = site_forms.ReviewForm()
+    return render_template(resources.edit_review['html'], review_form=review_form, review=_review)
+
+
+@login_required
 @public.route('/profile/edit', methods=['POST', 'GET'])
 def edit_profile():
     """

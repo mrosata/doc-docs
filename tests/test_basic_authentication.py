@@ -173,9 +173,26 @@ class TestingDocReview(TestingAppCommonFunctionality, unittest.TestCase):
                 filter_by(reviewer=current_user.id).count()
             self.assertEquals(rc, 1, "Should be 1 review by user now")
 
+    def test_3_edit_created_doc_review(self):
+        """Should be able to edit a doc review after it has been posted up"""
+        with self.app as ctx:
+            self._ctx = ctx
+            ctx.get('/')
+
+            self.login("mike@mike.com", "password")
+            # Get the review which we just created then goto url_for(public.edit_review)
+            review = db.session.query(models.DocReview).\
+                filter_by(reviewer=current_user.id).one()
+
+            review_page = ctx.get(url_for('public.edit_review', review_id=review.doc_review_id))
+            print review_page
 
 
 class TestingDocRating(TestingAppCommonFunctionality, unittest.TestCase):
+    pass
+
+
+class TestsWithSeleniumUI(TestingAppCommonFunctionality, unittest.TestCase):
     pass
 
 

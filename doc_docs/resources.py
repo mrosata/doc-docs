@@ -12,9 +12,11 @@ index = {'html': 'public/index.html'}
 site_blog = {'html': 'public/blog.html'}
 # Forms for logged in users to add a new {review/detour/rating}
 add_new = {'html': 'public/doc-data/add-new.html'}
+
 personal_profile = {'html': 'public/user/profile.html'}
 edit_profile = {'html': 'public/user/edit-profile.html'}
 # DocReviews linked to Tags
 single_term = {'html': 'public/tag/doc_review.html'}
 # A Single DocReview
 doc_review = {'html': 'public/doc-data/review.html'}
+edit_review = {'html': 'public/doc-data/edit-review.html'}
