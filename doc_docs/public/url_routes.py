@@ -7,10 +7,12 @@ Public URL Routes
 Most of the sites urls reside here in the public folder.
 
 http://onethingsimple.com/2015/07/thinking-forward-just-for-a-moment/
-This was a good article. It was not completely based in fact however. It seemed that the author came to a lot of the conclusions on his own thinking. Which is ok, but that really isn't what a doc is now is it? I said now is it? I said that is not what a doc truely is now shouldn't we take this author out to the wood shed and end him? No no no, that would be too easy.
-
+This was a good article. It was not completely based in fact however. It seemed that the author
+came to a lot of the conclusions on his own thinking. Which is ok, but that really isn't what a
+doc is now is it? I said now is it? I said that is not what a doc truely is now shouldn't we take
+this author out to the wood shed and end him? No no no, that would be too easy.
 """
-from flask import Blueprint, render_template, current_app, request, url_for, redirect, flash, g
+from flask import Blueprint, render_template, request, url_for, redirect, flash
 
 from flask_security import current_user, login_required, logout_user, forms
 
@@ -21,13 +23,12 @@ from doc_docs.public.creator import DocReviewCreator
 
 from doc_docs.utilities import utils
 
-from doc_docs import db, resources, PreviousReviewException
+from doc_docs import db, resources, PreviousReviewException, ReviewNotExistException
+
+from doc_docs.sql.models import UserProfile, UserBioText
+from doc_docs.sql.models import DocReview, DocTerm
+
 from doc_docs.sql.retriever import _q
-from doc_docs.sql.models import UserMixin, User, RoleMixin, Role, UserProfile, UserBioText, CommunityApproval
-from doc_docs.sql.models import DocReviewBody, DocReview, DocRating, DocDetour, DocTerm
-from doc_docs.sql.models import DocDoc, DocSiteMeta
-from doc_docs.sql.retriever import _q
-from sqlalchemy.orm.exc import NoResultFound
 
 public = Blueprint('public', __name__, template_folder='../templates')
 
@@ -41,8 +42,8 @@ def public_context_processor():
 
     item_totals = _q.site_totals()
     recent_reviews = _q.review.get_feed(10)
-    return dict(login_user_form=login_form, register_user_form=register_form, recently_added=recent_reviews,
-                **item_totals)
+    return dict(login_user_form=login_form, register_user_form=register_form,
+                recently_added=recent_reviews, **item_totals)
 
 
 @public.route('/forgot')
@@ -77,16 +78,19 @@ def add_new():
         # Shortcut for is_submitted() and validate()
         if review_form.validate_on_submit():
             doc = creator.return_or_create_doc(review_form.doc_url.data)
-            creator.push(rating=review_form.rating.data, review=review_form.review.data, tags=review_form.tags.data,
-                         detour=review_form.detour.data, summary=review_form.summary.data, discoverer=current_user)
+            creator.push(rating=review_form.rating.data, review=review_form.review.data,
+                         tags=review_form.tags.data, detour=review_form.detour.data,
+                         summary=review_form.summary.data, discoverer=current_user)
 
             try:
                 creator.create()
                 # TODO: This is temporary, send back to profile after successful review posted
                 return redirect("/profile")
             except PreviousReviewException:
-                # We want to render the error to the review form to let user know they can't make 2 reviews on 1 doc.
-                review_form.doc_url.errors.append("It seems you have already reviewed this Document in the past!")
+                # Render error on review form informing not possible to make 2 reviews on 1 doc.
+                review_form.doc_url.errors \
+                    .append("It seems you have already reviewed this "
+                            "Document in the past!")
 
             return render_template(resources.add_new['html'], new_review_form=review_form)
         # There was a problem with the form, so we will return the from w/errors
@@ -100,9 +104,50 @@ def add_new():
 @login_required
 @public.route('/new_review')
 def new_review():
-
     review_form = site_forms.ReviewForm()
     return render_template(resources.add_new['html'], new_review_form=review_form)
+
+
+@login_required
+@public.route('/review/edit/<int:review_id>', methods=['GET', 'POST'])
+def edit_review(review_id):
+    """
+    Render the edit review form on 'GET' request. On 'POST' request we try to make an edit in
+    the database using almost the same exact means as in the route add_new().
+    :param review_id:
+    :return:
+    """
+    _review = _q.review.by_id(review_id)
+
+    if _review is None or _review.reviewer != current_user.id:
+        return redirect('/', 403)
+
+    review_form = site_forms.ReviewForm()
+    if str(request.method).upper() == 'POST':
+        creator = DocReviewCreator(current_user)
+        if review_form.validate_on_submit():
+            # TODO: This seems like it could be abstracted (same as in add_new())
+            creator.return_or_create_doc(review_form.doc_url.data)
+            creator.push(rating=review_form.rating.data, review=review_form.review.data,
+                         tags=review_form.tags.data, detour=review_form.detour.data,
+                         summary=review_form.summary.data, discoverer=current_user)
+            try:
+                creator.create(edit=True)
+                return redirect("/profile")
+            except ReviewNotExistException:
+                review_form.doc_url.errors \
+                    .append("It seems that the review your editing doesn't exist!")
+
+    # Page was requested via GET or didn't validate, display old review [and any errors].
+    # Populate with the data for this review.
+    review_form.doc_url.data = _review.get_form_data('url')
+    review_form.rating.data = _review.get_form_data('rating')
+    review_form.review.data = _review.get_form_data('review')
+    review_form.summary.data = _review.get_form_data('summary')
+    review_form.detour.data = _review.get_form_data('detour')
+    review_form.tags.data = _review.get_form_data('tags')
+
+    return render_template(resources.edit_review['html'], review_form=review_form, review=_review)
 
 
 @public.route('/profile/')
@@ -118,29 +163,8 @@ def profile(username=None):
         ratings = _q.rating.by_review(r, community=True)
         reviews.append(dict(review=r, doc_meta=r.doc_doc.doc_site_meta, username=username,
                             ratings=ratings))
-        utils.log()("Here is a review doc: %r", r.doc_doc)
+
     return render_template(resources.personal_profile['html'], profile=p, reviews=reviews)
-
-
-@login_required
-@public.route('/review/edit/<review_id>')
-def edit_review(review_id):
-    _review = _q.review.by_id(review_id)
-    utils.log("REVIEW %r", _review)
-    if _review is None or _review.reviewer != current_user.id:
-        return redirect('/', 403)
-
-    # Get the review form and populate with the data for this review.
-    review_form = site_forms.ReviewForm()
-    review_form.doc_url.data = _review.get_form_data('url')
-    review_form.rating.data = _review.get_form_data('rating')
-    review_form.review.data = _review.get_form_data('review')
-    review_form.summary.data = _review.get_form_data('summary')
-    review_form.detour.data = _review.get_form_data('detour')
-    review_form.tags.data = _review.get_form_data('tags')
-
-
-    return render_template(resources.edit_review['html'], review_form=review_form, review=_review)
 
 
 @login_required
@@ -181,15 +205,16 @@ def edit_profile():
             return redirect(url_for("public.profile"))
 
     # On non-successful update or initial page load/GET request we will show the edit form
-    return render_template(resources.edit_profile['html'], profile_form=the_form, profile=user_profile, bio=bio)
+    return render_template(
+          resources.edit_profile['html'], profile_form=the_form, profile=user_profile, bio=bio)
 
 
 @public.route('/tag/<string:term_name>/')
 @public.route('/tag/<int:term_id>/')
 def tag(term_name=None, term_id=None):
     """
-    The Tags page is where all the resources on the site which have been filed using a certain tag are listed. This
-    makes searching for relevant content a bit simplier.
+    The Tags page is where all the resources on the site which have been filed using a certain
+    tag are listed. This makes searching for relevant content a bit simplier.
     :param term_name:
     :param term_id:
     :return:
@@ -201,14 +226,13 @@ def tag(term_name=None, term_id=None):
         term = str(db.session.query(DocTerm).filter_by(term_id=term_id).first())
     else:
         # We want to find any object (DocReview) which has term_name as a term to display on page.
-        term = db.session.query(DocTerm).\
+        term = db.session.query(DocTerm). \
             filter(DocTerm.term == term_name).first()
     return render_template(resources.single_term["html"], term=term)
 
 
 @public.route('/review/<int:review_id>')
 def review(review_id):
-
     r = db.session.query(DocReview, ).filter_by(doc_review_id=review_id).first()
 
     if r is None:

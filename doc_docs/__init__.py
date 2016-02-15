@@ -10,16 +10,16 @@ application.
 import pprint
 
 # Third party imports.
-from flask import Flask, render_template, request, redirect, url_for, flash, g
+from flask import Flask, render_template, request, flash, g
 from flask_security import SQLAlchemyUserDatastore, Security, current_user, \
-    user_registered, login_user, logout_user
+    user_registered
 
 from flask_mail import Mail
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.principal import identity_loaded, identity_changed
+from flask.ext.principal import identity_changed
 
 from . import resources
-from doc_doc_errors import PreviousReviewException
+from doc_doc_errors import PreviousReviewException, ReviewNotExistException
 from doc_docs.config import configure_app
 from doc_docs.utilities import utils
 
@@ -59,7 +59,6 @@ security = Security(app, user_datastore, register_form=security_forms.ExtendedRe
 
 # All newly registered users will get the "Member" role added.
 def newly_registered_user(app, user, confirm_token, **extra):
-    utils.log("USER USER, %r", user)
     role = user_datastore.find_or_create_role(
           name="member", description="Typical Member")
     user_datastore.add_role_to_user(user, role)
@@ -97,8 +96,8 @@ def check_body_classes():
 
 @identity_changed.connect
 def signal_identity_changed_handler(sender, identity):
-    """This is the signal flask security fires when a user is logged in. So every request made while a user is logged
-    into the app should trigger this signal
+    """This is the signal flask security fires when a user is logged in. Each request
+    made while a user is logged into the app should trigger this signal
     :param sender:
     :param identity:
     :return:
