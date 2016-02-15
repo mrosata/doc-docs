@@ -158,8 +158,8 @@ class TestingDocReview(TestingAppCommonFunctionality, unittest.TestCase):
             self.assertEquals(rc, 0, "Should be no reviews by user yet")
 
     def test_2_create_new_doc_review(self):
-        """Create a new doc doc and check that it is in the database, first the function
-        needs to login a user and then create the doc_review"""
+        """Create a new doc doc and check that it is in the database, first
+        the function needs to login a user and then create the doc_review"""
         with self.app as ctx:
             self._ctx = ctx
             ctx.get('/')
@@ -185,7 +185,6 @@ class TestingDocReview(TestingAppCommonFunctionality, unittest.TestCase):
                 filter_by(reviewer=current_user.id).one()
 
             review_page = ctx.get(url_for('public.edit_review', review_id=review.doc_review_id))
-            print review_page
 
 
 class TestingDocRating(TestingAppCommonFunctionality, unittest.TestCase):

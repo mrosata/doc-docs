@@ -15,7 +15,7 @@ class ReviewForm(Form):
     # rating The numeric rating given to the document by the reviewer.
     rating = DecimalField('rating', validators=[NumberRange(1, 10)])
     # review Actual review written by the user about the site that they entered as doc_url
-    review = TextAreaField('Review (Max 1000 words)', validators=[DataRequired()])
+    review = TextAreaField('Review (Max 1000 words)', default="", validators=[DataRequired()])
     # summary This is the Title of the review (excerpt)
     summary = StringField('Excerpt/Summary (optional)', validators=[Optional()])
     # detour An optional URL that the author suggests users should visit.
@@ -25,8 +25,8 @@ class ReviewForm(Form):
     tags = StringField('Tags, comma, seperated, max, 5 (optional)', validators=[Optional()])
 
     def get_fields(self):
-        return dict(doc_url=self.doc_url, rating=self.rating, review=self.review, summary=self.summary,
-                    detour=self.detour, tags=self.tags)
+        return dict(doc_url=self.doc_url, rating=self.rating, review=self.review,
+                    summary=self.summary, detour=self.detour, tags=self.tags)
 
 
 class RatingForm(Form):

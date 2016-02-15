@@ -209,6 +209,8 @@ body {
     vertical-align: baseline;
     padding: 0.65rem 0.65rem 0.3rem;
     margin: 0; }
+  .flash-message-modal .row {
+    overflow-y: hidden; }
 
 .activity {
   padding: 0.6rem 0.6rem 0.6rem 0; }

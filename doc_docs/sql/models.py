@@ -232,6 +232,31 @@ class DocReview(db.Model):
     user = db.relationship("User")
     doc_doc = db.relationship("DocDoc")
 
+    def get_form_data(self, key):
+        rv = ""
+        if key == 'url' or key == 'full_url':
+            rv = self.doc_doc.full_url
+
+        elif key == 'review':
+            rv = self.doc_review_body.review_body
+
+        elif key == 'tags' or key == 'terms':
+            l = list()
+            for i in self.terms:
+                l.append(i.term)
+            rv = ', '.join(l)
+
+        elif key == 'rating':
+            # Return the scalar rating value for a doc rating made by the user who wrote review.
+            rating = db.session.query(DocRating).filter_by(
+                  doc_doc_id=self.doc_id, user_id=self.reviewer).first()
+            if rating is not None:
+                rv = int(rating.rating)
+        elif key in self.__dict__:
+            rv = self.__dict__[key]
+
+        return rv
+
     def __repr__(self):
         return "<class DocReview doc_review_id: %r, doc_id: %r, review_body_id: %r, reviewer: %r, " \
                 "reviewed_on: %r, summary: %r, user: %r, doc_doc: %r, doc_review_body: %r>" % \

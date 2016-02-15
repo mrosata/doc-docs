@@ -30,18 +30,16 @@ class Finder:
     def __repr__(self):
         return "<class Finder User: {0!r:s}, Profile: {1!r:s}, Bio: {2!r:s}, Doc: {3!r:s}, Review: {4!r:s}, " \
                "Body: {5!r:s}, Term: {6!r:s}>". \
-                format(self.User, self.Profile, self.Bio, self.Doc, self.Review, self.Body, self.Term)
+            format(self.User, self.Profile, self.Bio, self.Doc, self.Review, self.Body, self.Term)
 
 
 class UserFinder(Finder):
-
     def by_username(self, username):
         user = db.session.query(self.User).filter_by(username=username).first()
         return user
 
 
 class ProfileFinder(Finder):
-
     def by_name(self, username, full_bio=True, create=False):
         """
         Get a profile using a user_id. full_bio argument determines whether the bio text should be returned or just
@@ -75,26 +73,27 @@ class ProfileFinder(Finder):
 
         if full_bio is True:
             profile = \
-                db.session.\
-                query(u.username, p.user_id, p.first_name, p.last_name, p.twitter, p.facebook, p.github,
-                      p.homepage, p.stackoverflow, b.bio_text).\
-                filter(p.bio_text_id == b.bio_text_id).\
-                filter(p.user_id == u.id). \
-                filter(constraint == constraint_value). \
-                first()
+                db.session. \
+                    query(u.username, p.user_id, p.first_name, p.last_name, p.twitter, p.facebook,
+                          p.github,
+                          p.homepage, p.stackoverflow, b.bio_text). \
+                    filter(p.bio_text_id == b.bio_text_id). \
+                    filter(p.user_id == u.id). \
+                    filter(constraint == constraint_value). \
+                    first()
         else:
             profile = \
-                db.session.\
-                query(u.username, p.user_id, p.first_name, p.last_name, p.twitter, p.facebook, p.github, p.homepage).\
-                filter(p.user_id == u.id).\
-                filter(constraint == constraint_value).\
-                first()
-            
+                db.session. \
+                    query(u.username, p.user_id, p.first_name, p.last_name, p.twitter, p.facebook,
+                          p.github, p.homepage). \
+                    filter(p.user_id == u.id). \
+                    filter(constraint == constraint_value). \
+                    first()
+
         return profile
 
 
 class RatingFinder(Finder):
-
     def by_review(self, review, community=True):
         if not isinstance(review, self.Review):
             return None
@@ -128,7 +127,6 @@ class RatingFinder(Finder):
 
 
 class ReviewFinder(Finder):
-
     def get_feed(self, _limit=10, _offset=0):
         """
         Get a feed of recent reviews along with the doc_doc that belongs to it.
@@ -144,15 +142,15 @@ class ReviewFinder(Finder):
         m = db.aliased(self.Meta, name="doc_site_meta")
         d = db.aliased(self.Doc, name="doc_doc")
 
-        recent_feed = db.session.query(r.doc_review_id, r.reviewed_on, r.summary, u, r.terms, d, m).\
-            filter(r.doc_id == d.doc_id).\
-            filter(r.reviewer == u.id).\
-            group_by(r.doc_review_id).\
+        recent_feed = db.session.query(r.doc_review_id, r.reviewed_on, r.summary, u, r.terms, d, m). \
+            filter(r.doc_id == d.doc_id). \
+            filter(r.reviewer == u.id). \
+            group_by(r.doc_review_id). \
             order_by(r.reviewed_on.desc()).offset(_offset).limit(_limit).all()
 
         return recent_feed
 
-    def by_username(self, username, with_rating=False, full_text=False, with_meta=False):
+    def by_username(self, username, with_rating=False):
         user = _q.user.by_username(username)
         user_id = None
         if isinstance(user, self.User):
@@ -160,7 +158,8 @@ class ReviewFinder(Finder):
         return self.query(self.Review.reviewer, user_id, with_rating=with_rating)
 
     def by_user_id(self, user_id, with_rating=False, full_text=False, with_meta=False):
-        return self.query(self.Review.reviewer, user_id, with_rating=with_rating, full_text=full_text, with_meta=with_meta)
+        return self.query(self.Review.reviewer, user_id, with_rating=with_rating,
+                          full_text=full_text, with_meta=with_meta)
 
     def by_id(self, review_id, with_rating=True, full_text=False, with_meta=False):
         return self.query(self.Review.doc_review_id, review_id, with_rating=with_rating,
@@ -170,6 +169,8 @@ class ReviewFinder(Finder):
               with_meta=False, single=False):
         """
         Make a query for a Review. This method is best called using one of the other methods provided on this class.
+        :param single:
+        :param with_meta:
         :type with_rating: object
         :param full_text:
         :param constraint_value:
@@ -183,8 +184,8 @@ class ReviewFinder(Finder):
         if with_meta is True:
             # Get reviews and meta (and optionally rating)
             if with_rating is True:
-                r_query = db.session.query(r, ra).\
-                    filter(ra.doc_doc_id == r.doc_id).\
+                r_query = db.session.query(r, ra). \
+                    filter(ra.doc_doc_id == r.doc_id). \
                     filter(
                       constraint_value == constraint_value)
             else:
@@ -199,7 +200,8 @@ class ReviewFinder(Finder):
         else:
             # get reviews without meta (and optionally rating)
             if with_rating is True:
-                r_query = db.session.query(r, ra).filter(ra.doc_doc_id == r.doc_id).filter(ra.user_id == r.reviewer)
+                r_query = db.session.query(r, ra).filter(
+                      ra.doc_doc_id == r.doc_id).filter(ra.user_id == r.reviewer)
             else:
                 r_query = db.session.query(r)
             reviews = r_query. \
@@ -208,7 +210,7 @@ class ReviewFinder(Finder):
                 order_by(r.reviewed_on.desc())
 
         if single is True:
-            reviews = reviews.first()
+            reviews = reviews.first()[0]
         else:
             reviews = reviews.all()
 
@@ -217,15 +219,17 @@ class ReviewFinder(Finder):
 
 class QueryHelper:
     """
-    QueryHelper is an abstraction of the work that has to be done around the site such as returning user profiles,
-    reviews, docdocs and such. Hopefully it will increase the readability of the rest of the code by making functions
-    smaller as well as cut down on duplicated code in some places.
-
-    To use QueryHelper just import _q which is an instance of this class created at the bottom of this file.
-    The properties exposed by QueryHelper are all just references to members of the Finder class which is defined
-    above. Finder classes expose methods that express how they should find something. For example with the ProfileFinder
-    there are methods .by_id() .by_username() and this helps to keep similar functionality grouped and DRY.
+    QueryHelper is an abstraction of the work that has to be done around the site such as
+    returning user profiles, reviews, docdocs and such. Hopefully it will increase the
+    readability of the rest of the code by making functions smaller as well as cut down on
+    duplicated code in some places. To use QueryHelper just import _q which is an instance  of
+    this class created at the bottom of this file. The properties exposed by QueryHelper are all
+    just references to members of the Finder class which is defined above. Finder classes expose
+    methods that express how they should find something. For example with the ProfileFinder
+    there are methods .by_id() .by_username() and this helps to keep similar functionality
+    grouped and DRY.
     """
+
     def __init__(self):
         self.profile = ProfileFinder(self)
         self.review = ReviewFinder(self)
@@ -236,16 +240,22 @@ class QueryHelper:
     @staticmethod
     def site_totals():
         """
-        Total up all objects for displaying count information on the main page. Just for showing the community
-        what all the work adds up to.
+        Total up all objects for displaying count information on the main page. Just for showing
+        the community what all the work adds up to.
+
         :return: dict with doc_doc, doc_detour, doc_rating, doc_review
         """
         # TODO: Check how effecient this is.
-        the_totals = {"doc_count": db.session.query(func.count("*")).select_from(models.DocDoc).scalar(),
-                      "detour_count": db.session.query(func.count("*")).select_from(models.DocDetour).scalar(),
-                      "rating_count": db.session.query(func.count("*")).select_from(models.DocRating).scalar(),
-                      "review_count": db.session.query(func.count("*")).select_from(models.DocReview).scalar()}
-        return the_totals
+        totals = {
+            "doc_count": db.session.query(func.count("*")).select_from(
+                  models.DocDoc).scalar(),
+            "detour_count": db.session.query(func.count("*")).select_from(
+                models.DocDetour).scalar(),
+            "rating_count": db.session.query(func.count("*")).select_from(
+                models.DocRating).scalar(),
+            "review_count": db.session.query(func.count("*")).select_from(
+                models.DocReview).scalar()}
+        return totals
 
     def __call__(self, *args, **kwargs):
         """

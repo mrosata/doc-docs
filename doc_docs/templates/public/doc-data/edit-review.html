@@ -27,7 +27,27 @@
       <form action="{{ url_for('public.edit_review', review_id=review_id) }}" method="post">
         {{ review_form.csrf_token }}
         {{ review_form.hidden_tag() }}
-        {{ review_form.doc_url.label }} {{ review_form.doc_url(value=review.doc_doc.full_url) }}
+
+        {# Values of the form are populated before the template is rendered to decouple logic #}
+        {{ review_form.doc_url.label }}
+          {{ review_form.doc_url() }}
+
+        {{ review_form.rating.label }}
+          {{ review_form.rating() }}
+
+        {{ review_form.review.label }}
+          {{ review_form.review() }}
+
+        {{ review_form.summary.label }}
+          {{ review_form.summary() }}
+
+        {{ review_form.detour.label }}
+          {{ review_form.detour() }}
+
+        {{ review_form.tags.label }}
+          {{ review_form.tags() }}
+
+
 
         <button type="submit" class="button large">Submit</button>
         <button type="reset" class="button hollow large">Reset</button>

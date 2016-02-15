@@ -100,6 +100,7 @@ def add_new():
 @login_required
 @public.route('/new_review')
 def new_review():
+
     review_form = site_forms.ReviewForm()
     return render_template(resources.add_new['html'], new_review_form=review_form)
 
@@ -125,11 +126,20 @@ def profile(username=None):
 @public.route('/review/edit/<review_id>')
 def edit_review(review_id):
     _review = _q.review.by_id(review_id)
-    if _review is None or review.reviewer != current_user.id:
+    utils.log("REVIEW %r", _review)
+    if _review is None or _review.reviewer != current_user.id:
         return redirect('/', 403)
 
-    utils.log("This is doc_review ok? %r", _review)
+    # Get the review form and populate with the data for this review.
     review_form = site_forms.ReviewForm()
+    review_form.doc_url.data = _review.get_form_data('url')
+    review_form.rating.data = _review.get_form_data('rating')
+    review_form.review.data = _review.get_form_data('review')
+    review_form.summary.data = _review.get_form_data('summary')
+    review_form.detour.data = _review.get_form_data('detour')
+    review_form.tags.data = _review.get_form_data('tags')
+
+
     return render_template(resources.edit_review['html'], review_form=review_form, review=_review)
 
 
