@@ -19,7 +19,8 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.principal import identity_changed
 
 from . import resources
-from doc_doc_errors import PreviousReviewException, ReviewNotExistException
+from doc_doc_errors import PreviousReviewException, ReviewNotExistException, \
+    MissingInformationException
 from doc_docs.config import configure_app
 from doc_docs.utilities import utils
 

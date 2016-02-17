@@ -1,0 +1,51 @@
+DEBUG:passlib.registry:registered 'bcrypt' handler: <class 'passlib.handlers.bcrypt.bcrypt'>
+DEBUG:passlib.registry:registered 'des_crypt' handler: <class 'passlib.handlers.des_crypt.des_crypt'>
+DEBUG:passlib.registry:registered 'pbkdf2_sha256' handler: <class 'passlib.handlers.pbkdf2.pbkdf2_sha256'>
+DEBUG:passlib.registry:registered 'pbkdf2_sha512' handler: <class 'passlib.handlers.pbkdf2.pbkdf2_sha512'>
+DEBUG:passlib.registry:registered 'sha256_crypt' handler: <class 'passlib.handlers.sha2_crypt.sha256_crypt'>
+DEBUG:passlib.registry:registered 'sha512_crypt' handler: <class 'passlib.handlers.sha2_crypt.sha512_crypt'>
+DEBUG:passlib.registry:registered 'plaintext' handler: <class 'passlib.handlers.misc.plaintext'>
+INFO:werkzeug: * Detected change in '/vagrant/doc_docs/doc_doc_errors.py', reloading
+DEBUG:passlib.registry:registered 'bcrypt' handler: <class 'passlib.handlers.bcrypt.bcrypt'>
+DEBUG:passlib.registry:registered 'des_crypt' handler: <class 'passlib.handlers.des_crypt.des_crypt'>
+DEBUG:passlib.registry:registered 'pbkdf2_sha256' handler: <class 'passlib.handlers.pbkdf2.pbkdf2_sha256'>
+DEBUG:passlib.registry:registered 'pbkdf2_sha512' handler: <class 'passlib.handlers.pbkdf2.pbkdf2_sha512'>
+DEBUG:passlib.registry:registered 'sha256_crypt' handler: <class 'passlib.handlers.sha2_crypt.sha256_crypt'>
+DEBUG:passlib.registry:registered 'sha512_crypt' handler: <class 'passlib.handlers.sha2_crypt.sha512_crypt'>
+DEBUG:passlib.registry:registered 'plaintext' handler: <class 'passlib.handlers.misc.plaintext'>
+DEBUG:passlib.registry:registered 'bcrypt' handler: <class 'passlib.handlers.bcrypt.bcrypt'>
+DEBUG:passlib.registry:registered 'des_crypt' handler: <class 'passlib.handlers.des_crypt.des_crypt'>
+DEBUG:passlib.registry:registered 'pbkdf2_sha256' handler: <class 'passlib.handlers.pbkdf2.pbkdf2_sha256'>
+DEBUG:passlib.registry:registered 'pbkdf2_sha512' handler: <class 'passlib.handlers.pbkdf2.pbkdf2_sha512'>
+DEBUG:passlib.registry:registered 'sha256_crypt' handler: <class 'passlib.handlers.sha2_crypt.sha256_crypt'>
+DEBUG:passlib.registry:registered 'sha512_crypt' handler: <class 'passlib.handlers.sha2_crypt.sha512_crypt'>
+DEBUG:passlib.registry:registered 'plaintext' handler: <class 'passlib.handlers.misc.plaintext'>
+INFO:werkzeug: * Running on http://0.0.0.0:5000/
+INFO:werkzeug: * Restarting with reloader
+DEBUG:passlib.registry:registered 'bcrypt' handler: <class 'passlib.handlers.bcrypt.bcrypt'>
+DEBUG:passlib.registry:registered 'des_crypt' handler: <class 'passlib.handlers.des_crypt.des_crypt'>
+DEBUG:passlib.registry:registered 'pbkdf2_sha256' handler: <class 'passlib.handlers.pbkdf2.pbkdf2_sha256'>
+DEBUG:passlib.registry:registered 'pbkdf2_sha512' handler: <class 'passlib.handlers.pbkdf2.pbkdf2_sha512'>
+DEBUG:passlib.registry:registered 'sha256_crypt' handler: <class 'passlib.handlers.sha2_crypt.sha256_crypt'>
+DEBUG:passlib.registry:registered 'sha512_crypt' handler: <class 'passlib.handlers.sha2_crypt.sha512_crypt'>
+DEBUG:passlib.registry:registered 'plaintext' handler: <class 'passlib.handlers.misc.plaintext'>
+INFO:werkzeug:10.0.2.2 - - [16/Feb/2016 17:26:06] "GET /profile/ HTTP/1.1" 200 -
+INFO:werkzeug:10.0.2.2 - - [16/Feb/2016 17:26:06] "GET /static/css/app.css HTTP/1.1" 304 -
+INFO:werkzeug:10.0.2.2 - - [16/Feb/2016 17:26:06] "GET /static/js/vendor/jquery.min.js HTTP/1.1" 304 -
+INFO:werkzeug:10.0.2.2 - - [16/Feb/2016 17:26:06] "GET /static/js/vendor/what-input.min.js HTTP/1.1" 304 -
+INFO:werkzeug:10.0.2.2 - - [16/Feb/2016 17:26:06] "GET /static/js/foundation.js HTTP/1.1" 304 -
+INFO:werkzeug:10.0.2.2 - - [16/Feb/2016 17:26:06] "GET /static/js/app.js HTTP/1.1" 304 -
+INFO:werkzeug:10.0.2.2 - - [16/Feb/2016 17:26:06] "GET /favicon.ico HTTP/1.1" 200 -
+INFO:werkzeug:10.0.2.2 - - [16/Feb/2016 17:26:09] "GET /review/edit/4 HTTP/1.1" 200 -
+INFO:werkzeug:10.0.2.2 - - [16/Feb/2016 17:26:10] "GET /favicon.ico HTTP/1.1" 200 -
+INFO:werkzeug:10.0.2.2 - - [16/Feb/2016 17:26:36] "POST /review/edit/4 HTTP/1.1" 302 -
+INFO:werkzeug:10.0.2.2 - - [16/Feb/2016 17:26:36] "GET /profile HTTP/1.1" 301 -
+INFO:werkzeug:10.0.2.2 - - [16/Feb/2016 17:26:36] "GET /profile/ HTTP/1.1" 200 -
+INFO:werkzeug:10.0.2.2 - - [16/Feb/2016 17:26:36] "GET /favicon.ico HTTP/1.1" 200 -
+INFO:werkzeug: * Detected change in '/vagrant/doc_docs/doc_doc_errors.py', reloading
+INFO:werkzeug: * Restarting with reloader
+INFO:werkzeug: * Restarting with reloader
+INFO:werkzeug: * Restarting with reloader
+INFO:werkzeug: * Restarting with reloader
+INFO:werkzeug: * Restarting with reloader
+INFO:werkzeug: * Restarting with reloader

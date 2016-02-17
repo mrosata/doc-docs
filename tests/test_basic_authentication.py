@@ -185,6 +185,10 @@ class TestingDocReview(TestingAppCommonFunctionality, unittest.TestCase):
                 filter_by(reviewer=current_user.id).one()
 
             review_page = ctx.get(url_for('public.edit_review', review_id=review.doc_review_id))
+            assert(review_page.status_code == 200,
+                   "Requesting public.edit_review should return status 200")
+            assert('<form action="/review/edit/1"' in review_page.data,
+                   "There should be an edit <form> in the html to edit review in review_page.data")
 
 
 class TestingDocRating(TestingAppCommonFunctionality, unittest.TestCase):

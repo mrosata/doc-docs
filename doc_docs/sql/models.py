@@ -2,14 +2,14 @@
 Doc Docs >> 2015 - 2016
     by: Michael Rosata <<
 
-Models
+db.Models
 ------
 Database models (tables) used through the application.
 """
 from datetime import datetime
 from flask.ext.security import UserMixin, RoleMixin
 
-from doc_docs import utils, app, db
+from doc_docs import db
 
 
 # This is the association for Flask_Security linking Users and Roles One-to-Many
@@ -18,7 +18,7 @@ roles_users = db.Table('roles_users',
                        db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
 
 # This is the apps association linking Reviews to Terms (Tags) Many-to-Many
-reviews_terms = db.Table('reviews_terms', db.metadata,
+reviews_terms = db.Table('reviews_terms',
                          db.Column("review", db.Integer, db.ForeignKey("doc_review.doc_review_id")),
                          db.Column("term", db.Integer, db.ForeignKey("doc_term.term_id")))
 
@@ -86,7 +86,7 @@ class UserProfile(db.Model, UserMixin):
     bio_text = None
 
     def __init__(self, user, first_name='', last_name='', homepage='', github='', facebook='',
-                       stackoverflow='', twitter='', updated_at=None, bio_text=""):
+                 stackoverflow='', twitter='', updated_at=None, bio_text=""):
         self.user = user
         self.first_name = first_name
         self.last_name = last_name
@@ -111,8 +111,9 @@ class UserProfile(db.Model, UserMixin):
 
     def __repr__(self):
         return '<class UserProfile user_id: %r, first_name: %r, last_name: %r, homepage: %r, ' \
-               'github: %r, facebook: %r, stackoverflow: %r, twitter: %r>'\
-               % (self.user_id, self.first_name, self.last_name, self.homepage, self.github, self.facebook,
+               'github: %r, facebook: %r, stackoverflow: %r, twitter: %r>' \
+               % (self.user_id, self.first_name, self.last_name, self.homepage, self.github,
+                  self.facebook,
                   self.stackoverflow, self.twitter)
 
 
@@ -157,7 +158,7 @@ class DocSiteMeta(db.Model):
     audio = db.Column(db.String(140), nullable=True, default="")
 
     doc_doc = db.relationship("DocDoc")
-    
+
 
 class DocDoc(db.Model):
     """
@@ -189,7 +190,7 @@ class DocDoc(db.Model):
     def __repr__(self):
         return '<class DocDoc doc_id: %r, base_url: %r, pathname: %r, fragment: %r, ' \
                'query_string: %r, params %r, discoverer: %r, discovered: %r, visits: %r, ' \
-               'meta_data_id: %r, doc_site_meta: %r, user: %r>' %\
+               'meta_data_id: %r, doc_site_meta: %r, user: %r>' % \
                (self.doc_id, self.base_url, self.pathname, self.fragment,
                 self.query_string, self.params, self.discoverer, self.discovered, self.visits,
                 self.meta_data_id, self.doc_site_meta, self.user)
@@ -225,9 +226,8 @@ class DocReview(db.Model):
     review_body_id = db.Column(db.Integer, db.ForeignKey("doc_review_body"))
     summary = db.Column(db.Text(350))
 
-    # terms = db.relationship("DocTerm", backref="doc_review")
-
     terms = db.relationship("DocTerm", secondary=reviews_terms, back_populates="reviews")
+
     doc_review_body = db.relationship("DocReviewBody")
     user = db.relationship("User")
     doc_doc = db.relationship("DocDoc")
@@ -259,8 +259,9 @@ class DocReview(db.Model):
 
     def __repr__(self):
         return "<class DocReview doc_review_id: %r, doc_id: %r, review_body_id: %r, reviewer: %r, " \
-                "reviewed_on: %r, summary: %r, user: %r, doc_doc: %r, doc_review_body: %r>" % \
-               (self.doc_review_id, self.doc_id, self.review_body_id, self.reviewer, self.reviewed_on, self.summary,
+               "reviewed_on: %r, summary: %r, user: %r, doc_doc: %r, doc_review_body: %r>" % \
+               (self.doc_review_id, self.doc_id, self.review_body_id, self.reviewer,
+                self.reviewed_on, self.summary,
                 self.user, self.doc_doc, self.doc_review_body)
 
 
@@ -287,21 +288,26 @@ class DocRating(db.Model):
 
 class DocDetour(db.Model):
     """
-    Doc Detours are just links to alternative articles. Since the alternative articles qualify to be docs, that
-    is what they must be to be added into the table. When a user adds a detour the system will have to register
-    it as a doc_doc first.
+    Doc Detours are just links to alternative articles. Since the alternative articles qualify
+    to be docs, that is what they must be to be added into the table. When a user adds a detour
+    the system will have to register it as a doc_doc first.
     """
     __tablename__ = 'doc_detour'
-    target_doc_id = db.Column('target_doc_id', db.Integer, db.ForeignKey('doc_review.doc_review_id'), primary_key=True)
-    detour_doc_id = db.Column('detour_doc_id', db.Integer, db.ForeignKey('doc_review.doc_review_id'), primary_key=True)
-    user_id = db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    # I'm not sure if this is an optimization or a de-optimization. I think using a 3 column primary key is smart ;)
-    # I could be idiot though. Only deltatime will tell.
+    target_doc_id = db.Column(
+          'target_doc_id', db.Integer, db.ForeignKey('doc_review.doc_review_id'), primary_key=True)
+    detour_doc_id = db.Column(
+          'detour_doc_id', db.Integer, db.ForeignKey('doc_review.doc_review_id'), primary_key=True)
+    user_id = db.Column(
+          'user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
+
+    # I'm not sure if this is an optimization or a de-optimization.
+    # I think using a 3 column primary key is smart ;)
     db.PrimaryKeyConstraint('target_doc_id', 'detour_doc_id', 'user_id')
     review_body = db.Column(db.Text)
 
     def __repr__(self):
-        return '<class DocReviewBody %r>' % self.doc_review_id
+        return '<class DocDetour target_doc_id: %r, detour_doc_id: %r, user_id: %r>' % \
+               self.target_doc_id, self.detour_doc_id, self.user_id
 
 
 class DocTerm(db.Model):
@@ -312,10 +318,11 @@ class DocTerm(db.Model):
     __tablename__ = "doc_term"
     term_id = db.Column(db.Integer, primary_key=True)
     term = db.Column(db.String(64))
-    reviews = db.relationship("DocReview", secondary=reviews_terms, back_populates="terms")
+    # reviews = db.relationship("DocReview", secondary=reviews_terms, back_populates="terms")
+    reviews = db.relationship("DocReview", secondary=reviews_terms)
 
     def __repr__(self):
-        return "<class DocTerm term_id: %r, term: %r>" %\
+        return "<class DocTerm term_id: %r, term: %r>" % \
                (self.term_id, self.term)
 
 

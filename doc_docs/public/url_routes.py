@@ -153,7 +153,7 @@ def edit_review(review_id):
 @public.route('/profile/')
 @public.route('/profile/<string:username>/')
 def profile(username=None):
-    if username is None:
+    if username is None and type(username) != "<AnonymousUser>":
         username = current_user.username
 
     p = _q.profile.by_name(username, create=True)

@@ -12,7 +12,8 @@ from .doc_scraper import fetch_meta
 from doc_docs.sql import models
 from doc_docs.public.site_forms import ReviewForm
 from doc_docs.utilities import utils
-from doc_docs import db, current_user, PreviousReviewException, ReviewNotExistException
+from doc_docs import db, current_user, PreviousReviewException, ReviewNotExistException, \
+    MissingInformationException
 
 
 class Creator:
@@ -148,53 +149,70 @@ class DocReviewCreator(Creator):
             return False
 
         # Check for all the required fields before moving on.
+        # add fields through .push() inherited via creator.
         for x in self._data:
             if x not in self.data:
-                return False
+                raise MissingInformationException(x)
 
-        previous_review = self.session.query(models.DocReview). \
+        # Was there a previous review by this user on this doc?
+        self.review = self.session.query(models.DocReview). \
             filter_by(doc_id=self.doc.doc_id). \
             filter_by(reviewer=self.user.id). \
             first()
 
         # A Reviewer may only review an article/document 1 time.
-        if previous_review is not None and edit is False:
+        if self.review is not None and edit is False:
             raise PreviousReviewException()
-        elif previous_review is None and edit is True:
+        elif self.review is None and edit is True:
             raise ReviewNotExistException()
 
-        self.insert_or_update(review=previous_review)
-
-    def insert_or_update(self, review=None):
-        """
-        This is called by create() or edit() when a document is ready to be inserted or
-        edited in the database. This functionality is common to both edit and create.
-        :return:
-        """
         review_text = self.data["review"].encode('ascii', 'ignore')
         if self.data["summary"] == '' or not self.data["summary"]:
             self.data["summary"] = self.convert_to_summary(review_text)
 
-        # Either edit or create the review.
-        if review is None:
+        # Review will be None only if this is a create
+        if edit is True:
+            # This is an edit. First check to see if there is a review body
+            review_body = self.review.doc_review_body
+
+            # Remove any relationship from terms related to review (below we'll attach/add new)
+            terms = models.DocTerm.query.filter(models.DocTerm.reviews.contains(self.review))
+            for t in terms:
+                t.reviews.remove(self.review)
+
+            rating = self.session.query(models.DocRating). \
+                filter(models.DocRating.doc_doc_id == self.doc.doc_id). \
+                filter(models.DocRating.user_id == self.user.id)
+
+            if rating.first() is not None:
+                # Update the users rating (they already made)
+                rating.update({models.DocRating.rating: int(self.data["rating"])})
+            else:
+                # create a new rating since there new has been one.
+                DocRatingCreator().rate(self.doc.doc_id, self.user.id, int(self.data["rating"]))
+
+            # Update the doc review (summary)
+            self.review.query.\
+                filter_by(doc_id=self.doc.doc_id). \
+                filter_by(reviewer=self.user.id). \
+                update({models.DocReview.summary: self.data["summary"]},
+                       synchronize_session='fetch')
+            self.review.doc_review_body.review_body = self.data["review"]
+        else:
+            # This is a new review being created
             self.review = models.DocReview(doc_id=self.doc.doc_id, reviewer=self.user.id,
                                            summary=self.data["summary"])
-        else:
-            # TODO: FIGURE OUT THE INSERT USING ARGUMENT review
-            pass
-
-
-
-        review_body = models.DocReviewBody(review_body=review_text)
+            review_body = models.DocReviewBody(review_body=review_text)
+            # Create a new rating
+            if self.data["rating"]:
+                # This will add the rating but not commit
+                DocRatingCreator().rate(self.doc.doc_id, self.user.id, int(self.data["rating"]))
 
         if self.review is None:
             return None
 
         # This will add the terms but not commit
         self.update_terms()
-        if self.data["rating"]:
-            # This will add the rating but not commit
-            DocRatingCreator().rate(self.doc.doc_id, self.user.id, int(self.data["rating"]))
 
         self.review.doc_review_body = review_body
         db.session.add(self.review)
@@ -222,7 +240,6 @@ class DocReviewCreator(Creator):
         if term is None:
             term = models.DocTerm(term=tag)
 
-        term.reviews.append(self.review)
         self.review.terms.append(term)
         db.session.add(term)
 
