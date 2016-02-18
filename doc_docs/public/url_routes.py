@@ -119,10 +119,10 @@ def edit_review(review_id):
     """
     _review = _q.review.by_id(review_id)
 
-    if _review is None or _review.reviewer != current_user.id:
-        return redirect('/', 403)
+    if isinstance(_review, type(None)) or _review.reviewer != current_user.id:
+        return redirect('/', 404)
 
-    review_form = site_forms.ReviewForm()
+    review_form = site_forms.ReviewEditForm()
     if str(request.method).upper() == 'POST':
         creator = DocReviewCreator(current_user)
         if review_form.validate_on_submit():
@@ -153,7 +153,7 @@ def edit_review(review_id):
 @public.route('/profile/')
 @public.route('/profile/<string:username>/')
 def profile(username=None):
-    if username is None and type(username) != "<AnonymousUser>":
+    if username is None:
         username = current_user.username
 
     p = _q.profile.by_name(username, create=True)

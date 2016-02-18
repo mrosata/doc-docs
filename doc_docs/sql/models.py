@@ -62,10 +62,10 @@ class User(db.Model, UserMixin):
 
 class UserProfile(db.Model, UserMixin):
     """
-    User Profile Data. I'm torn between keeping social data on the profile. It could be just as easily done as
-    meta data. I will do this for now to keep the application simple though.
-    Note that the UserProfile is one of the only tables that is using a custom __init__ method. This makes the
-    insert with the bio easier.
+    User Profile Data. I'm torn between keeping social data on the profile. It could be
+    just as easily done as meta data. I will do this for now to keep the application
+    simple though. Note that the UserProfile is one of the only tables that is using a custom
+    __init__ method. This makes the insert with the bio easier.
     """
     __tablename__ = 'user_profile'
     profile_id = db.Column(db.Integer, primary_key=True)
@@ -101,7 +101,7 @@ class UserProfile(db.Model, UserMixin):
 
         self.updated_at = updated_at
 
-        # We have to create a bio text entry as well when we create a new profile and link it back to here.
+        # Create bio text entry also when creating a new profile and link it back to here.
         bio_text = UserBioText()
         self.bio_text_id = bio_text.bio_text_id
         self.bio_text = bio_text.bio_text
@@ -119,8 +119,8 @@ class UserProfile(db.Model, UserMixin):
 
 class UserBioText(db.Model):
     """
-    Bio Text is a bio written by a user about themselves. It links from the profile table and every
-    user is able to write one.
+    Bio Text is a bio written by a user about themselves. It links from the profile table and
+    every user is able to write one.
     """
     __tablename__ = 'user_bio_text'
     bio_text_id = db.Column('bio_text_id', db.Integer, primary_key=True)
@@ -138,10 +138,11 @@ class UserBioText(db.Model):
 
 class DocSiteMeta(db.Model):
     """
-    Site meta is the og:meta data parsed from a site when it is initially added to DocDocs. The image right now will
-    just be a link but in the future it would probably be good to save the image. I'm not sure. I know that a lot of
-    sites are trying to stop people from remotely displaying their content so it might be needed to actually download
-    the images from sites. But that's a lot of images, although they could be compressed a lot.
+    Site meta is the og:meta data parsed from a site when it is initially added to DocDocs.
+    The image right now will just be a link but in the future it would probably be good to save
+    the image. I'm not sure. I know that a lot of sites are trying to stop people from remotely
+    displaying their content so it might be needed to actually download the images from sites.
+    But that's a lot of images, although they could be compressed a lot.
     """
     __tablename__ = "doc_site_meta"
     meta_id = db.Column(db.Integer, primary_key=True)
@@ -198,10 +199,10 @@ class DocDoc(db.Model):
 
 class DocReviewBody(db.Model):
     """
-    This table holds the body of the review. The reviews table could grow large and since the text
-    is variable in size and doesn't need to be seen unless a user navigates to that reviews page I
-    think it's better to link it through another table. The table uses the same primary key as the
-    DocReview object
+    This table holds the body of the review. The reviews table could grow large and since
+    the text is variable in size and doesn't need to be seen unless a user navigates to that
+    reviews page I think it's better to link it through another table. The table uses the same
+    primary key as the DocReview object
     """
     __tablename__ = 'doc_review_body'
     review_body_id = db.Column(db.Integer, primary_key=True)
@@ -233,6 +234,18 @@ class DocReview(db.Model):
     doc_doc = db.relationship("DocDoc")
 
     def get_form_data(self, key):
+        """
+        Get back data from the DocReview that matches a form key. This is for easy retrieval of
+        data in a readable form and by common semantic reference. Notice the first line of the
+        function adds self to db.session, the reason for this is that in off cases (testing from
+        cli especially) the DocReview is not added to the session which prevents lazy loading of
+        model instances referenced through the DocReview model instance. For example:
+        self.doc_review_body.review_body
+
+        :param key:
+        :return:
+        """
+        db.session.add(self)
         rv = ""
         if key == 'url' or key == 'full_url':
             rv = self.doc_doc.full_url
@@ -258,8 +271,9 @@ class DocReview(db.Model):
         return rv
 
     def __repr__(self):
-        return "<class DocReview doc_review_id: %r, doc_id: %r, review_body_id: %r, reviewer: %r, " \
-               "reviewed_on: %r, summary: %r, user: %r, doc_doc: %r, doc_review_body: %r>" % \
+        return "<class DocReview doc_review_id: %r, doc_id: %r, review_body_id: %r, " \
+               "reviewer: %r, reviewed_on: %r, summary: %r, user: %r, doc_doc: %r, " \
+               "doc_review_body: %r>" % \
                (self.doc_review_id, self.doc_id, self.review_body_id, self.reviewer,
                 self.reviewed_on, self.summary,
                 self.user, self.doc_doc, self.doc_review_body)
@@ -267,9 +281,9 @@ class DocReview(db.Model):
 
 class DocRating(db.Model):
     """
-    A simple rating, since a user may only rate a page once there is no need to have an explicit primary
-    key for this table. Instead we use the unique combination of 'doc_doc_id' and 'user_id' as a primary
-    key.
+    A simple rating, since a user may only rate a page once there is no need to have an explicit
+    primary key for this table. Instead we use the unique combination of 'doc_doc_id' and
+    'user_id' as a primary key.
     """
     __tablename__ = 'doc_rating'
     doc_doc_id = db.Column(db.Integer, db.ForeignKey('doc_doc.doc_id'), primary_key=True)
@@ -312,8 +326,9 @@ class DocDetour(db.Model):
 
 class DocTerm(db.Model):
     """
-    A Term can relate to any object. Right now it only links using Reviews through the review_term association (top of
-    file). This is many-to-many relationship handled by SQL Alchemy.
+    A Term can relate to any object. Right now it only links using Reviews through the
+    review_term association (top of file). This is many-to-many relationship handled by
+    SQL Alchemy.
     """
     __tablename__ = "doc_term"
     term_id = db.Column(db.Integer, primary_key=True)
@@ -328,9 +343,10 @@ class DocTerm(db.Model):
 
 class CommunityApproval(db.Model):
     """
-    Community Approvals are the votes made by users on reviews, ratings, and detours that other users have
-    made. It's possible that there won't be a need to approval on a rating so I will stick to using the
-    detours and reviews. Each user can only vote one time on their approval of a thing.
+    Community Approvals are the votes made by users on reviews, ratings, and detours that
+    other users have made. It's possible that there won't be a need to approval on a rating so I
+    will stick to using the detours and reviews. Each user can only vote one time on their
+    approval of a thing.
     """
     __tablename__ = 'community_approval'
     vote_id = db.Column(db.Integer, primary_key=True)

@@ -31,7 +31,10 @@
 
         {# Values of the form are populated before the template is rendered to decouple logic #}
         {{ review_form.doc_url.label }}
-          {{ review_form.doc_url(disabled=True) }}
+          {{ review_form.doc_url() }}
+          <p>
+            <strong>{{ review_form.doc_url.data }}</strong>
+          </p>
 
         {{ review_form.rating.label }}
           {{ review_form.rating() }}

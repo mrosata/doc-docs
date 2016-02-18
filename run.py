@@ -22,13 +22,14 @@ if args.cli_config_opt:
 
 
 if __name__ == '__main__':
-    """ I have configuration settings in place inside doc_docs.config.
-    However the app is instanciated by then which makes sense because it uses
-    the app object to parse out configuration values from another Python
-    object. So to set the port/host use cli arguments. In this way you'r
-    able to simply change address info for gunicorn on heroku or add an arg
-    to the cli from vagrant and switch configs. The config from CLI effects
-    the config here and the config in doc_docs.config.py ---
+    """
+    DocDocs has configurations inside module doc_docs.config -- However the app is instanciated
+    already by the time the config module is loaded. This behavior makes sense because it uses
+    the app object to parse out configuration values from another Python object. So to set the
+    port/host use cli arguments. In this way you'll be able to change web address info using
+    gunicorn on heroku or add an arg to the cli from vagrant to switch config setups. The config
+    set from CLI effects the configuration about to be set here and also effects the config in
+    doc_docs.config.py
 
     vagrant:
        python run.py -c=testing
@@ -39,7 +40,7 @@ if __name__ == '__main__':
         python run.py
 
      gunicorn:
-        gunicorn --workers=2 doc_docs:run
+        gunicorn --workers=2 doc_docs:app
 
     """
     flask_conf = os.environ.get('FLASK_CONFIGURATION')

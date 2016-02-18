@@ -210,11 +210,13 @@ class ReviewFinder(Finder):
                 order_by(r.reviewed_on.desc())
 
         if single is True:
-            reviews = reviews.first()[0]
+            # if isinstance(reviews.first(), type(None)):
+            try:
+                return reviews.first()[0]
+            except TypeError:
+                return None
         else:
-            reviews = reviews.all()
-
-        return reviews
+            return reviews.all()
 
 
 class QueryHelper:
