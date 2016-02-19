@@ -10,10 +10,15 @@ import requests
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 from sqlalchemy.orm.exc import NoResultFound
-
 from flask import json
+from flask_security import SQLAlchemyUserDatastore
+
 from doc_docs import db, login_session, utils
-from doc_docs.sql.models import User
+from doc_docs.sql.models import User, Role
+from doc_docs.public import creator
+
+
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 
 
 def fb_graph(token):
@@ -50,18 +55,43 @@ def fb_login(app_id, secret, access_token):
 
         # Error will raise if the user doesn't exist
         user_info = fb_graph(token)
-        return get_user_from_email(user_info.get('email'))
+        return find_or_create_user(user_info.get('email'), user_info.get('name'), 'facebook')
 
     except NoResultFound, e:
         utils.log("WE HAVE UNO PROBLEMA %r", e)
         return None
 
 
-def get_user_from_email(email):
+def find_or_create_user(email, full_name='', provider='', provider_id=''):
     """
-    Try to lookup a user by email, return id or None.
+    Return a User based on their email address. If the User doesn't exist then create
+    a user using the user_datastore and UserProfileCreator, then return that User.
+
+    :param provider_id:
+    :param provider:
+    :param full_name:
     :param email:
     :return:
     """
-    return db.session.query(User).filter_by(email=email).one()
+    user = user_datastore.find_user(email=email)
+    if user is None:
+        # Create the user and start their profile since they don't exist yet.
+        provider = str(provider).lower()
+        user = user_datastore.create_user(email=email)
+        role = user_datastore.find_role('member')
+        user_datastore.add_role_to_user(user, role)
+        profile = creator.UserProfileCreator(user=user)
+        if full_name != '':
+            profile.full_name(full_name)
+
+        if provider == 'facebook':
+            profile.facebook = provider_id
+        elif provider == 'google':
+            profile.google = provider_id
+        elif provider == 'github':
+            profile.github = provider_id
+
+        profile.create()
+
+    return user
 

@@ -32,3 +32,12 @@ class MissingInformationException(Exception):
     def __init__(self, msg):
         logging.warning("Missing data: {}".format(msg))
 
+
+class ProfileNotExistsException(RuntimeError):
+    """
+    User has tried to perform an action which would require a review which they have
+    already created, and that review can't be found.
+    """
+    def __init__(self, msg):
+        logging.error("User without a Profile: {}".format(msg))
+

@@ -42,6 +42,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(32), unique=True)
     email = db.Column(db.String(255), unique=True)
     password = db.Column(db.String(255))
+    # provider is the
+    provider = db.Column(db.Integer(1), default=0)
     active = db.Column(db.Boolean())
     # Time user confirmed registration via email
     confirmed_at = db.Column(db.DateTime())
@@ -56,6 +58,25 @@ class User(db.Model, UserMixin):
     roles = db.relationship('Role', secondary=roles_users,
                             backref=db.backref('users', lazy='dynamic'))
 
+    provider_list = ["client", "facebook", "google", "github"]
+
+    def get_provider_id(self, provider=None):
+        """
+        Get the provider id by looking it up in this list. The provider is who provided the
+        users initial account information upon registration. There is no tightly coupled behavior
+        linked to this data, meaning it is more informational than functional at this time. It
+        could be useful for instance if a user signed up and then came back to the site after being
+        away for a few months and they tried to use the login form or to reset their password
+        forgetting that they signed up with Facebook and not the user form. We could inform the
+        user to sign in using Facebook.
+
+        :param provider:
+        :return integer:
+        """
+        if provider in self.provider_list:
+            return self.provider_list.index(provider)
+        return 0
+
     def __repr__(self):
         return '<User %r>' % self.email
 
@@ -63,8 +84,8 @@ class User(db.Model, UserMixin):
 class UserProfile(db.Model, UserMixin):
     """
     User Profile Data. I'm torn between keeping social data on the profile. It could be
-    just as easily done as meta data. I will do this for now to keep the application
-    simple though. Note that the UserProfile is one of the only tables that is using a custom
+    just as easily done in a meta data table. I will store data here now to keep the application
+    simple atm. Note: that the UserProfile is one of the only tables that is using a custom
     __init__ method. This makes the insert with the bio easier.
     """
     __tablename__ = 'user_profile'
@@ -74,6 +95,7 @@ class UserProfile(db.Model, UserMixin):
     last_name = db.Column(db.String(45), default='')
     homepage = db.Column(db.String(100), default='')
     github = db.Column(db.String(50), default='')
+    google = db.Column(db.String(50), default='')
     facebook = db.Column(db.String(50), default='')
     stackoverflow = db.Column(db.String(50), default='')
     twitter = db.Column(db.String(50), default='')
@@ -85,7 +107,7 @@ class UserProfile(db.Model, UserMixin):
 
     bio_text = None
 
-    def __init__(self, user, first_name='', last_name='', homepage='', github='', facebook='',
+    def __init_old__(self, user, first_name='', last_name='', homepage='', github='', facebook='',
                  stackoverflow='', twitter='', updated_at=None, bio_text=""):
         self.user = user
         self.first_name = first_name
@@ -125,12 +147,6 @@ class UserBioText(db.Model):
     __tablename__ = 'user_bio_text'
     bio_text_id = db.Column('bio_text_id', db.Integer, primary_key=True)
     bio_text = db.Column(db.Text, default='')
-
-    def __init__(self, bio_text=None):
-        self.bio_text = bio_text
-
-        db.session.add(self)
-        db.session.commit()
 
     def __repr__(self):
         return '<class BioText bio_text_id: %r, bio_text: %r>' % (self.bio_text_id, self.bio_text)

@@ -1,5 +1,7 @@
 <!-- The login modal -->
 
+{% import "layouts/partials/_oauth2-login.html" as fb_helper %}
+
 <div id="login-modal" class="reveal"
      data-reveal aria-labelledby="login" aria-hidden="true" role="dialog"
      data-errors-present="{% if login_user_form.errors %}true{% else %}false{% endif %}">
@@ -54,7 +56,7 @@
         <a href="#" data-close="login-modal" data-open="signup-modal">Not yet a member? SIGN UP FREE!</a>
       </div>
 
-      {% include "layouts/partials/_oauth2-login.html" %}
+      {{ fb_helper.fb_login(current_user) }}
 
     </div>
   </div>
@@ -124,7 +126,7 @@
       </div>
       <a href="#" data-open="login-modal" data-close="signup-modal">Already a member? SIGN IN!</a>
 
-      {% include "layouts/partials/_oauth2-login.html" %}
+      {{ fb_helper.fb_login(current_user) }}
 
     </div>
   </div>

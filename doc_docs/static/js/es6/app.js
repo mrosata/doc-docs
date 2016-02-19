@@ -89,7 +89,7 @@ jQuery(function ($) {
   /**
    * Log User out of the app (including fb or any other oauth).
    */
-  window.accountFacebookDocDocsLogoff = function() {
+  window.accountDocDocsLogoff = function() {
     FB.logout();
     window.location = "/logout";
   };

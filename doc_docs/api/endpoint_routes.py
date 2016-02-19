@@ -13,7 +13,10 @@ from string import ascii_letters, digits
 from flask import Blueprint, request, make_response, url_for, json
 from flask_security import current_user, login_required, logout_user, forms
 
-from doc_docs import login_session, security_utils
+from doc_docs import login_session
+
+from flask_security import utils as security_utils
+
 from doc_docs.public.security_forms import ExtendedRegistrationForm
 from doc_docs.public.creator import DocReviewCreator
 from doc_docs.utilities import utils

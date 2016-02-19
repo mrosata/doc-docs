@@ -8,7 +8,7 @@ and from site forms
 """
 from datetime import datetime
 
-from .doc_scraper import fetch_meta
+from doc_docs.public.creator.doc_scraper import fetch_meta
 from doc_docs.sql import models
 from doc_docs.public.site_forms import ReviewForm
 from doc_docs.utilities import utils
@@ -16,6 +16,8 @@ from doc_docs import db, current_user, PreviousReviewException, ReviewNotExistEx
     MissingInformationException
 
 
+# TODO: Move creator out of public
+# TODO: Creator should be a factory for everything it creates and manage a single session
 class Creator:
     """
     _data is a list of attributes this object (or child) will accept and data is where the
@@ -24,13 +26,23 @@ class Creator:
     """
     _data = tuple()
     data = dict()
-    doc = None
-    review = None
-    rating = None
+    # Properties of the creator to be passed down
+    doc = user = review = rating = profile = bio_text = None
 
     def __init__(self):
         self.session = db.session
-        pass
+
+    def commit(self):
+        self.session.commit()
+
+    def rollback(self):
+        self.session.rollback()
+
+    def add(self, database_item):
+        self.session.add(database_item)
+
+    def remove(self, database_item):
+        self.session.remove(database_item)
 
     def return_or_create_doc(self, doc_url, user_id=None):
         """
@@ -105,6 +117,75 @@ class DocRatingCreator(Creator):
         db.session.add(the_rating)
 
         return the_rating
+
+
+class UserProfileCreator(Creator):
+    model = models.UserProfile
+    profile = None
+    facebook = google = github = first_name = last_name = bio = ""
+
+    def __init__(self, user, first_name='', last_name='', facebook='', google='', github=''):
+        """
+        The User Object must be passed into UserProfileCreator on init, the rest of the arguments
+        are optional and could also be set after __init__ if needed. All the additional params
+        are scalar column values belonging on the UserProfile table.
+
+        :param user:
+        :param first_name:
+        :param last_name:
+        :param facebook:
+        :param google:
+        :param github:
+        :return:
+        """
+        self.user = user
+        self.first_name = first_name
+        self.last_name = last_name
+        self.facebook = facebook
+        self.google = google
+        self.github = github
+
+        Creator.__init__(self)
+
+    def full_name(self, full_name=''):
+        """
+        Set the first_name and last_name properties of UserProfileCreator based on a string
+        containing a full name. If a name with more than 2 parts is passed the first part is
+        used as first_name and the remaining parts as last. If the name in string contains 1
+        part then the last name on UserProfileCreator will be reset to ""
+
+        :param full_name:
+        :return list:
+        """
+        names = str(full_name).split(' ')
+        self.last_name = ''
+        self.first_name = names.pop(0)
+
+        if len(names) > 0:
+            self.last_name = ' '.join(names)
+
+        return [self.first_name, self.last_name]
+
+    def create(self):
+        """
+        Create the User Profile along with the Bio Text based on the values of properties on
+        the UserProfileCreator object and then commit the changes into the database session on
+        the parent Creator class.
+
+        :return:
+        """
+
+        self.profile = self.model()
+        self.profile.first_name = self.first_name
+        self.profile.last_name = self.last_name
+        self.profile.github = self.github
+        self.profile.facebook = self.facebook
+        self.profile.google = self.google
+        self.profile.user = self.user
+        self.profile.user_bio_text = models.UserBioText(bio_text=self.bio)
+        
+        self.add(self.profile)
+        self.commit()
 
 
 class DocReviewCreator(Creator):

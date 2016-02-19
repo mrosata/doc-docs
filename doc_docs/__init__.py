@@ -16,8 +16,6 @@ from flask import Flask, render_template, request, flash, g
 from flask_security import SQLAlchemyUserDatastore, Security, current_user, \
     user_registered
 
-from flask_security import utils as security_utils
-
 from flask import session as login_session
 
 from flask_mail import Mail
@@ -26,7 +24,7 @@ from flask.ext.principal import identity_changed
 
 from . import resources
 from doc_doc_errors import PreviousReviewException, ReviewNotExistException, \
-    MissingInformationException
+    MissingInformationException, ProfileNotExistsException
 from doc_docs.config import configure_app
 from doc_docs.utilities import utils
 
@@ -40,7 +38,7 @@ configure_app(app)
 db = SQLAlchemy(app)
 db.init_app(app)
 # Public facing url routes and API endpoint blueprints.
-from public import url_routes
+from public import url_routes, creator
 from api import endpoint_routes
 
 # Jinja2 loopcontrols.
@@ -67,28 +65,52 @@ user_datastore = SQLAlchemyUserDatastore(db, models.User, models.Role)
 security = Security(app, user_datastore, register_form=security_forms.ExtendedRegistrationForm)
 
 
-# All newly registered users will get the "Member" role added.
 def newly_registered_user(app, user, confirm_token, **extra):
+    """
+    Anytime a user registers on the site we want to give them a profile (empty) and add
+    the Standard User role "member" to their user. This will complete the creation of
+    entries in all the user specific tables User, UserProfile, ProfileBioText
+
+    :param app:
+    :param user:
+    :param confirm_token:
+    :param extra:
+    :return:
+    """
+    profile = creator.UserProfileCreator(user)
+    profile.create()
     role = user_datastore.find_or_create_role(
-          name="member", description="Typical Member")
+          name="member", description="Standard User")
     user_datastore.add_role_to_user(user, role)
 
-user_registered.connect(newly_registered_user)
+
+def app_state_token():
+    """
+    Get the App State Token, create the token if it is not already created.
+    :return:
+    """
+    # Check if STATE is not available.
+    if 'STATE' not in login_session:
+        login_session['STATE'] = "".join(
+              choice(ascii_letters.join(digits)) for i in range(32))
+    # return STATE
+    return login_session['STATE']
 
 
 @app.before_first_request
 def init_app_db():
     # user_datastore.delete_user('mike@mike.com')
-    user_datastore.find_or_create_role(name="member", description="Typical Member")
+    role = user_datastore.find_or_create_role(name="member", description="Typical Member")
     # user_datastore.create_role(name="member", description="Typical Member")
     _main_user = user_datastore.find_user(email="mike@mike.com")
     if _main_user is None:
-        user_datastore.create_user(email="mike@mike.com", username="mrosata", password="password")
-        user_datastore.add_role_to_user("mike@mike.com", 'member')
+        _main_user = user_datastore.create_user(
+              email="mike@mike.com", username="mrosata", password="password")
 
+        user_datastore.add_role_to_user(_main_user, role)
+
+    app_state_token()
     db.session.commit()
-    # Setup the login session STATE variable
-    login_session['STATE'] = "".join(choice(ascii_letters.join(digits)) for i in range(32))
 
 
 # TODO: function to add class names onto the body based on the template.
@@ -99,11 +121,12 @@ def check_body_classes():
     body_classes = ("home",)
     register_form = security_forms.ExtendedRegistrationForm()
     login_form = security_forms.LoginForm()
+    app_state = app_state_token()
     return dict(
           body_classes=body_classes,
           register_user_form=register_form,
           login_user_form=login_form,
-          app_state=login_session['STATE']
+          app_state=app_state
     )
 
 
@@ -136,3 +159,5 @@ def errors_and_stuff(error=None):
     return render_template(resources.error["html"], error_code=404)
 
 
+# When the user_registered signal is triggered the app should take action
+user_registered.connect(newly_registered_user)

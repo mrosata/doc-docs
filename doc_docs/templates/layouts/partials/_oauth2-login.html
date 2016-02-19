@@ -1,16 +1,21 @@
 
-    <div class="fb-login-option">
+{% macro fb_login(current_user, text="Login with Facebook", text_logout="Logout",
+                  classnames="button-hollow") %}
+
+  <div class="fb-login-option">
     {% if not current_user.is_active %}
-      <div class="facebook-login-button button button-hollow"
+      <div class="facebook-login-button button {{ classnames }}"
            onclick="facebookDocDocsLogin()">
-        Login With Facebook
+        {{ text }}
       </div>
 
     {% else %}
-      <div class="facebook-logout-button button button-hollow"
+      <div class="facebook-logout-button button {{ classnames }}"
            onclick="accountDocDocsLogoff()">
-        Logout
+        {{ text_logout }}
       </div>
 
     {% endif %}
-    </div>
+  </div>
+
+{% endmacro %}

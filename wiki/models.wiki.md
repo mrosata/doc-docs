@@ -33,11 +33,20 @@ taken by non authorized accounts.
 The `profile_data` table has information which is public about a user. This is data which they are able to change 
 in their profile page and which will be displayed to other members of the site that come to view a users profile.
 
-| profile_id | display_name | first_name | last_name  | homepage   | github  | facebook | stackoverflow | twitter | bio_text_id  |
-|--------------------------------------------------------------------------------------------------------------------|
-|  int(10)   | str(40)      |  str(40)   |  str(40)   |  str(80)   | str(30) | str(30)  | str(30)       | str(30) |    int(10)   |
-|   primary  | unique       |            |            |            | unique  |          |               |         |    serial    |  
-
+| Column Name   | Type   | Constraint  |  Info       |
+|----------------------------------------------------|
+| user_id       | Integer | ForeignKey |  unique     |
+| first_name    | String  |            |  default='' |
+| last_name     | String  |            |  default='' |
+| homepage      | String  |            |  default='' |
+| github        | String  |            |  default='' |
+| google        | String  |            |  default='' |
+| facebook      | String  |            |  default='' |
+| stackoverflow | String  |            |  default='' |
+| twitter       | String  |            |  default='' |
+| updated_at    | DateTime |      | default=datetime |
+| bio_text_id   | Integer | ForeignKey |             |
+    
 ** Notes: It is possible to signup to stackoverflow with a long username. I decided to limit each username to 30 chars. 
 Possibly in the future I may pull all social usernames and ids into a meta table because popular sites are always 
 changing.

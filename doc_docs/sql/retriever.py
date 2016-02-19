@@ -4,7 +4,8 @@ Doc Docs >> 2015 - 2016
 """
 from sqlalchemy import func
 
-from doc_docs import app, db
+from doc_docs import db
+from doc_docs.public import creator
 from doc_docs.sql import models
 
 
@@ -52,8 +53,8 @@ class ProfileFinder(Finder):
         if not profile and create is True:
             user = db.session.query(self.User).filter_by(username=username).first()
             if user is not None:
-                profile = self.Profile(user)
-                db.session.commit()
+                profile = creator.UserProfileCreator(user)
+                profile = profile.create()
 
         return profile
 

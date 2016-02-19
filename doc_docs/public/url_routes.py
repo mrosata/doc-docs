@@ -14,11 +14,12 @@ from flask_security import current_user, login_required, logout_user, forms
 from . import site_forms
 
 from doc_docs.public.security_forms import ExtendedRegistrationForm
-from doc_docs.public.creator import DocReviewCreator
+from doc_docs.public.creator import DocReviewCreator, UserProfileCreator
 
 from doc_docs.utilities import utils
 
-from doc_docs import db, resources, PreviousReviewException, ReviewNotExistException
+from doc_docs import db, resources, PreviousReviewException, ReviewNotExistException, \
+    ProfileNotExistsException
 
 from doc_docs.sql.models import UserProfile, UserBioText
 from doc_docs.sql.models import DocReview, DocTerm
@@ -171,11 +172,10 @@ def edit_profile():
     :return:
     """
     the_form = site_forms.ProfileForm()
-    user_profile = db.session.query(UserProfile).filter_by(user_id=current_user.id).first()
+    user_profile = UserProfile.query.filter_by(user_id=current_user.id).first()
 
     if user_profile is None:
-        user_profile = UserProfile(current_user)
-        db.session.commit()
+        raise ProfileNotExistsException
 
     bio = db.session.query(UserBioText).filter_by(bio_text_id=user_profile.bio_text_id).first()
 
@@ -254,6 +254,12 @@ def the_feeds():
 @public.route('/archive')
 def the_archive():
     return "coming soon to a browser near you!"
+
+
+@public.route('/policy')
+def site_policies():
+    return "Coming soon http://doc-docs.herokuapp.com/policy#privacy and " \
+       "http://doc-docs.herokuapp.com/policy#terms-of-service"
 
 
 @public.route('/blog')
