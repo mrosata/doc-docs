@@ -50,6 +50,12 @@ body {
   .add-new-form label {
     font-size: 1rem; }
 
+.facebook-login-button.button {
+  background-color: #44619D;
+  color: #FFFFFF; }
+  .facebook-login-button.button:hover {
+    background-color: #354b79; }
+
 /*
  *  Profile Pages
  */

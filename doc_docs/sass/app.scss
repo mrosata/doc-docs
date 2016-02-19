@@ -70,6 +70,15 @@ body {
   @extend .login-form
 }
 
+.facebook-login-button.button {
+  background-color: $facebook-bg;
+  color: $facebook-color;
+  &:hover {
+    background-color: darken($facebook-bg, 10%)
+  }
+}
+
+
 @import "partials/_profile_page";
 @import "partials/_nav-header-with-login";
 @import "partials/_flash-message-modals";

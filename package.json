@@ -1,18 +1,26 @@
 {
   "name": "doc-docs",
-  "version": "1.0.0",
   "description": "A project which aims to record the accuracy of online documentation relative to current industry best practices.",
-  "main": "gulpfile.js",
+  "author": "Michael Rosata",
+  "version": "0.1.0",
+  "private": true,
+  "main": "run.py",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start" : "nohup ipython run.py &"
+    "test": "python2.7 -m unittest discover",
+    "start": "export FLASK_CONFIGURATION && python2.7 run.py"
   },
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrosata/doc-docs.git"
+  },
   "devDependencies": {
+    "babel-preset-es2015": "^6.5.0",
     "browser-sync": "^2.10.1",
-    "browserify": "^12.0.1",
     "gulp": "^3.9.0",
-    "gulp-sass": "^2.1.1"
+    "gulp-babel": "^6.1.2",
+    "gulp-concat": "^2.6.0",
+    "gulp-sass": "^2.1.1",
+    "gulp-sourcemaps": "^1.6.0"
   }
 }

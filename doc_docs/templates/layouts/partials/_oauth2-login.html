@@ -1,0 +1,16 @@
+
+    <div class="fb-login-option">
+    {% if not current_user.is_active %}
+      <div class="facebook-login-button button button-hollow"
+           onclick="facebookDocDocsLogin()">
+        Login With Facebook
+      </div>
+
+    {% else %}
+      <div class="facebook-logout-button button button-hollow"
+           onclick="accountDocDocsLogoff()">
+        Logout
+      </div>
+
+    {% endif %}
+    </div>

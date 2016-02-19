@@ -4,13 +4,8 @@ Doc Docs >> 2015 - 2016
 
 Public URL Routes
 -----------------
-Most of the sites urls reside here in the public folder.
-
-http://onethingsimple.com/2015/07/thinking-forward-just-for-a-moment/
-This was a good article. It was not completely based in fact however. It seemed that the author
-came to a lot of the conclusions on his own thinking. Which is ok, but that really isn't what a
-doc is now is it? I said now is it? I said that is not what a doc truely is now shouldn't we take
-this author out to the wood shed and end him? No no no, that would be too easy.
+All the endpoints which can be viewed on the website (besides errors) are found here in the
+public blueprint.
 """
 from flask import Blueprint, render_template, request, url_for, redirect, flash
 

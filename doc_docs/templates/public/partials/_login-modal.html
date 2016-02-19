@@ -54,9 +54,9 @@
         <a href="#" data-close="login-modal" data-open="signup-modal">Not yet a member? SIGN UP FREE!</a>
       </div>
 
+      {% include "layouts/partials/_oauth2-login.html" %}
+
     </div>
-
-
   </div>
   <a class="close-button" data-close aria-label="Close reveal">&#215;</a>
 </div>
@@ -123,6 +123,8 @@
 
       </div>
       <a href="#" data-open="login-modal" data-close="signup-modal">Already a member? SIGN IN!</a>
+
+      {% include "layouts/partials/_oauth2-login.html" %}
 
     </div>
   </div>

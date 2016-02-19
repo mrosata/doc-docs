@@ -7,6 +7,15 @@ community which paved the way for their own successes. *all praise o.s.* As an F
 documentation I will use the word "materials" to describe a webpage which provides documentation, 
 an article or other resource of information.
 
+> #### Quick Download and Setup for DocDocs Development
+> This is the easiest way to get up and running DocDocs Development environment. 
+> Download: `git clone https://github.com/mrosata/doc-docs.git`
+> Setup: `cd doc-docs && npm install`
+> Deps: `pip install -r requirements.txt`
+> Test: `npm test`
+> Run: `npm start`
+
+
 #### Who is watching the watchers?
 Just because material is great doesn't mean that its accuracy and relavance will be preserved with time. 
 Material which you read today may not even be correct, maybe it was at one time and maybe it never had been. 

@@ -8,11 +8,17 @@ application.
 """
 # System modules
 import pprint
+from random import choice
+from string import digits, ascii_letters
 
 # Third party imports.
 from flask import Flask, render_template, request, flash, g
 from flask_security import SQLAlchemyUserDatastore, Security, current_user, \
     user_registered
+
+from flask_security import utils as security_utils
+
+from flask import session as login_session
 
 from flask_mail import Mail
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -33,12 +39,15 @@ configure_app(app)
 # SQLAlchemy().init_app()
 db = SQLAlchemy(app)
 db.init_app(app)
-# This holds the public facing url routes and templates.
+# Public facing url routes and API endpoint blueprints.
 from public import url_routes
+from api import endpoint_routes
+
 # Jinja2 loopcontrols.
 app.jinja_env.add_extension('jinja2.ext.loopcontrols')
 # Flask Security Blueprint for all pages created so far.
 app.register_blueprint(public.url_routes.public)
+app.register_blueprint(api.endpoint_routes.api)
 
 from public import security_forms
 from sql import models
@@ -78,6 +87,8 @@ def init_app_db():
         user_datastore.add_role_to_user("mike@mike.com", 'member')
 
     db.session.commit()
+    # Setup the login session STATE variable
+    login_session['STATE'] = "".join(choice(ascii_letters.join(digits)) for i in range(32))
 
 
 # TODO: function to add class names onto the body based on the template.
@@ -91,7 +102,8 @@ def check_body_classes():
     return dict(
           body_classes=body_classes,
           register_user_form=register_form,
-          login_user_form=login_form
+          login_user_form=login_form,
+          app_state=login_session['STATE']
     )
 
 
