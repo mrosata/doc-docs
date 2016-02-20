@@ -57,6 +57,7 @@
       </div>
 
       {{ fb_helper.fb_login(current_user) }}
+      {{ fb_helper.google_login(current_user) }}
 
     </div>
   </div>
@@ -127,7 +128,7 @@
       <a href="#" data-open="login-modal" data-close="signup-modal">Already a member? SIGN IN!</a>
 
       {{ fb_helper.fb_login(current_user) }}
-
+      {{ fb_helper.google_login(current_user) }}
     </div>
   </div>
   <a class="close-button" data-close="signup-modal" aria-label="Close Signup Modal">&#215;</a>

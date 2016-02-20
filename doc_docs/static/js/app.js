@@ -36,17 +36,32 @@ var ResponseUtils = function () {
   _createClass(ResponseUtils, null, [{
     key: "fbResp",
     value: function fbResp(fbObj) {
-      if (!fbObj || (typeof fbObj === "undefined" ? "undefined" : _typeof(fbObj)) !== "object") return false;
+      if (!isObject(fbObj)) return false;
       if (!fbObj.status || fbObj.status === "unknown") return false;
       if (!fbObj.hasOwnProperty('authResponse') || _typeof(fbObj.authResponse) !== "object") return false;
       var resp = {
         type: 'fb'
       };
-      resp.action = fbObj.status;
+
       resp.user_id = fbObj.authResponse.userID;
       resp.access_token = fbObj.authResponse.accessToken;
       resp.expires_in = fbObj.authResponse.expiresIn;
       resp.signed_request = fbObj.authResponse.signedRequest;
+
+      return resp;
+    }
+  }, {
+    key: "gplusResp",
+    value: function gplusResp(googleObj) {
+      if (!isObject(googleObj)) return false;
+      if (!googleObj.id_token || !googleObj.code || !googleObj.client_id) return false;
+
+      var resp = {
+        type: 'google'
+      };
+      resp.client_id = googleObj.client_id;
+      resp.code = googleObj.code;
+      resp.id_token = googleObj.id_token;
 
       return resp;
     }
@@ -113,7 +128,6 @@ jQuery(function ($) {
 
     FB.login(function (fbObject) {
 
-      console.dir(fbObject);
       var fbUserInfo = ResponseUtils.fbResp(fbObject);
       if (!fbUserInfo || !isObject(fbUserInfo)) return false;
 
@@ -141,28 +155,31 @@ jQuery(function ($) {
     }, { scope: 'email,public_profile,user_friends' });
   };
 
-  /*
-   // Sticky profile menu object to hold all vars/props
-   var profileSticky = {};
-   // Only setup the sticky menu if this is a page with a container we want to use.
-   profileSticky.profileTabs = $('#profile-tabs-container').first();
-   console.log(profileSticky);
-   if (profileSticky.profileTabs.length) {
-    profileSticky.init = function (evt) {
-   profileSticky.offsetTop = profileSticky.profileTabs.offset().top;
-   };
-   profileSticky.scroll = function (evt) {
-   profileSticky.menuContainer.toggleClass('floating-menu', profileSticky.offsetTop < profileSticky.profileTabs.scrollTop().top);
-    console.log(profileSticky, profileSticky.profileTabs.scrollTop());
-   };
-    // Get the menu that we will make sticky
-   profileSticky.menuContainer = profileSticky.profileTabs.find('.tabs-menu-container');
-   // The resize event is just to know the offset height where the menu rests in natural state
-   $(window).on('resize', profileSticky.init );
-   // When we scroll check offset and set menu to proper state.
-   $(window).on('scroll', profileSticky.scroll);
-    profileSticky.init();
-   }
-   */
+  window.googleDocDocsLogin = function (authResult) {
+    console.debug(authResult);
+    authResult = ResponseUtils.gplusResp(authResult);
+    if (!authResult['code']) return false;
+
+    authResult._state = _STATE;
+    // Hide the sign in button
+    document.querySelector('.google-login-button').style.display = 'none';
+
+    $.ajax({
+      type: "post",
+      url: "/api/login",
+      dataType: "json",
+      contentType: "application/json",
+      data: JSON.stringify(authResult),
+      success: function success(result) {
+        // handle response from our own app
+        if (isObject(result) && result.status.toLowerCase() === "success") {
+          window.location = result.data.location;
+        } else {
+          // The login failed somehow on server side
+          alert("Hew Son, Ve Ack a Pro Blah!");
+        }
+      }
+    });
+  };
 });
 //# sourceMappingURL=app.js.map

@@ -4,18 +4,37 @@
 
   <div class="fb-login-option">
     {% if not current_user.is_active %}
-      <div class="facebook-login-button button {{ classnames }}"
+      <div class="facebook-login-button social-button button {{ classnames }}"
            onclick="facebookDocDocsLogin()">
-        {{ text }}
+        <i class="fi-social-facebook size-lg"> </i> {{ text }}
       </div>
 
     {% else %}
-      <div class="facebook-logout-button button {{ classnames }}"
+      <div class="facebook-logout-button social-button button {{ classnames }}"
            onclick="accountDocDocsLogoff()">
-        {{ text_logout }}
+        <i class="fi-social-facebook size-lg"> </i> {{ text_logout }}
       </div>
 
     {% endif %}
+  </div>
+
+{% endmacro %}
+
+
+
+{# Google Login Button Macro #}
+{% macro google_login(current_user, text="Login with Google", classnames="button-hollow") %}
+
+  <div id="signInButton">
+    <div class="g-signin google-login-button social-button button {{ classnames }}"
+          data-scope="openid email"
+          data-clientid="146569384261-pq4bfmcvtf41deom38h151j8ob5ujvln.apps.googleusercontent.com"
+          data-accesstype="offline"
+          data-cookiepolicy="single_host_origin"
+          data-callback="googleDocDocsLogin"
+          data-approvalprompt="force">
+      <i class="fi-social-google-plus size-lg"> </i> {{ text }}
+    </div>
   </div>
 
 {% endmacro %}

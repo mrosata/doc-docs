@@ -53,6 +53,21 @@ body {
   }
 }
 
+
+.size {
+  &-sm {
+    font-size: .8rem;
+  }
+  &-md {
+    font-size:  1.2rem;
+  }
+  &-lg {
+    font-size: 2.2rem;
+  }
+  &-xlg {
+    font-size: 3rem;
+  }
+}
 .spacer {
   height: 1.7rem;
   width: 100%;
@@ -70,11 +85,30 @@ body {
   @extend .login-form
 }
 
-.facebook-login-button.button {
-  background-color: $facebook-bg;
-  color: $facebook-color;
-  &:hover {
-    background-color: darken($facebook-bg, 10%)
+.social-button {
+  position: relative;
+  padding-left: 2.5rem;
+  font-weight: bold;
+  i[class^=fi] {
+    position: absolute;
+    padding: .05rem .4rem 1rem;
+    top: 0;
+    left: 0;
+  }
+
+  &.facebook-login-button {
+    background-color: $google-bg;
+    color: $google-color;
+    &:hover {
+      background-color: darken($google-bg, 10%)
+    }
+  }
+  &.facebook-login-button {
+    background-color: $facebook-bg;
+    color: $facebook-color;
+    &:hover {
+      background-color: darken($facebook-bg, 10%)
+    }
   }
 }
 

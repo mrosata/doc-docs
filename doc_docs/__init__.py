@@ -15,6 +15,7 @@ from string import digits, ascii_letters
 from flask import Flask, render_template, request, flash, g
 from flask_security import SQLAlchemyUserDatastore, Security, current_user, \
     user_registered
+from flask.ext.login import user_logged_out
 
 from flask import session as login_session
 
@@ -146,6 +147,12 @@ def signal_identity_changed_handler(sender, identity):
     else:
         g.logged_in = True
         flash("Successfully Logged In.", category="doc doc system message")
+
+
+@user_logged_out.connect
+def user_logged_out_handler(*args, **kwargs):
+    """Clear the login_session upon logout"""
+    login_session.clear()
 
 
 # We should try to handle some errors

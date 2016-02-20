@@ -22,6 +22,6 @@ doc_review = {'html': 'public/doc-data/review.html'}
 edit_review = {'html': 'public/doc-data/edit-review.html'}
 # Client Secrets for OAuth2
 client_secrets = {
-    'google': '/conf/client_secrets.json',
+    'google': 'doc_docs/conf/client_secrets.json',
     'fb': 'doc_docs/conf/fb_client_secrets.json'
 }

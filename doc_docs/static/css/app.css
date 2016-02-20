@@ -39,6 +39,18 @@ body {
   .section-title h4 {
     font-size: 1.43em; }
 
+.size-sm {
+  font-size: .8rem; }
+
+.size-md {
+  font-size: 1.2rem; }
+
+.size-lg {
+  font-size: 2.2rem; }
+
+.size-xlg {
+  font-size: 3rem; }
+
 .spacer {
   height: 1.7rem;
   width: 100%;
@@ -50,11 +62,25 @@ body {
   .add-new-form label {
     font-size: 1rem; }
 
-.facebook-login-button.button {
-  background-color: #44619D;
-  color: #FFFFFF; }
-  .facebook-login-button.button:hover {
-    background-color: #354b79; }
+.social-button {
+  position: relative;
+  padding-left: 2.5rem;
+  font-weight: bold; }
+  .social-button i[class^=fi] {
+    position: absolute;
+    padding: .05rem .4rem 1rem;
+    top: 0;
+    left: 0; }
+  .social-button.facebook-login-button {
+    background-color: #C93E32;
+    color: #FEFEFE; }
+    .social-button.facebook-login-button:hover {
+      background-color: #a03128; }
+  .social-button.facebook-login-button {
+    background-color: #44619D;
+    color: #FFFFFF; }
+    .social-button.facebook-login-button:hover {
+      background-color: #354b79; }
 
 /*
  *  Profile Pages
