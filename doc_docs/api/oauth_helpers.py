@@ -118,6 +118,53 @@ def google_login(access_token, client_id, id_token):
     return find_or_create_user(user_info.get('email'), user_info.get('name'), 'google')
 
 
+def github_login(step1_code, client_secret, client_id):
+    """
+    Return a user by upgrading the code returned from GitHub step 1 OAuth and getting the
+    users email. If there is no user matching the email then create a new user.
+
+    :param step1_code:
+    :param client_secret:
+    :param client_id:
+    :return:
+    """
+    url = 'https://github.com/login/oauth/access_token'
+    data = {
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "code": step1_code
+    }
+
+    try:
+        req = requests.post(url, data, headers=dict(accept="application/json"))
+        result = req.json()
+
+        if result.get('error') is not None:
+            # 500
+            raise Exception("Github Error: {}".format(result.get('error_description')))
+
+        access_token = result.get('access_token')
+        scope = result.get('scope')
+
+        if "user:email" not in scope:
+            # 403
+            raise Exception("Github Error: Require scope user:email in order to complete OAuth2")
+
+        # Now if we have the token we can get back the email
+        url = "https://api.github.com/user?access_token={}".format(access_token)
+        req = requests.get(url)
+        result = req.json()
+        utils.log("HERE IS THE USER INFORMATION:::: %r ", result)
+        email = result.get('email')
+    except ValueError, KeyError:
+        # There was a problem with the request.. probably not a 200
+        raise Exception("Github Error: Did not recieve a valid response from Github.")
+
+    user = find_or_create_user(email)
+
+    return user
+
+
 def find_or_create_user(email, full_name='', provider='', provider_id=''):
     """
     Return a User based on their email address. If the User doesn't exist then create

@@ -1,6 +1,6 @@
 <!-- The login modal -->
 
-{% import "layouts/partials/_oauth2-login.html" as fb_helper %}
+{% import "layouts/partials/_oauth2-login.html" as oauth_helper %}
 
 <div id="login-modal" class="reveal"
      data-reveal aria-labelledby="login" aria-hidden="true" role="dialog"
@@ -48,16 +48,16 @@
 
     <div class="large-6 columns auth-plain">
       <div class="signup-panel left-solid">
-        <p class="welcome"></p>
-        <h5>Well look who decided to come back!</h5>
-      </div>
-      <div>
-        <br>
-        <a href="#" data-close="login-modal" data-open="signup-modal">Not yet a member? SIGN UP FREE!</a>
+        <p class="welcome">
+          <a href="#" data-close="login-modal" data-open="signup-modal">Not yet a member? SIGN UP FREE!</a>
+        </p>
       </div>
 
-      {{ fb_helper.fb_login(current_user) }}
-      {{ fb_helper.google_login(current_user) }}
+      <div>
+        {{ oauth_helper.fb_login(current_user) }}
+        {{ oauth_helper.google_login(current_user) }}
+        {{ oauth_helper.github_login(current_user) }}
+      </div>
 
     </div>
   </div>
@@ -124,11 +124,20 @@
           {{ render_field(register_user_form.submit, class="button") }}
         </form>
 
-      </div>
-      <a href="#" data-open="login-modal" data-close="signup-modal">Already a member? SIGN IN!</a>
+        <div>
+          <p class="welcome">
+            <a href="#" data-open="login-modal" data-close="signup-modal">Already a member? SIGN IN!</a>
+          </p>
+        </div>
 
-      {{ fb_helper.fb_login(current_user) }}
-      {{ fb_helper.google_login(current_user) }}
+      </div>
+
+      <div>
+        {{ oauth_helper.fb_login(current_user, "Sign up through Facebook") }}
+        {{ oauth_helper.google_login(current_user, "Sign up through Google") }}
+        {{ oauth_helper.github_login(current_user, "Sign up through Github") }}
+      </div>
+
     </div>
   </div>
   <a class="close-button" data-close="signup-modal" aria-label="Close Signup Modal">&#215;</a>

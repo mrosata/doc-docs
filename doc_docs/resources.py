@@ -1,9 +1,8 @@
 
 """
-This is a list of the resources for use in the app. Not all resources are listed in here but I'm trying to get a
-little collection of file locations so there is one place where everything can be edited or changed. Sort of the
-way config options work. The reason I chose not to use the config.py file is because these aren't really settings
-and there is already enough clutter from all the different options provided by flask, flask-security, sqlalchemy...
+This is a small collection of some of the resources used throughout the app. It might be
+easier to manage these locations here rather than spread out through the application. The
+resources file is not to be confused as a config file, just references.
 """
 # A generic error page. Located outside of public blueprint
 error = {'html': 'layouts/_error.html'}
@@ -23,5 +22,7 @@ edit_review = {'html': 'public/doc-data/edit-review.html'}
 # Client Secrets for OAuth2
 client_secrets = {
     'google': 'doc_docs/conf/client_secrets.json',
+    'github': 'doc_docs/conf/github_client_secrets.json',
     'fb': 'doc_docs/conf/fb_client_secrets.json'
 }
+

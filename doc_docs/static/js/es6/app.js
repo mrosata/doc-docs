@@ -14,58 +14,71 @@ var isObject = (!!isObject && typeof isObject === "function" ? isObject :
 );
 
 class ResponseUtils {
+
   constructor () {
 
   }
 
   /**
-   * Figure out if obj is result of Facebook login/logoff
+   * Figure out if obj is result of Facebook OAuth2 call. Then return
+   * an object with only the values required to send to DocDocs server.
    *
-   * @param fbObj obj
-   * @return object|boolean "connected", "disconnected", false
+   * @param fbRespObj
+   * @return object|boolean Response object or false
    */
-  static fbResp(fbObj) {
-    if (!isObject(fbObj))
+  static fbResp(fbRespObj) {
+    if (!isObject(fbRespObj))
       return false;
-    if (!fbObj.status || fbObj.status === "unknown")
+    if (!fbRespObj.status || fbRespObj.status === "unknown")
       return false;
-    if (!fbObj.hasOwnProperty('authResponse') || typeof fbObj.authResponse !== "object")
+    if (!fbRespObj.hasOwnProperty('authResponse') || !isObject(fbRespObj.authResponse))
       return false;
-    let resp = {
-      type: 'fb'
+    let authResponse = fbRespObj.authResponse;
+    return {
+      type: 'fb',
+      user_id: authResponse.userID,
+      access_token: authResponse.accessToken,
+      expires_in: authResponse.expiresIn,
+      signed_request: authResponse.signedRequest
     };
-
-    resp.user_id = fbObj.authResponse.userID;
-    resp.access_token = fbObj.authResponse.accessToken;
-    resp.expires_in = fbObj.authResponse.expiresIn;
-    resp.signed_request = fbObj.authResponse.signedRequest;
-
-    return resp
   }
 
-  static gplusResp(googleObj) {
-    if (!isObject(googleObj))
+  
+  /**
+   * Figure out if obj is result of Google OAuth2 call. Then return
+   * an object with only the values required to send to DocDocs server.
+   * 
+   * @param gplusRespObj obj
+   * @return object|boolean Response object or false
+   */
+  static gplusResp(gplusRespObj) {
+    if (!isObject(gplusRespObj))
       return false;
-    if (!googleObj.id_token || !googleObj.code || !googleObj.client_id)
+    if (!gplusRespObj.id_token || !gplusRespObj.code || !gplusRespObj.client_id)
       return false;
 
     let resp = {
       type: 'google'
     };
-    resp.client_id = googleObj.client_id;
-    resp.code = googleObj.code;
-    resp.id_token = googleObj.id_token;
+    resp.client_id = gplusRespObj.client_id;
+    resp.code = gplusRespObj.code;
+    resp.id_token = gplusRespObj.id_token;
 
     return resp;
   }
 
-  static error (msg="", code=0) {
-    return {
-      type: "error",
-      msg: msg,
-      code: code
-    }
+  /**
+   * Figure out if obj is result of GitHub OAuth2 call. Then return
+   * an object with only the values required to send to DocDocs server.
+   * 
+   * @param githubRespObj
+   * @return object|boolean Response object or false
+   */
+  static githubResp(githubRespObj) {
+    if (!isObject(githubRespObj))
+      return false;
   }
+
 }
 var respUtil = new ResponseUtils();
 
@@ -95,7 +108,7 @@ jQuery(function ($) {
       formsWithErrors.foundation("open");
     } else if (flaskFlashMessages.length) {
       // We only pop open flash messages if there aren't any forms with errors open.
-      flaskFlashMessages.each(function(t, n, a){
+      flaskFlashMessages.each(function() {
         $(this).foundation("open");
       });
     }
@@ -152,8 +165,6 @@ jQuery(function ($) {
       return false;
 
     authResult._state = _STATE;
-    // Hide the sign in button
-    document.querySelector('.google-login-button').style.display = 'none';
 
     $.ajax({
       type: "post",
@@ -175,4 +186,21 @@ jQuery(function ($) {
 
   };
 
+
+  window.githubDocDocsStep1 = function() {
+    // Unlike Facebook and Google OAuth2, Doc Docs will create the initial request to ask the
+    // users for permission to authenticate them using their GitHub account.
+    // I put all the needed information inside the template (sort of like Google + FB)
+    let githubBtn = document.querySelector(".github-signin");
+    let [scope, client_id, redirect_uri] = [
+      githubBtn.dataset['scope'],
+      githubBtn.dataset['clientid'],
+      `${window.location.origin}${githubBtn.dataset['redirecturi']}`
+    ];
+
+    // With the GitHub OAuth we will actually let the page redirect and then afterwards it
+    // will redirect back to us.
+    window.location = "https://github.com/login/oauth/authorize"
+      + `?scope=${scope}&client_id=${client_id}&state=${_STATE}&redirecturi=${redirect_uri}`;
+  };
 });

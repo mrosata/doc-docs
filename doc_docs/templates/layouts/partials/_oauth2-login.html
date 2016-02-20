@@ -27,13 +27,29 @@
 
   <div id="signInButton">
     <div class="g-signin google-login-button social-button button {{ classnames }}"
-          data-scope="openid email"
-          data-clientid="146569384261-pq4bfmcvtf41deom38h151j8ob5ujvln.apps.googleusercontent.com"
-          data-accesstype="offline"
-          data-cookiepolicy="single_host_origin"
-          data-callback="googleDocDocsLogin"
-          data-approvalprompt="force">
+         data-scope="openid email"
+         data-clientid="146569384261-pq4bfmcvtf41deom38h151j8ob5ujvln.apps.googleusercontent.com"
+         data-accesstype="offline"
+         data-cookiepolicy="single_host_origin"
+         data-callback="googleDocDocsLogin"
+         data-approvalprompt="force">
       <i class="fi-social-google-plus size-lg"> </i> {{ text }}
+    </div>
+  </div>
+
+{% endmacro %}
+
+
+{# GitHub Login Button Macro #}
+{% macro github_login(current_user, text="Login using GitHub", classnames="button-hollow") %}
+
+  <div id="signInButton">
+    <div class="github-signin github-login-button social-button button {{ classnames }}"
+         data-scope="user:email"
+         data-clientid="e922db0a14eff23cc03c"
+         data-redirecturi="/api/login/github"
+         onclick="window.githubDocDocsStep1();">
+      <i class="fi-social-github size-lg"> </i> {{ text }}
     </div>
   </div>
 

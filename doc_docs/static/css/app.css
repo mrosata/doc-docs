@@ -65,22 +65,29 @@ body {
 .social-button {
   position: relative;
   padding-left: 2.5rem;
-  font-weight: bold; }
+  min-width: 15.5rem;
+  display: block;
+  margin: .25rem auto; }
   .social-button i[class^=fi] {
     position: absolute;
-    padding: .05rem .4rem 1rem;
+    padding: .1rem .4rem 1rem;
     top: 0;
     left: 0; }
-  .social-button.facebook-login-button {
-    background-color: #C93E32;
-    color: #FEFEFE; }
-    .social-button.facebook-login-button:hover {
-      background-color: #a03128; }
   .social-button.facebook-login-button {
     background-color: #44619D;
     color: #FFFFFF; }
     .social-button.facebook-login-button:hover {
       background-color: #354b79; }
+  .social-button.google-login-button {
+    background-color: #C93E32;
+    color: #FEFEFE; }
+    .social-button.google-login-button:hover {
+      background-color: #a03128; }
+  .social-button.github-login-button {
+    background-color: #333333;
+    color: #F7F7F7; }
+    .social-button.github-login-button:hover {
+      background-color: #1a1a1a; }
 
 /*
  *  Profile Pages
