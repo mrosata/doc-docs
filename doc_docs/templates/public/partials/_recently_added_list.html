@@ -7,18 +7,26 @@
 
         <div class="activity-info medium-5 large-4 small-11 columns">
           <div class="row">
+            <br>
             <p class="activity-datetime small-6 medium-12 columns">{{ review.reviewed_on.date() }}
-              <br>
               {{ review.reviewed_on.year }}/{{ review.reviewed_on.month }}/{{ review.reviewed_on.day }} {{ review.reviewed_on.hour }}:{{ review.reviewed_on.minute }}
             </p>
 
-            <p class="activity-author small-6 medium-12 columns"><span class="username">{{ review.user_info.username }}</span><br><span class="user-role">{{ review.user_info.roles[0].name|e }}</span><br>1210 pts.</p>
+            <p class="activity-author small-6 medium-12 columns">
+              <span class="username">{{ review.user.username }}</span>
+              <br>
+              <span class="user-role">{{ review.user.roles[0].name|e }}</span>
+              <br>1210 pts.
+            </p>
+
           </div>
         </div>
 
         <div class="activity-desc medium-7 large-8 small-12 columns wrap">
           <p class="activity-desc-detail">
-            <span class="activity-desc-time"><a target="_blank" href="{{ review.doc_site_meta.full_url }}">{{ review.doc_site_meta.title }}</a></span>
+            <span class="activity-desc-time"><a target="_blank" href="{{ review
+            .doc_doc.doc_site_meta
+            .full_url }}">{{ review.doc_doc.doc_site_meta.title }}</a></span>
           </p>
           <p>{{ review.summary }}</p>
 

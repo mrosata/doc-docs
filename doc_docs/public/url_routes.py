@@ -97,11 +97,30 @@ def add_new():
         return render_template(resources.add_new['html'], new_review_form=review_form)
 
 
+@public.route('/review/<int:review_id>')
+def review(review_id):
+    r = db.session.query(DocReview, ).filter_by(doc_review_id=review_id).first()
+
+    if r is None:
+        return redirect("/", 404)
+
+    return render_template(resources.doc_review["html"], review=r)
+
+
 @login_required
 @public.route('/new_review')
 def new_review():
     review_form = site_forms.ReviewForm()
     return render_template(resources.add_new['html'], new_review_form=review_form)
+
+
+@login_required
+@public.route('/review/delete/<int:review_id>')
+def delete_review(review_id):
+    _review = _q.review.by_id(review_id)
+
+    if isinstance(_review, type(None)) or _review.reviewer != current_user.id:
+        return redirect('/', 404)
 
 
 @login_required
@@ -224,16 +243,6 @@ def tag(term_name=None, term_id=None):
         term = db.session.query(DocTerm). \
             filter(DocTerm.term == term_name).first()
     return render_template(resources.single_term["html"], term=term)
-
-
-@public.route('/review/<int:review_id>')
-def review(review_id):
-    r = db.session.query(DocReview, ).filter_by(doc_review_id=review_id).first()
-
-    if r is None:
-        return redirect("/", 404)
-
-    return render_template(resources.doc_review["html"], data=r)
 
 
 @public.route('/discussion')

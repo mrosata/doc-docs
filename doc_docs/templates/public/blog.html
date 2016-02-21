@@ -2,24 +2,30 @@
 
 {% block body %}
 
-  <div class="callout large docdocs-main">
-    <div class="row column text-center">
-      <h1><span class="docdocs-text-logo">Docdocs..</span> When Good Docs Go Bad.</h1>
-      <p class="lead">It's like a documentation angel watching over you.</p>
-      <a href="#" class="button medium hollow">Search</a>
-
-      {% if not current_user.is_active %}
-        {# User not logged in then we should offer Sign-Up #}
-        <a href="#" class="button medium hollow" data-open="signup-modal">Sign Up</a>
-      {% else %}
-        {# Active user then show button to add new Review #}
-        <a href="{{ url_for('public.add_new') }}" class="button medium hollow secondary">Add New</a>
-      {% endif %}
-
-    </div>
-  </div>
-
   <section class="main-content">
+
+
+    <div class="row">
+      <div class="small-10 medium-8 large-6 small-centered columns">
+        <div class="header panel">
+          <div class="sign">
+            <h1>OAuth and Simplification</h1>
+          </div>
+          <p>
+            <span>02-20-2016</span>
+            The OAuth2 logins/signups are now done for Facebook, Google and GitHub. I think that
+            is a good enough amount of login options for now. I feel some of the code which I
+            wrote a couple months ago was a bit hackish and have set about fixing it. Mainly
+            there are a couple queries which use joins to get data aggregated for the templates
+            and they don't have to use joins because SQLAlchemy holds relationships in the
+            objects returned from the queries.
+          </p>
+
+        </div>
+
+      </div>
+    </div>
+
 
     <div class="row">
       <div class="small-10 medium-8 large-6 small-centered columns">

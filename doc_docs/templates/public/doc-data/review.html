@@ -2,81 +2,179 @@
 
 {% block body %}
 
-  <div class="callout large">
-    <div class="row column text-center">
-      <h1><span class="docdocs-text-logo">Docdocs..</span> When Good Docs Go Bad</h1>
-      <p class="lead">Review: {{ data.full_url }}</p>
-      <a href="#" class="button medium">Search</a>
-
-      {% if not current_user.is_active %}
-        {# User not logged in then we should offer Sign-Up #}
-        <a href="#" class="button medium hollow" data-open="signup-modal">Sign Up</a>
-      {% else %}
-        {# Active user then show button to add new Review #}
-        <a href="{{ url_for('public.add_new') }}" class="button medium hollow secondary">Add New</a>
-      {% endif %}
-
-    </div>
-  </div>
-
-
-
   <div class="small-10 medium-8 small-push-1 medium-push-2 single-review">
     <div class="spacer medium"></div>
 
 
-    {% if data.doc_meta and data.doc_meta.image %}
+    {% if review.doc_meta and review.doc_meta.image %}
       <div class="row review-field-container">
         <div class="thumbnail">
-          <img src="{{ data.doc_meta.image|e }}" alt="">
+          <img src="{{ review.doc_meta.image|e }}" alt="">
         </div>
       </div>
     {% endif %}
-  
+
     <div class="row review-listing-container">
+      <div class="column small-12">
+        <section class="review-image">
+          <img src="{{ review.doc_doc.doc_site_meta.image }}" class="thumbnail full">
+        </section>
+      </div>
+    </div>
+
+    {# URI Parts #}
+    <div class="row review-listing-container">
+
+      {# Full URL #}
       <div class="column small-12">
         <span class="label field">Reviewed URL: </span>
       </div>
       <div class="column small-12">
-        {{ data.full_url}}
+        {{ review.doc_doc.full_url}}
       </div>
-    </div>
 
-    <div class="row review-listing-container">
+      {# URI Base #}
       <div class="column small-12">
-        <span class="label field">Reviewer: </span>
+        <span class="label field">URI Base: </span>
       </div>
       <div class="column small-12">
-        <a href="{{ url_for("public.profile", username=data.user.username) }}">{{ data.user.username }}</a>
+        {{ review.doc_doc.base_url|e }}
       </div>
-    </div>
 
-    <div class="row review-listing-container">
+      {# URI Path #}
       <div class="column small-12">
-        <span class="label field">Summary: </span>
+        <span class="label field">URI Path: </span>
       </div>
       <div class="column small-12">
-        <article>
-          {{ data.summary|e }}
-        </article>
-                <span class="read-more">
-                <a href="{{ url_for("public.review", review_id=data.doc_review_id) }}">
-                  (... READ MORE)
-                </a></span>
+        {{ review.doc_doc.pathname|e }}
       </div>
+
     </div>
 
 
+    {# Review Ratings #}
+    {% if review.ratings %}
+      <div class="row review-field-container">
+        <div class="column small-6">
+          <div class="row">
+            <div class="column small-12">
+              <span class="label field">Reviewer Rating: </span>
+            </div>
+            <div class="column small-12">
+              {{ review.ratings.user|e }}
+            </div>
+          </div>
+        </div>
+
+        <div class="column small-6">
+          <div class="row">
+            <div class="column-12">
+              <span class="label field">Community Rating: </span>
+            </div>
+            <div class="column-12">
+              {{ review.ratings.community|e }}
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    {% endif %}
+
+
+    {# Review Author #}
     <div class="row review-listing-container">
-      <div class="column small-12">
+
+      <div class="column small-6">
+        <div class="row">
+          <div class="column small-12">
+            <span class="label field">DocDoc Review Author: </span>
+          </div>
+          <div class="column small-12">
+            <a href="{{ url_for("public.profile", username=review.user.username)|e }}">
+              {{ review.user.username|e }}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="column small-6">
+        <div class="row">
+          <div class="column-12">
+            <span class="label field">Written on: </span>
+          </div>
+          <div class="column small-12">
+            <div class="column-12">
+              {{ review.reviewed_on.date()|e }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="row review-listing-container">
+      <div class="column small-6 pull-left">
         <span class="label field">User Review: </span>
       </div>
+      <div class="column small-6 pull-left">
+
+      </div>
       <div class="column small-12">
         <article>
-          {{ data.doc_review_body.review_body|e }}
+          {{ review.doc_review_body.review_body|e }}
         </article>
       </div>
+
+
+      {# Tags #}
+      <div class="column small-12">
+        <span class="label field">Tags: </span>
+      </div>
+      <div class="column small-12">
+        {% if review.terms|length > 0 %}
+          <ul class="menu term-tags">
+
+          {% for tag in review.terms %}
+            <li><a href="{{ url_for("public.tag", term_name=tag.term)|e }}">{{ tag.term }}</a></li>
+          {% endfor %}
+
+        {% endif %}
+
+        </ul>
+      </div>
     </div>
+
+
+    {# Summary Toggle #}
+    <div class="row review-listing-container">
+      <div class="column small-12">
+        <button class="button small secondary" type="button"
+                data-toggle="summary-dropdown">Click to expand summary</button>
+        <div class="dropdown-pane full-width" id="summary-dropdown" data-dropdown data-auto-focus="true">
+          <p>
+            {{ review.summary|e }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+
+    {# Show EDIT and DELETE buttons if this is the logged in users review #}
+    {% if current_user and current_user.id == review.user.id %}
+      <div class="row review-field-container expanded">
+        <div class="column small-3 left">
+          <a href="{{ url_for("public.edit_review", review_id=review.doc_review_id) }}"
+             class="button delete-button secondary">EDIT</a>
+        </div>
+        <div class="column small-3 right">
+          <button class="button delete-button secondary"
+                  data-open="confirm-delete">DELETE</button>
+        </div>
+      </div>
+    {% endif %}
+
 
   </div> <!-- .single-review -->
 
@@ -84,7 +182,7 @@
   <br>
   <hr>
   <br>
-  
+
   <div class="row collapse">
     {% include "public/partials/_recent_widget.html" %}
   </div>

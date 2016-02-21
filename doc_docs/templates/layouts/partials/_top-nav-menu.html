@@ -32,7 +32,7 @@
 
       <span class="active-user-name"> {{ current_user.email }} </span>
       <ul class="inline-list account-action active-user">
-        <li> <a href="{{ url_for('public.profile') }}">Profile</a></li>
+        {# <li> <a href="{{ url_for('public.profile') }}">Profile</a></li> #}
         <li class=""> <a class="logout" href="{{ url_for('public.logout') }}">Logout</a></li>
       </ul>
 

@@ -156,16 +156,22 @@ def github_login(step1_code, client_secret, client_id):
         result = req.json()
         utils.log("HERE IS THE USER INFORMATION:::: %r ", result)
         email = result.get('email')
+        full_name = result.get('name')
+        login = result.get('login')
+        if login is None:
+            login = email
+        if email is None:
+            raise ValueError
     except ValueError, KeyError:
         # There was a problem with the request.. probably not a 200
         raise Exception("Github Error: Did not recieve a valid response from Github.")
 
-    user = find_or_create_user(email)
+    user = find_or_create_user(email, full_name, username=login)
 
     return user
 
 
-def find_or_create_user(email, full_name='', provider='', provider_id=''):
+def find_or_create_user(email, full_name='', provider='', provider_id='', username=''):
     """
     Return a User based on their email address. If the User doesn't exist then create
     a user using the user_datastore and UserProfileCreator, then return that User.
@@ -180,7 +186,13 @@ def find_or_create_user(email, full_name='', provider='', provider_id=''):
     if user is None:
         # Create the user and start their profile since they don't exist yet.
         provider = str(provider).lower()
-        user = user_datastore.create_user(email=email)
+        # DocDocs doesn't require unique username, but we do need a username.
+        if username is None or username == "":
+            if full_name is None or full_name == "":
+                username = str(email).split('@')[0]
+            username = full_name
+
+        user = user_datastore.create_user(email=email, username=username)
         role = user_datastore.find_role('member')
         user_datastore.add_role_to_user(user, role)
         profile = creator.UserProfileCreator(user=user)

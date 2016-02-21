@@ -21,7 +21,6 @@ class TestUserLoginLogoff(TestingAppCommonFunctionality, unittest.TestCase):
         :return:
         """
         # User should not be logged in
-
         with self.app as ctx:
             self._ctx = ctx
 
@@ -40,6 +39,24 @@ class TestUserLoginLogoff(TestingAppCommonFunctionality, unittest.TestCase):
             # logged off current_user shouldn't have an id as an AnonymousUser
             self.assertRaises(AttributeError, lambda fn: current_user.id,
                               "current_user equal to None after logout")
+
+    def test_user_login_with_oauth_facebook(self):
+        with self.app as ctx:
+            self._ctx = ctx
+
+            ctx.get('/')
+            self.assertNotEquals(current_user, None,
+                                 "current_user not None after request")
+            # AnonymousUser doesn't have an id attribute
+            self.assertRaises(AttributeError, lambda fn: current_user.id,
+                              "current_user should raise error when accessing .id")
+
+
+    def test_user_login_with_oauth_google(self):
+        pass
+
+    def test_user_login_with_oauth_github(self):
+        pass
 
 
 class TestingUserProfile(TestingAppCommonFunctionality, unittest.TestCase):

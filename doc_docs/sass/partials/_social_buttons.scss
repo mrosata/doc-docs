@@ -1,0 +1,36 @@
+
+.social-button {
+  position: relative;
+  padding-left: 2.5rem;
+  min-width: 12.5rem;
+  display: block;
+  margin: .25rem auto;
+  i[class^=fi] {
+    position: absolute;
+    padding: .1rem .4rem 1rem;
+    top: 0;
+    left: 0;
+  }
+
+  &.facebook-login-button {
+    background-color: $facebook-bg;
+    color: $facebook-color;
+    &:hover {
+      background-color: darken($facebook-bg, 10%)
+    }
+  }
+  &.google-login-button {
+    background-color: $google-bg;
+    color: $google-color;
+    &:hover {
+      background-color: darken($google-bg, 10%)
+    }
+  }
+  &.github-login-button {
+    background-color: $github-bg;
+    color: $github-color;
+    &:hover {
+      background-color: darken($github-bg, 10%)
+    }
+  }
+}

@@ -1,0 +1,27 @@
+
+.review-form-area {
+  margin-bottom: 2rem;
+
+  .add-new-form {
+    font-size: 0.9rem;
+
+    label {
+      font-size: 1rem;
+    }
+
+    @extend .login-form
+  }
+}
+.dropdown-pane.full-width {
+  width: 100%;
+}
+.label {
+  background-color: $label-bg;
+  border-radius: 1px;
+}
+.label.large {
+  padding: .85rem 1rem;
+}
+.review-listing-container {
+  margin-bottom: 1.2rem;
+}

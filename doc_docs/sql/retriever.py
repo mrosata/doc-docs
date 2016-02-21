@@ -4,7 +4,7 @@ Doc Docs >> 2015 - 2016
 """
 from sqlalchemy import func
 
-from doc_docs import db
+from doc_docs import db, utils
 from doc_docs.public import creator
 from doc_docs.sql import models
 
@@ -128,6 +128,7 @@ class RatingFinder(Finder):
 
 
 class ReviewFinder(Finder):
+
     def get_feed(self, _limit=10, _offset=0):
         """
         Get a feed of recent reviews along with the doc_doc that belongs to it.
@@ -137,17 +138,16 @@ class ReviewFinder(Finder):
         :return: - list of results with props doc_review_id, reviewed_on, summary, user, term_relationship,
                     doc_doc, site_meta
         """
-        r = self.Review
-        # p = db.aliased(self.Profile, name="user_profile")
-        u = db.aliased(self.User, name="user_info")
-        m = db.aliased(self.Meta, name="doc_site_meta")
-        d = db.aliased(self.Doc, name="doc_doc")
 
-        recent_feed = db.session.query(r.doc_review_id, r.reviewed_on, r.summary, u, r.terms, d, m). \
-            filter(r.doc_id == d.doc_id). \
-            filter(r.reviewer == u.id). \
-            group_by(r.doc_review_id). \
-            order_by(r.reviewed_on.desc()).offset(_offset).limit(_limit).all()
+        # This will return a keyedTuple with reviews and profiles [review, profile]
+        #recent_feed = db.session.query(self.Review, models.UserProfile).\
+        #    join(models.UserProfile, models.DocReview.reviewer == models.UserProfile.user_id).\
+        #    order_by(models.DocReview.reviewed_on.desc()).\
+        #    offset(_offset).limit(_limit).all()
+
+        recent_feed = self.Review.query. \
+            order_by(self.Review.reviewed_on.desc()). \
+            offset(_offset).limit(_limit).all()
 
         return recent_feed
 

@@ -24,6 +24,8 @@ body {
     margin-bottom: 0; }
   body .main-content {
     padding-top: 1.7rem; }
+  body a {
+    color: #126eab; }
 
 .section-title {
   width: 100%; }
@@ -57,37 +59,14 @@ body {
   float: none;
   clear: both; }
 
-.add-new-form {
-  font-size: 0.9rem; }
-  .add-new-form label {
-    font-size: 1rem; }
-
-.social-button {
-  position: relative;
-  padding-left: 2.5rem;
-  min-width: 15.5rem;
-  display: block;
-  margin: .25rem auto; }
-  .social-button i[class^=fi] {
-    position: absolute;
-    padding: .1rem .4rem 1rem;
-    top: 0;
-    left: 0; }
-  .social-button.facebook-login-button {
-    background-color: #44619D;
-    color: #FFFFFF; }
-    .social-button.facebook-login-button:hover {
-      background-color: #354b79; }
-  .social-button.google-login-button {
-    background-color: #C93E32;
-    color: #FEFEFE; }
-    .social-button.google-login-button:hover {
-      background-color: #a03128; }
-  .social-button.github-login-button {
-    background-color: #333333;
-    color: #F7F7F7; }
-    .social-button.github-login-button:hover {
-      background-color: #1a1a1a; }
+.button.hollow.secondary {
+  border: 1px solid #bf2323;
+  color: #fefffe;
+  background-color: #DB3A3A; }
+  .button.hollow.secondary:hover {
+    border-color: #2b9db7;
+    background-color: #42b8d3;
+    color: #fefffe; }
 
 /*
  *  Profile Pages
@@ -114,6 +93,53 @@ body {
 
 .profile-review .row {
   margin-bottom: 0.62rem; }
+
+.review-form-area {
+  margin-bottom: 2rem; }
+  .review-form-area .add-new-form {
+    font-size: 0.9rem; }
+    .review-form-area .add-new-form label {
+      font-size: 1rem; }
+
+.dropdown-pane.full-width {
+  width: 100%; }
+
+.label {
+  background-color: #5E21E8;
+  border-radius: 1px; }
+
+.label.large {
+  padding: .85rem 1rem; }
+
+.review-listing-container {
+  margin-bottom: 1.2rem; }
+
+.social-button {
+  position: relative;
+  padding-left: 2.5rem;
+  min-width: 12.5rem;
+  display: block;
+  margin: .25rem auto; }
+  .social-button i[class^=fi] {
+    position: absolute;
+    padding: .1rem .4rem 1rem;
+    top: 0;
+    left: 0; }
+  .social-button.facebook-login-button {
+    background-color: #44619D;
+    color: #FFFFFF; }
+    .social-button.facebook-login-button:hover {
+      background-color: #354b79; }
+  .social-button.google-login-button {
+    background-color: #C93E32;
+    color: #FEFEFE; }
+    .social-button.google-login-button:hover {
+      background-color: #a03128; }
+  .social-button.github-login-button {
+    background-color: #333333;
+    color: #F7F7F7; }
+    .social-button.github-login-button:hover {
+      background-color: #1a1a1a; }
 
 .row.top-nav {
   max-width: 100%; }
@@ -207,29 +233,29 @@ body {
         float: left; } }
 
 .login-panel .welcome,
-.login-form .welcome, .add-new-form .welcome,
+.login-form .welcome, .review-form-area .add-new-form .welcome,
 .register-form .welcome {
   margin-bottom: 1.2rem; }
 
 .login-panel form i,
-.login-form form i, .add-new-form form i,
+.login-form form i, .review-form-area .add-new-form form i,
 .register-form form i {
   font-size: 1.5rem;
   vertical-align: bottom; }
 
 .login-panel form label,
-.login-form form label, .add-new-form form label,
+.login-form form label, .review-form-area .add-new-form form label,
 .register-form form label {
   font-weight: bold; }
 
 .login-panel form input[type=checkbox],
-.login-form form input[type=checkbox], .add-new-form form input[type=checkbox],
+.login-form form input[type=checkbox], .review-form-area .add-new-form form input[type=checkbox],
 .register-form form input[type=checkbox] {
   width: 1.25em;
   height: 1.25em; }
 
 .login-panel form .error-message li,
-.login-form form .error-message li, .add-new-form form .error-message li,
+.login-form form .error-message li, .review-form-area .add-new-form form .error-message li,
 .register-form form .error-message li {
   color: #ff3349;
   list-style: none;
@@ -292,6 +318,50 @@ body {
     padding-bottom: 0.5rem;
     margin: 0; }
 
+.login-form, .review-form-area .add-new-form, .register-form {
+  margin-top: 1.8rem;
+  border: 1px solid #cacaca;
+  padding: 1rem;
+  border-radius: 3px; }
+
+body.the-blog .main-content {
+  background: #D0D2F8; }
+
+.header.panel {
+  margin: 3rem auto;
+  border: 2px solid #444;
+  background: #fefafe; }
+  .header.panel p {
+    font: 1.075rem "Avenir Next";
+    padding: 1rem 2rem 2rem 2rem;
+    margin-top: -1.25rem;
+    color: #464646; }
+    .header.panel p span {
+      text-transform: uppercase;
+      text-decoration: underline;
+      letter-spacing: 1px;
+      font-size: 0.85rem;
+      font-weight: bold; }
+  .header.panel .sign {
+    background: #fff;
+    width: 20rem;
+    height: 2.25rem;
+    max-width: 100%;
+    border: 2px solid #555;
+    border-bottom: 1px solid #555;
+    position: relative;
+    top: -2.3rem;
+    z-index: 2;
+    margin: auto; }
+    .header.panel .sign h1 {
+      text-transform: uppercase;
+      font: bolder 0.875rem "Avenir Next";
+      letter-spacing: 3px;
+      color: #555;
+      font-size: 0.75rem;
+      text-align: center;
+      line-height: 2.375rem; }
+
 /**
  *  DocDocs Callout (The logo and slogan found on most pages).
  */
@@ -332,54 +402,9 @@ body {
     .docdocs-text-logo {
       padding: 0.175rem 0.6rem 0.3rem; } }
 
-.callout.docdocs-main .button.hollow.secondary {
-  border: 1px solid #87d37c;
-  color: #fefffe;
-  background-color: #3adb76; }
-  .callout.docdocs-main .button.hollow.secondary:hover {
-    color: #fafbfa;
-    background-color: #22bb5b; }
-
-.login-form, .add-new-form, .register-form {
-  margin-top: 1.8rem;
-  border: 1px solid #cacaca;
-  padding: 1rem;
-  border-radius: 3px; }
-
-body.the-blog .main-content {
-  background: #b9b9b9; }
-
-.header.panel {
-  margin: 3rem auto;
-  border: 2px solid #444;
-  background: #fefafe; }
-  .header.panel p {
-    font: 1.075rem "Avenir Next";
-    padding: 1rem 2rem 2rem 2rem;
-    margin-top: -1.25rem;
-    color: #464646; }
-    .header.panel p span {
-      text-transform: uppercase;
-      text-decoration: underline;
-      letter-spacing: 1px;
-      font-size: 0.85rem;
-      font-weight: bold; }
-  .header.panel .sign {
-    background: #fff;
-    width: 20rem;
-    height: 2.25rem;
-    max-width: 100%;
-    border: 2px solid #555;
-    border-bottom: 1px solid #555;
-    position: relative;
-    top: -2.3rem;
-    z-index: 2;
-    margin: auto; }
-    .header.panel .sign h1 {
-      text-transform: uppercase;
-      font: bolder 0.875rem "Avenir Next";
-      letter-spacing: 3px;
-      color: #555;
-      font-size: 0.75rem;
-      text-align: center;
-      line-height: 2.375rem; }
+.callout.docdocs-main {
+  padding-bottom: 0;
+  border-bottom: none; }
+  .callout.docdocs-main ~ .callout-expansion {
+    border-bottom: 1px solid rgba(10, 10, 10, 0.25);
+    padding-bottom: 2rem; }

@@ -2,27 +2,10 @@
 
 {% block body %}
 
-  <div class="callout large">
-    <div class="row column text-center">
-      <h1><span class="docdocs-text-logo">Docdocs..</span> Add New</h1>
-      <p class="lead">Fill out one or more of the forms below.</p>
-      <a href="#" class="button medium">Search</a>
-
-      {% if not current_user.is_active %}
-        {# User not logged in then we should offer Sign-Up #}
-        <a href="#" class="button medium hollow" data-open="signup-modal">Sign Up</a>
-      {% else %}
-        {# Active user then show button to add new Review #}
-        <a href="{{ url_for('public.add_new') }}" class="button medium hollow secondary">Add New</a>
-      {% endif %}
-
-    </div>
-  </div>
-
   <div class="row">
     <div class="spacer large"></div>
   </div>
-  <div class="row">
+  <div class="row review-form-area">
     <div class="column small-12 medium-9 large-7 medium-centered">
       {% include "public/partials/_add-new-forms.html" %}
     </div>
