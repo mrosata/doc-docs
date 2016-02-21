@@ -42,7 +42,6 @@ def api_login(login_type=None):
         request_state = request.args['state']
         # GitHub Specific
         code = request.args['code']
-        utils.log("THIS IS THE CODE::: %r", code)
 
     # Ensure that the App State has been perserved or else we can't trust request
     if request_state != login_session['STATE']:

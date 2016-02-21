@@ -19,6 +19,7 @@ single_term = {'html': 'public/tag/doc_review.html'}
 # A Single DocReview
 doc_review = {'html': 'public/doc-data/review.html'}
 edit_review = {'html': 'public/doc-data/edit-review.html'}
+delete_review = {'html': 'public/doc-data/delete-review.html'}
 # Client Secrets for OAuth2
 client_secrets = {
     'google': 'doc_docs/conf/client_secrets.json',

@@ -169,8 +169,10 @@
              class="button delete-button secondary">EDIT</a>
         </div>
         <div class="column small-3 right">
-          <button class="button delete-button secondary"
-                  data-open="confirm-delete">DELETE</button>
+          <a href="{{ url_for('public.delete_review', review_id=review.doc_review_id) }}"
+             class="button
+          delete-button
+          secondary">DELETE</a>
         </div>
       </div>
     {% endif %}

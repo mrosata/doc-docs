@@ -118,9 +118,11 @@ def new_review():
 @public.route('/review/delete/<int:review_id>')
 def delete_review(review_id):
     _review = _q.review.by_id(review_id)
-
     if isinstance(_review, type(None)) or _review.reviewer != current_user.id:
-        return redirect('/', 404)
+        # Forbidden
+        return redirect('/', 403)
+
+    return render_template(resources.delete_review['html'], review=_review)
 
 
 @login_required
@@ -237,11 +239,13 @@ def tag(term_name=None, term_id=None):
         if term_id is None:
             # Can't render a term without knowing its name or id
             return redirect("/", 404)
-        term = str(db.session.query(DocTerm).filter_by(term_id=term_id).first())
+        term = DocTerm.query.filter_by(term_id=term_id).first()
     else:
         # We want to find any object (DocReview) which has term_name as a term to display on page.
-        term = db.session.query(DocTerm). \
-            filter(DocTerm.term == term_name).first()
+        term = DocTerm.query.filter(DocTerm.term == term_name).first()
+    if term is None:
+        return redirect("/", 404)
+
     return render_template(resources.single_term["html"], term=term)
 
 

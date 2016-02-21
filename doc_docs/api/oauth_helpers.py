@@ -78,7 +78,6 @@ def fb_login(app_id, secret, access_token):
         return find_or_create_user(user_info.get('email'), user_info.get('name'), 'facebook')
 
     except NoResultFound, e:
-        utils.log("WE HAVE UNO PROBLEMA %r", e)
         return None
 
 
@@ -154,7 +153,6 @@ def github_login(step1_code, client_secret, client_id):
         url = "https://api.github.com/user?access_token={}".format(access_token)
         req = requests.get(url)
         result = req.json()
-        utils.log("HERE IS THE USER INFORMATION:::: %r ", result)
         email = result.get('email')
         full_name = result.get('name')
         login = result.get('login')

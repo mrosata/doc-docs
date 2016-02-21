@@ -1,12 +1,12 @@
 <div class="row">
-  <div class="small-11 columns small-centered">
+  <div class="small-12 columns small-centered">
 
     {# Show the recent reviews passed in through retriever file called via context processor in url_routes #}
     {% for review in recently_added %}
-    <article class="activity row">
+    <article class="activity">
 
-        <div class="activity-info medium-5 large-4 small-11 columns">
-          <div class="row">
+        <div class="activity-info medium-5 large-4 small-12 columns">
+          <div class="">
             <br>
             <p class="activity-datetime small-6 medium-12 columns">{{ review.reviewed_on.date() }}
               {{ review.reviewed_on.year }}/{{ review.reviewed_on.month }}/{{ review.reviewed_on.day }} {{ review.reviewed_on.hour }}:{{ review.reviewed_on.minute }}
